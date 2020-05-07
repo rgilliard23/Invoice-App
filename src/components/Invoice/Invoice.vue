@@ -107,12 +107,7 @@
             ></b-form-input>
           </template>
           <template v-slot:cell(name)="data">
-            <b-form-input
-              type="text"
-              v-model="data.item.name"
-              read-only
-              placeholder="Enter your name"
-            ></b-form-input>
+            <b-form-input type="text" v-model="data.item.name" read-only placeholder="Enter Name"></b-form-input>
           </template>
           <template v-slot:cell(price)="data">
             <b-form-input
@@ -135,8 +130,8 @@
           <template v-slot:cell(total)="data">
             <b-form-input readonly type="number" v-model="data.item.total" read-only></b-form-input>
           </template>
-          <template v-slot:cell(actions)>
-            <b-button variant="danger" @click="deleteRow(index)">Remove</b-button>
+          <template v-slot:cell(actions)="data">
+            <b-button variant="danger" @click="deleteRow(data.item.uniqueId)">Remove</b-button>
           </template>
           <template v-slot:custom-foot>
             <tr>
@@ -177,6 +172,16 @@
               <td></td>
               <td>Grand Total:</td>
               <td>${{grandTotal.toLocaleString()}}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <b-button @click="addRow" variant="primary">Add Row</b-button>
+              </td>
               <td></td>
             </tr>
           </template>
@@ -297,12 +302,46 @@ export default {
         { key: "actions", label: "" }
       ],
       items: [
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 },
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 },
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 },
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 },
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 },
-        { id: 1, name: "Ronald", quantity: 1, price: 300, total: 300 }
+        {
+          uniqueId: 0,
+          id: 1,
+          name: "Ronald",
+          quantity: 1,
+          price: 300,
+          total: 300
+        },
+        {
+          uniqueId: 0,
+          id: 1,
+          name: "Ronald",
+          quantity: 1,
+          price: 300,
+          total: 300
+        },
+        {
+          uniqueId: 0,
+          id: 1,
+          name: "Ronald",
+          quantity: 1,
+          price: 300,
+          total: 300
+        },
+        {
+          uniqueId: 0,
+          id: 1,
+          name: "Ronald",
+          quantity: 1,
+          price: 300,
+          total: 300
+        },
+        {
+          uniqueId: 0,
+          id: 1,
+          name: "Ronald",
+          quantity: 1,
+          price: 300,
+          total: 300
+        }
       ]
     };
   },
@@ -337,14 +376,33 @@ export default {
   },
   methods: {
     addRow() {
-      this.items.push({ id: 0, name: "", quantity: 1, price: 0, total: 0 });
+      this.inLineTotal();
+      let temp = 0;
+      if (this.items.length > 0) {
+        temp = this.items[this.items.length - 1].uniqueId + 1;
+      }else{
+        temp = 0;
+      }
+
+      this.items.push({
+        uniqueId: temp,
+        id: 0,
+        name: "",
+        quantity: 1,
+        price: 0,
+        total: 0
+      });
     },
     deleteRow(index) {
+      this.inLineTotal();
       this.items.splice(index, 1);
     },
     inLineTotal() {
+      let count = 0;
       this.items.forEach(element => {
+        element.uniqueId = count;
         element.total = Number((element.price * element.quantity).toFixed(2));
+        count++;
       });
     },
     selectCustomer(customer) {
