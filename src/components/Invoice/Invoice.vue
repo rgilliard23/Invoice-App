@@ -10,9 +10,25 @@
 
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-button class="margin" size="lg" variant="danger">Invoice Pdf</b-button>
-            <b-button class="margin" size="lg" variant="secondary">Export To Excel</b-button>
-            <b-button class="margin" size="lg" variant="success">Save Invoice</b-button>
+            <b-button
+              :disabled="InvoiceIncomplete"
+              v-b-modal.InvoiceTemplate
+              class="margin"
+              size="lg"
+              variant="danger"
+            >Invoice Pdf</b-button>
+            <b-button
+              :disabled="InvoiceIncomplete"
+              class="margin"
+              size="lg"
+              variant="secondary"
+            >Export To Excel</b-button>
+            <b-button
+              :disabled="InvoiceIncomplete"
+              class="margin"
+              size="lg"
+              variant="success"
+            >Save Invoice</b-button>
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
@@ -26,7 +42,7 @@
             label-for="sortBySelect"
             class="mb-0"
           >
-            <b-form-datepicker size="lg" id="example-datepicker" v-model="value" class="mb-2"></b-form-datepicker>
+            <b-form-datepicker v-model="createdDate" size="lg" id="example-datepicker" class="mb-2"></b-form-datepicker>
           </b-form-group>
         </b-col>
 
@@ -38,7 +54,7 @@
             label-for="initialSortSelect"
             class="mb-0"
           >
-            <b-form-datepicker size="lg" id="example-datepicker" v-model="value" class="mb-2"></b-form-datepicker>
+            <b-form-datepicker size="lg" id="example-datepicker" v-model="dateDue" class="mb-2"></b-form-datepicker>
           </b-form-group>
         </b-col>
 
@@ -63,7 +79,10 @@
             label-for="filterInput"
             class="mb-0"
           >
-            <b-button v-b-modal.customerModal block variant="outline-success">Select Customer</b-button>
+            <b-button v-b-modal.customerModal block variant="outline-success">
+              <span v-if="customer.name != null">{{customer.name}}</span>
+              <span v-else>Select Customer</span>
+            </b-button>
           </b-form-group>
         </b-col>
       </b-row>
@@ -135,7 +154,7 @@
               <td>Tax:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input append="%" v-model="tax" type="number"></b-form-input>
+                  <b-form-input append="%" min="0" v-model="tax" type="number"></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -147,7 +166,7 @@
               <td>Discount:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input v-model="discount" type="number"></b-form-input>
+                  <b-form-input min="0" v-model="discount" type="number"></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -173,6 +192,12 @@
           ></b-form-textarea>
         </b-form-group>
       </b-container>
+      <b-modal title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
+        <keep-alive>
+          <InvoiceTemplate class="overflow" />
+        </keep-alive>
+        <b-button style="margin-top: 50px;" variant="success">Download PDF</b-button>
+      </b-modal>
 
       <b-modal centered size="lg" id="productsModal" title="Add Products">
         <keep-alive>
@@ -180,9 +205,9 @@
         </keep-alive>
       </b-modal>
 
-      <b-modal centered size="lg" id="customerModal" title="Add Customer">
+      <b-modal ref="customerModal" centered size="lg" id="customerModal" title="Add Customer">
         <keep-alive>
-          <CustomerModal/>
+          <CustomerModal @selectCustomer="selectCustomer" />
         </keep-alive>
       </b-modal>
       <!-- <b-table-simple fixed sticky-header="60vh">
@@ -239,17 +264,25 @@
 import "axios";
 import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
+import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
 
 export default {
   name: "Invoice",
   components: {
     CustomerModal,
-    ProductsModal
+    ProductsModal,
+    InvoiceTemplate
   },
   data: function() {
     return {
       GrandTotal: 0,
       transactions: [],
+      createdDate: null,
+      dateDue: null,
+      customer: {
+        name: null,
+        address: null
+      },
       customers: [],
       products: [],
       tax: 0,
@@ -288,6 +321,18 @@ export default {
       let tax = grandTotal * (this.tax / 100);
       grandTotal += tax;
       return Number(grandTotal.toFixed(2));
+    },
+    InvoiceIncomplete() {
+      if (
+        this.customer.name !== null &&
+        this.items.length > 0 &&
+        this.createdDate !== null &&
+        this.dateDue !== null
+      ) {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   methods: {
@@ -301,6 +346,11 @@ export default {
       this.items.forEach(element => {
         element.total = Number((element.price * element.quantity).toFixed(2));
       });
+    },
+    selectCustomer(customer) {
+      this.customer.name = customer.name;
+      this.customer.address = customer.address;
+      this.$refs["customerModal"].hide();
     }
   },
   filters: {
@@ -315,5 +365,10 @@ export default {
 .margin {
   margin-left: 10px;
   margin-right: 10px;
+}
+.overflow {
+  overflow: scroll;
+  max-height: 70vh;
+  height: 70vh;
 }
 </style>

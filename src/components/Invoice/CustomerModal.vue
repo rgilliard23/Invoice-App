@@ -8,41 +8,18 @@
           <b-list-group-item v-for="customer in filterCustomerList" :key="customer">
             <b-row align-h="between">
               <div>{{customer.name}}</div>
-              <b-button variant="primary">Select Customer</b-button>
+              <b-button @click="selectCustomer(customer)" variant="primary">Select Customer</b-button>
             </b-row>
           </b-list-group-item>
         </b-list-group>
-        <b-button v-b-modal.addCustomerModal variant="primary">Add Customer</b-button>
+        <b-button
+          style="margin-top: 10px;"
+          v-b-modal.addCustomerModal
+          variant="info"
+        >Add Customer</b-button>
 
-        <b-modal id="addCustomerModal">
-          <b-form @submit.stop.prevent="onSubmit">
-            <b-form-group id="input-group-1" label="Customer Name:" label-for="input-1">
-              <b-form-input
-                id="input-1"
-                v-model="$v.form.name.$model"
-                type="text"
-                required
-                :state="validateState('name')"
-                placeholder="Enter Name"
-                aria-describedby="input-1-live-feedback"
-              ></b-form-input>
-              <b-form-invalid-feedback id="input-1-live-feedback">Name must be at least 3 characters</b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group label="Customer Address:">
-              <b-form-input
-                id="input-1"
-                v-model="$v.form.address.$model"
-                type="text"
-                required
-                :state="validateState('address')"
-                placeholder="Enter Address"
-                aria-describedby="input-2-live-feedback"
-              ></b-form-input>
-              <b-form-invalid-feedback id="input-2-live-feedback">Address be at least 5 characters</b-form-invalid-feedback>
-            </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button class="ml-2" @click="resetForm()">Reset</b-button>
-          </b-form>
+        <b-modal centered ref="addCustomerModal" id="addCustomerModal" title="Add Customer">
+          <AddCustomer />
         </b-modal>
       </b-col>
     </b-row>
@@ -52,10 +29,14 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
+import AddCustomer from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/AddCustomer.vue";
 
 export default {
   mixins: [validationMixin],
   name: "CustomerModal",
+  components: {
+    AddCustomer
+  },
   data: function() {
     return {
       searchCustomer: "",
@@ -108,6 +89,11 @@ export default {
       alert("Form submitted!");
       this.customer.name = this.form.name;
       this.customer.address = this.form.address;
+    },
+    selectCustomer(customer) {
+      this.customer.name = customer.name;
+      this.customer.address = customer.address;
+      this.$emit("selectCustomer", customer);
     }
   },
   computed: {
@@ -118,7 +104,8 @@ export default {
           .split(" ")
           .every(v => item.name.toLowerCase().includes(v));
       });
-    }
+    },
+    
   },
   validations: {
     form: {
