@@ -16,7 +16,8 @@
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
-      <b-row style="height: 10vh;">
+      <div style="height: 10px;"></div>
+      <b-row class="margin" style="height: 10vh;">
         <b-col lg="6" class="my-1">
           <b-form-group
             label="Date Created:"
@@ -49,7 +50,7 @@
             label-for="filterInput"
             class="mb-0"
           >
-            <b-button block variant="success">Add Products</b-button>
+            <b-button v-b-modal.productsModal block variant="success">Add Products</b-button>
           </b-form-group>
         </b-col>
 
@@ -62,11 +63,11 @@
             label-for="filterInput"
             class="mb-0"
           >
-            <b-button v-b-modal.modal-1 block variant="outline-success">Select Customer</b-button>
+            <b-button v-b-modal.customerModal block variant="outline-success">Select Customer</b-button>
           </b-form-group>
         </b-col>
       </b-row>
-      <div style="height: 1vh;"></div>
+      <div style="height: 2vh;"></div>
       <b-container fluid>
         <b-table
           small
@@ -96,6 +97,7 @@
           </template>
           <template v-slot:cell(price)="data">
             <b-form-input
+              @change="inLineTotal"
               type="number"
               v-model="data.item.price"
               read-only
@@ -105,19 +107,14 @@
           <template v-slot:cell(quantity)="data">
             <b-form-input
               type="number"
+              @change="inLineTotal"
               v-model="data.item.quantity"
               read-only
               placeholder="Enter your name"
             ></b-form-input>
           </template>
           <template v-slot:cell(total)="data">
-            <b-form-input
-              readonly
-              type="number"
-              v-model="data.item.total"
-              read-only
-              placeholder="Enter your name"
-            ></b-form-input>
+            <b-form-input readonly type="number" v-model="data.item.total" read-only></b-form-input>
           </template>
           <template v-slot:cell(actions)>
             <b-button variant="danger" @click="deleteRow(index)">Remove</b-button>
@@ -128,7 +125,7 @@
               <td></td>
               <td></td>
               <td>Sub Total:</td>
-              <td>$1,500</td>
+              <td>${{subTotal.toLocaleString()}}</td>
               <td></td>
             </tr>
             <tr>
@@ -138,7 +135,7 @@
               <td>Tax:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input append="%" type="number"></b-form-input>
+                  <b-form-input append="%" v-model="tax" type="number"></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -150,7 +147,7 @@
               <td>Discount:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input type="number"></b-form-input>
+                  <b-form-input v-model="discount" type="number"></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -160,17 +157,33 @@
               <td></td>
               <td></td>
               <td>Grand Total:</td>
-              <td>1,500</td>
+              <td>${{grandTotal.toLocaleString()}}</td>
               <td></td>
             </tr>
           </template>
         </b-table>
+
+        <b-form-group label="Invoice Notes:">
+          <b-form-textarea
+            id="textarea"
+            v-model="notes"
+            placeholder="Notes.."
+            rows="6"
+            max-rows="6"
+          ></b-form-textarea>
+        </b-form-group>
       </b-container>
 
-      <b-button v-b-modal.modal-1>Launch demo modal</b-button>
+      <b-modal centered size="lg" id="productsModal" title="Add Products">
+        <keep-alive>
+          <ProductsModal />
+        </keep-alive>
+      </b-modal>
 
-      <b-modal size="lg" id="modal-1" title="BootstrapVue">
-       <CustomerModal/>
+      <b-modal centered size="lg" id="customerModal" title="Add Customer">
+        <keep-alive>
+          <CustomerModal/>
+        </keep-alive>
       </b-modal>
       <!-- <b-table-simple fixed sticky-header="60vh">
         <b-thead>
@@ -224,18 +237,24 @@
 
 <script>
 import "axios";
-import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/CustomerModal.vue";
+import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
+import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 
 export default {
   name: "Invoice",
   components: {
-    CustomerModal
+    CustomerModal,
+    ProductsModal
   },
   data: function() {
     return {
+      GrandTotal: 0,
       transactions: [],
       customers: [],
       products: [],
+      tax: 0,
+      discount: 0,
+      notes: "",
       invoiceFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
@@ -255,11 +274,20 @@ export default {
     };
   },
   computed: {
-    total() {
-      return this.items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
+    subTotal() {
+      let subTotal = 0;
+      this.items.forEach(element => {
+        subTotal += element.total;
+      });
+      return Number(subTotal.toFixed(2));
+    },
+    grandTotal() {
+      let grandTotal = this.subTotal;
+      let discount = grandTotal * (this.discount / 100);
+      grandTotal = this.subTotal - discount;
+      let tax = grandTotal * (this.tax / 100);
+      grandTotal += tax;
+      return Number(grandTotal.toFixed(2));
     }
   },
   methods: {
@@ -268,6 +296,11 @@ export default {
     },
     deleteRow(index) {
       this.items.splice(index, 1);
+    },
+    inLineTotal() {
+      this.items.forEach(element => {
+        element.total = Number((element.price * element.quantity).toFixed(2));
+      });
     }
   },
   filters: {
@@ -280,7 +313,7 @@ export default {
 
 <style scoped>
 .margin {
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 </style>
