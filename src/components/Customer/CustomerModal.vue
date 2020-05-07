@@ -3,47 +3,51 @@
     <b-row>
       <b-col>
         <b-form @submit.stop.prevent="onSubmit">
-          <b-form-group
-            id="input-group-1"
-            label="Customer Name:"
-            label-for="input-1"
-          >
+          <b-form-group id="input-group-1" label="Customer Name:" label-for="input-1">
             <b-form-input
               id="input-1"
-              v-model="$v.address.model"
+              v-model="$v.form.name.$model"
               type="text"
               required
+              :state="validateState('name')"
               placeholder="Enter Name"
+              aria-describedby="input-1-live-feedback"
             ></b-form-input>
+            <b-form-invalid-feedback id="input-2-live-feedback">Name must be at least 3 characters</b-form-invalid-feedback>
           </b-form-group>
           <b-form-group label="Customer Address:">
-               <b-form-input
+            <b-form-input
               id="input-1"
-              v-model="address"
-              type="email"
+              v-model="$v.form.address.$model"
+              type="text"
               required
+              :state="validateState('address')"
               placeholder="Enter Address"
+              aria-describedby="input-2-live-feedback"
             ></b-form-input>
+            <b-form-invalid-feedback id="input-2-live-feedback">Address be at least 5 characters</b-form-invalid-feedback>
           </b-form-group>
+          <b-button type="submit" variant="primary">Submit</b-button>
+          <b-button class="ml-2" @click="resetForm()">Reset</b-button>
         </b-form>
-
-        <b-button type="submit">Save Customer</b-button>
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script>
+import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
+  mixins: [validationMixin],
   name: "CustomerModal",
   data: function() {
     return {
-      showNameError: false,
-      showAddressError: false,
-      address: "",
-      name: "",
+      form: {
+        name: null,
+        address: null
+      },
       customer: {
         name: "",
         address: ""
@@ -51,28 +55,39 @@ export default {
     };
   },
   methods: {
-    addCustomer() {
-      if (this.name.length > 3) {
-        this.showNameError = true;
-      }
-      if (this.address > 5) {
-        this.showAddressError;
+    validateState(name) {
+      const { $dirty, $error } = this.$v.form[name];
+      return $dirty ? !$error : null;
+    },
+    resetForm() {
+      this.form = {
+        name: null,
+        address: null
+      };
+
+      this.$nextTick(() => {
+        this.$v.$reset();
+      });
+    },
+    onSubmit() {
+      this.$v.form.$touch();
+      if (this.$v.form.$anyError) {
+        return;
       }
 
-      if (this.showAddressError || this.showNameError) {
-        return;
-      } else {
-        this.customer.address = this.address;
-        this.customer.name = this.name;
-        this.address = "";
-        this.name = "";
-      }
+      alert("Form submitted!");
     }
   },
   validations: {
-    name: {
-      required,
-      minLength: minLength(4)
+    form: {
+      address: {
+        required,
+        minLength: minLength(5)
+      },
+      name: {
+        required,
+        minLength: minLength(3)
+      }
     }
   }
 };
