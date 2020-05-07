@@ -2,8 +2,10 @@
   <div>
     <b-row>
       <b-col>
-        <b-list-group>
-          <b-list-group-item v-for="(customer,index) in customers" :key="index">
+        <b-input v-model="searchCustomer" type="text" placeholder="Search"></b-input>
+        <div style="height: 2vh;"></div>
+        <b-list-group class="list-group-overflow">
+          <b-list-group-item v-for="customer in filterCustomerList" :key="customer">
             <b-row align-h="between">
               <div>{{customer.name}}</div>
               <b-button variant="primary">Select Customer</b-button>
@@ -56,6 +58,7 @@ export default {
   name: "CustomerModal",
   data: function() {
     return {
+      searchCustomer: "",
       form: {
         name: null,
         address: null
@@ -65,6 +68,16 @@ export default {
         address: ""
       },
       customers: [
+        { name: "Ronald", address: "3202 cherrydale dr" },
+        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
+        { name: "Ronald", address: "3202 cherrydale dr" },
+        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
+        { name: "Ronald", address: "3202 cherrydale dr" },
+        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
+        { name: "Ronald", address: "3202 cherrydale dr" },
+        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
+        { name: "Ronald", address: "3202 cherrydale dr" },
+        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
         { name: "Ronald", address: "3202 cherrydale dr" },
         { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
         { name: "Bob", address: "3202 cherrydale dr" }
@@ -97,6 +110,16 @@ export default {
       this.customer.address = this.form.address;
     }
   },
+  computed: {
+    filterCustomerList() {
+      return this.customers.filter(item => {
+        return this.searchCustomer
+          .toLowerCase()
+          .split(" ")
+          .every(v => item.name.toLowerCase().includes(v));
+      });
+    }
+  },
   validations: {
     form: {
       address: {
@@ -113,4 +136,8 @@ export default {
 </script>
 
 <style>
+.list-group-overflow {
+  overflow: scroll;
+  max-height: 60vh;
+}
 </style>
