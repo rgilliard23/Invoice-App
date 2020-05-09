@@ -30,6 +30,23 @@
 
         <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
       </b-form-group>
+      <b-form-group label="Select Quantity:">
+        <b-input-group>
+          <b-form-input
+            id="input-1"
+            v-model="$v.form.quantity.$model"
+            type="number"
+            min="1"
+            step="1"
+            required
+            :state="validateState('quantity')"
+            placeholder="0"
+            aria-describedby="input-2-live-feedback"
+          ></b-form-input>
+        </b-input-group>
+
+        <b-form-invalid-feedback id="input-2-live-feedback">Quantity Too High</b-form-invalid-feedback>
+      </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button class="ml-2" @click="resetForm()">Reset</b-button>
     </b-form>
@@ -47,11 +64,13 @@ export default {
       form: {
         name: null,
         price: null,
+        quantity: 1,
         description: null
       },
       product: {
         name: null,
         price: null,
+        quantity: 1,
         description: null
       }
     };
@@ -65,6 +84,9 @@ export default {
       name: {
         required,
         minLength: minLength(3)
+      },
+      quantity: {
+        between: between(0, 9999)
       }
     }
   },
@@ -93,6 +115,7 @@ export default {
       this.product.price = this.form.price;
       this.product.description = this.form.description;
       this.product.quantity = this.form.quantity;
+      this.$emit("addToProductList", this.product);
     }
   }
 };

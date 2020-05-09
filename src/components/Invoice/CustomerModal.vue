@@ -19,7 +19,7 @@
         >Add Customer</b-button>
 
         <b-modal centered ref="addCustomerModal" id="addCustomerModal" title="Add Customer">
-          <AddCustomer />
+          <AddCustomerInvoice />
         </b-modal>
       </b-col>
     </b-row>
@@ -29,13 +29,13 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
-import AddCustomer from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/AddCustomer.vue";
+import AddCustomerInvoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/AddCustomerInvoice.vue";
 
 export default {
   mixins: [validationMixin],
   name: "CustomerModal",
   components: {
-    AddCustomer
+    AddCustomerInvoice
   },
   data: function() {
     return {

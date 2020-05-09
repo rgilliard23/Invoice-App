@@ -92,22 +92,16 @@
           small
           striped
           fixed
-          sticky-header="60vh"
+          sticky-header="50vh"
           :items="items"
           :key="index"
           :fields="invoiceFields"
         >
           <template v-slot:cell(id)="data">
-            <b-form-input
-              readonly
-              type="number"
-              v-model="data.item.id"
-              read-only
-              placeholder="Enter your name"
-            ></b-form-input>
+            <b-form-input readonly type="number" v-model="data.item.id" read-only placeholder="Id"></b-form-input>
           </template>
           <template v-slot:cell(name)="data">
-            <b-form-input type="text" v-model="data.item.name" read-only placeholder="Enter Name"></b-form-input>
+            <b-form-input type="text" v-model="data.item.name" read-only placeholder="Name"></b-form-input>
           </template>
           <template v-slot:cell(price)="data">
             <b-form-input
@@ -115,7 +109,7 @@
               type="number"
               v-model="data.item.price"
               read-only
-              placeholder="Enter your name"
+              placeholder="Price"
             ></b-form-input>
           </template>
           <template v-slot:cell(quantity)="data">
@@ -124,7 +118,7 @@
               @change="inLineTotal"
               v-model="data.item.quantity"
               read-only
-              placeholder="Enter your name"
+              placeholder="Quantity"
             ></b-form-input>
           </template>
           <template v-slot:cell(total)="data">
@@ -199,14 +193,20 @@
       </b-container>
       <b-modal title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
         <keep-alive>
-          <InvoiceTemplate class="overflow" />
+          <InvoiceTemplate
+            ref="content"
+            v-bind:transactions="items"
+            v-bind:dateDue="dateDue"
+            v-bind:createdDate="createdDate"
+            class="overflow"
+          />
         </keep-alive>
-        <b-button style="margin-top: 50px;" variant="success">Download PDF</b-button>
+        <b-button style="margin-top: 50px;" @click="createPDF" variant="success">Download PDF</b-button>
       </b-modal>
 
-      <b-modal centered size="lg" id="productsModal" title="Add Products">
+      <b-modal centered size="lg" id="productsModal" ref="productsModal" title="Add Products">
         <keep-alive>
-          <ProductsModal />
+          <ProductsModal @closeProductModal="closeProductModal" v-bind:transactions="items" />
         </keep-alive>
       </b-modal>
 
@@ -270,6 +270,7 @@ import "axios";
 import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
+
 
 export default {
   name: "Invoice",
@@ -380,7 +381,7 @@ export default {
       let temp = 0;
       if (this.items.length > 0) {
         temp = this.items[this.items.length - 1].uniqueId + 1;
-      }else{
+      } else {
         temp = 0;
       }
 
@@ -392,6 +393,9 @@ export default {
         price: 0,
         total: 0
       });
+    },
+    closeProductModal() {
+      this.$refs["productsModal"].hide();
     },
     deleteRow(index) {
       this.inLineTotal();
@@ -409,11 +413,12 @@ export default {
       this.customer.name = customer.name;
       this.customer.address = customer.address;
       this.$refs["customerModal"].hide();
-    }
+    },
+    
   },
   filters: {
     currency(value) {
-      return value.toFixed(2);
+      return Number(value.toFixed(2));
     }
   }
 };

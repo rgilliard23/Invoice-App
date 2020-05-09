@@ -36,7 +36,7 @@ import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 export default {
   mixins: [validationMixin],
-  name: "AddCustomer",
+  name: "AddCustomerInvoice",
   data: function() {
     return {
       form: {

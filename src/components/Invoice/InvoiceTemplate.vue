@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="invoice-box">
-      <table cellpadding="0" cellspacing="0">
+  <div ref="content">
+    <div  class="invoice-box">
+      <table id="InvoiceTemplate"  cellpadding="0" cellspacing="0">
         <tr class="top">
           <td colspan="4">
             <table>
@@ -15,8 +15,10 @@
 
                 <td>
                   Invoice #: 123
-                  <br />Created: January 1, 2015
-                  <br />Due: February 1, 2015
+                  <br />
+                  Created: {{createdDate | moment('MMMM Do YYYY')}}
+                  <br />
+                  Due: {{dateDue | moment('MMMM Do YYYY')}}
                 </td>
               </tr>
             </table>
@@ -60,24 +62,11 @@
           <td>Price</td>
         </tr>
 
-        <tr class="item" v-for="item in items" :key="item">
-          <td>
-            <input v-model="item.description" />
-          </td>
-          <td>
-            $
-            <input type="number" v-model="item.price" />
-          </td>
-          <td>
-            <input type="number" v-model="item.quantity" />
-          </td>
-          <td>${{ item.price * item.quantity | currency }}</td>
-        </tr>
-
-        <tr>
-          <td colspan="4">
-            <button class="btn-add-row" @click="addRow">Add row</button>
-          </td>
+        <tr class="item" v-for="transaction in transactions" :key="transaction">
+          <td>{{transaction.name}}</td>
+          <td>$ {{transaction.price | currency}}</td>
+          <td>{{transaction.quantity}}</td>
+          <td>${{ transaction.price * transaction.quantity | currency }}</td>
         </tr>
 
         <tr class="total">
@@ -86,12 +75,22 @@
         </tr>
       </table>
     </div>
+    <div id="pdf"></div>
+    <b-button variant="success" @click="createPDF">Download</b-button>
   </div>
 </template>
 
 <script>
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
 export default {
   name: "InvoiceTemplate",
+  props: {
+    transactions: Array,
+    createdDate: String,
+    dateDue: String
+  },
   data: function() {
     return {
       items: [
@@ -103,7 +102,7 @@ export default {
   },
   computed: {
     total() {
-      return this.items.reduce(
+      return this.transactions.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
       );
@@ -112,6 +111,44 @@ export default {
   methods: {
     addRow() {
       this.items.push({ description: "", quantity: 1, price: 0 });
+    },
+    createPDF() {
+      // const doc = new jsPDF();
+      // /** WITH CSS */
+      // var canvasElement = document.createElement("canvas");
+      // console.log(this.$refs.content);
+      return new Promise((resolve, reject) => {
+        let windowHeight = window.outerHeight;
+        let windowWidth = window.outerWidth;
+        var doc = new jsPDF("p", "mm", "a4");
+        var canvasElement = document.createElement("canvas");
+        canvasElement.width = windowWidth;
+        canvasElement.height = windowHeight;
+        html2canvas(this.$refs.content, {
+          canvas: canvasElement,
+          width: windowWidth,
+          height: windowHeight
+        })
+          .then(function(canvas) {
+            const img = canvas.toDataURL("image/jpeg", 1);
+            document.body.appendChild(canvas);
+            doc.addImage(img, "JPEG", 10, 10);
+            doc.save("sample.pdf");
+            resolve();
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+      // html2canvas(this.$refs.content, { canvas: canvasElement }).then(
+      //  canvas =>{document.getElementById('pdf').appendChild(canvas)
+      //  let img = canvas.toDataURL('image/png');
+      //  doc.addImage(img, 'JPEG', 5, 5, 200, 287)
+      //  doc.save('relatorio-remoto.pdf');
+      //  }
+      // )
+   
+
     }
   },
   filters: {

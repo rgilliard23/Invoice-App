@@ -36,7 +36,11 @@ export default {
      margin:0;
      padding: 0;
  }
+ html, body {
+  height: 100%;
+}
  .fullHeight{
-   height: 100vh;
+   min-height: 100vh;
+   height: 100%;
  }
 </style>
