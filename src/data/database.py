@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
-from datetime import date
+from marshmallow import Schema, fields, pprint
+from datetime import datetime
 import sys
 import os
 
@@ -25,6 +27,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Init db
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
+
 
 # sanity check route
 @app.route('/api/ping', methods=['GET'])
@@ -51,8 +55,6 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     address = db.Column(db.String(150))
-    invoices = db.relationship('Invoice', backref='customers')
-
     def __init__(self, name, address):
         self.name = name
         self.address = address
@@ -62,13 +64,17 @@ class Invoice(db.Model):
     __tablename__ = 'invoices'
     id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.Date, nullable=False)
+    date_due = db.Column(db.Date, nullable=False)
+    notes = db.Column(db.String)
     customer_id = db.Column(db.Integer, db.ForeignKey(
         'customers.id'), nullable=False)
+    customer = db.relationship("Customer", backref="customer")
     total = db.Column(db.Float)
-    transactions = db.relationship('Transaction', backref='invoices')
 
-    def __init__(self, date_created, customer_id, total):
+    def __init__(self, date_created, date_due, notes, customer_id, total):
         self.date_created = date_created
+        self.date_due = date_due
+        self.notes = notes
         self.customer_id = customer_id
         self.total = total
 
@@ -80,8 +86,10 @@ class Transaction(db.Model):
     quantity = db.Column(db.Integer, unique=False)
     invoice_id = db.Column(db.Integer, db.ForeignKey(
         'invoices.id'), nullable=False)
+    invoice = db.relationship("Invoice", backref="invoices")    
     product_id = db.Column(db.Integer, db.ForeignKey(
         'products.id'), nullable=False)
+    product = db.relationship("Product", backref="transactions")
 
     def __init__(self, date_created, quantity, invoice_id, product):
         self.date_created = date_created
@@ -92,7 +100,6 @@ class Transaction(db.Model):
 
 class Product(db.Model):
     __tablename__ = 'products'
-    transaction = db.relationship('Transaction', backref='products')
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), unique=True)
     description = db.Column(db.String(200))
@@ -104,6 +111,32 @@ class Product(db.Model):
         self.price = price
 
 
+class ProductSchema(Schema):
+    class Meta:
+        model = Product
+
+
+class TransactionSchema(Schema):
+    class Meta:
+        model = Transaction
+    invoice = fields.Nested(lambda: InvoiceSchema(only=(None)))
+
+
+class InvoiceSchema(Schema):
+    id = fields.Int(dump_only=True)
+    customer = fields.Nested(lambda: CustomerSchema(exclude=("customer",)))
+    date_created = fields.DateTime(required=True)
+    date_due = fields.DateTime(required=True)
+    transactions = fields.List(fields.Nested(TransactionSchema(many=True,only=(None))))
+
+class CustomerSchema(Schema):
+    class Meta:
+        model = Customer
+    invoices = fields.List(fields.Nested(InvoiceSchema(many=True,only=(None))))
+
+
+
+
 #* API methods ###################
 
 
@@ -112,7 +145,7 @@ class Product(db.Model):
 def add_Customer():
     name = request.json['name']
     address = request.json['address']
-
+    
     customer = Customer(name, address)
     db.session.add(customer)
     db.session.commit()
@@ -280,11 +313,16 @@ def add_Transaction():
 
 @app.route('/api/invoice', methods=['POST'])
 def add_Invoice():
-    date_created = date.today()
+    date_created = request.json['date_created']
+    date_due = request.json['date_due']
+    notes = request.json['notes']
     customerId = request.json['customer_id']
     total = request.json['total']
 
-    invoice = Invoice(date_created, customerId, total)
+    date1 = datetime.strptime(date_created, "%Y/%m/%d")
+    date2 = date1 = datetime.strptime(date_due, "%Y/%m/%d")
+    
+    invoice = Invoice(date1, date2,notes, customerId, total)
     db.session.add(invoice)
     db.session.commit()
 
@@ -306,14 +344,14 @@ def get_Invoices():
 
     return jsonify({'invoices': output})
 
+
 @app.route('/api/invoice/<id>', methods=['GET'])
 def delete_Invoice(id):
     invoice = Invoice.query.get(id)
     db.session.delete(invoice)
     db.session.commit()
-    
+
     return jsonify({'message': 'Deleted Invoice'})
-    
 
 
 # *END OF API****************
