@@ -30,6 +30,7 @@
 
         <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
       </b-form-group>
+
       <b-form-group label="Select Quantity:">
         <b-input-group>
           <b-form-input
@@ -47,6 +48,19 @@
 
         <b-form-invalid-feedback id="input-2-live-feedback">Quantity Too High</b-form-invalid-feedback>
       </b-form-group>
+      <b-form-group label="Product Description:">
+        <b-form-textarea
+          id="textarea"
+          v-model="$v.form.description.$model"
+          placeholder="Description.."
+          :state="validateState('description')"
+          aria-describedby="input-2-live-feedback"
+          rows="6"
+          max-rows="6"
+        ></b-form-textarea>
+
+        <b-form-invalid-feedback id="input-2-live-feedback">Description cannot exceed 1000 characters</b-form-invalid-feedback>
+      </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button class="ml-2" @click="resetForm()">Reset</b-button>
     </b-form>
@@ -55,7 +69,10 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
+import { required, minLength, maxLength, between } from "vuelidate/lib/validators";
+const axios = require("axios");
+const path = "http://localhost:5000/api/product";
+
 export default {
   mixins: [validationMixin],
   name: "AddProductInvoice",
@@ -87,6 +104,9 @@ export default {
       },
       quantity: {
         between: between(0, 9999)
+      },
+      description: {
+        maxLength: maxLength(1000),
       }
     }
   },
@@ -110,7 +130,22 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
-      alert("Product Saved and Added To List!");
+      let temp = { name: "", price: 0, description: "" };
+      temp.name = this.form.name;
+      temp.price = this.form.price;
+      temp.description = this.form.description;
+      axios
+        .post(path, temp)
+        .then(res => {
+          this.$emit("addedProduct");
+          alert("Added Product");
+          this.$emit("addedProduct")
+          console.log(res.data);
+        })
+        .catch(error => {
+          console.log(error.data);
+        });
+
       this.product.name = this.form.name;
       this.product.price = this.form.price;
       this.product.description = this.form.description;

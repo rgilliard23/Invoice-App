@@ -12,13 +12,9 @@
             </b-row>
           </b-list-group-item>
         </b-list-group>
-        <b-button
-          style="margin-top: 10px;"
-          v-b-modal.addCustomerModal
-          variant="info"
-        >Add Customer</b-button>
+        <b-button style="margin-top: 10px;" v-b-modal.addCustomerModal variant="info">Add Customer</b-button>
 
-        <b-modal centered ref="addCustomerModal" id="addCustomerModal" title="Add Customer">
+        <b-modal hide-footer busy centered ref="addCustomerModal" id="addCustomerModal" title="Add Customer">
           <AddCustomerInvoice />
         </b-modal>
       </b-col>
@@ -30,6 +26,8 @@
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 import AddCustomerInvoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/AddCustomerInvoice.vue";
+const axios = require("axios");
+const path = "http://localhost:5000/api/customer";
 
 export default {
   mixins: [validationMixin],
@@ -48,21 +46,7 @@ export default {
         name: "",
         address: ""
       },
-      customers: [
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Ronald", address: "3202 cherrydale dr" },
-        { name: "Joyce Gilliard", address: "3202 cherrydale dr" },
-        { name: "Bob", address: "3202 cherrydale dr" }
-      ]
+      customers: []
     };
   },
   methods: {
@@ -94,6 +78,17 @@ export default {
       this.customer.name = customer.name;
       this.customer.address = customer.address;
       this.$emit("selectCustomer", customer);
+    },
+    getCustomers() {
+      axios
+        .get(path)
+        .then(res => {
+          this.customers = res.data.customers;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
     }
   },
   computed: {
@@ -104,8 +99,7 @@ export default {
           .split(" ")
           .every(v => item.name.toLowerCase().includes(v));
       });
-    },
-    
+    }
   },
   validations: {
     form: {
@@ -118,6 +112,9 @@ export default {
         minLength: minLength(3)
       }
     }
+  },
+  created() {
+    this.getCustomers();
   }
 };
 </script>

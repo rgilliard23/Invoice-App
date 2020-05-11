@@ -9,12 +9,22 @@
             >
               <h1>Howdy</h1>
             </b-list-group-item>
-            <b-nav-item class="sidebarItems">
-              <b-nav-text class="sidebarItems">
-                <h3><span><b-icon-house></b-icon-house></span><span>Home</span></h3>
+            <b-nav-item
+              v-on:click="currentTab = tab"
+              v-for="tab in tabs"
+              :key="tab"
+              class="sidebarItems"
+            >
+              <b-nav-text v-on:click="currentTab = tab" class="sidebarItems">
+                <h3>
+                  <span>
+                    <b-icon-house></b-icon-house>
+                  </span>
+                  <span>{{tab}}</span>
+                </h3>
               </b-nav-text>
             </b-nav-item>
-            <b-nav-item class="sidebarItems">
+            <!-- <b-nav-item class="sidebarItems">
               <b-nav-text class="sidebarItems">
                 <h3><span><b-icon-people></b-icon-people></span><span>Customers</span></h3>
               </b-nav-text>
@@ -28,11 +38,13 @@
               <b-nav-text class="sidebarItems">
                 <h3><span><b-icon-folder-plus></b-icon-folder-plus></span><span>Create Invoice</span></h3>
               </b-nav-text>
-            </b-nav-item>
+            </b-nav-item>-->
           </b-nav>
         </b-col>
         <b-col col lg="9" class="clear fullHeight">
-          <Invoice />
+          <keep-alive>
+            <component v-bind:is="currentTabComponent" />
+          </keep-alive>
         </b-col>
       </b-row>
     </b-container>
@@ -41,15 +53,41 @@
 
 <script>
 import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
-import { BIconPeople, BIconHouse, BIconLayers, BIconFolderPlus, } from "bootstrap-vue";
+import ProductView from "/Users/ronaldgilliard/invoice-app-electron/src/views/ProductView.vue";
+import CustomerView from "/Users/ronaldgilliard/invoice-app-electron/src/views/CustomerView.vue";
+
+import BIconHouse from "bootstrap-vue";
+// import { BIconPeople, BIconHouse, BIconLayers, BIconFolderPlus, } from "bootstrap-vue";
 export default {
   name: "Dashboard",
   components: {
     Invoice,
-    BIconPeople,
-    BIconHouse,
-    BIconLayers,
-    BIconFolderPlus
+    ProductView,
+    CustomerView,
+    // BIconPeople,
+    BIconHouse
+    // BIconLayers,
+    // BIconFolderPlus
+  },
+  data: function() {
+    return {
+      currentTab: "Products",
+      tabs: ["Customers", "Products", "Create Invoice"]
+    };
+  },
+  computed: {
+    currentTabComponent: function() {
+
+
+      
+      if (this.currentTab === ("Products")) {
+        return ProductView;
+      }
+      if (this.currentTab === ("Customers")) {
+        return CustomerView;
+      }
+      return Invoice;
+    }
   }
 };
 </script>

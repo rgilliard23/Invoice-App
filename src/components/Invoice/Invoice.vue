@@ -191,7 +191,7 @@
           ></b-form-textarea>
         </b-form-group>
       </b-container>
-      <b-modal title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
+      <b-modal hide-footer title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
         <keep-alive>
           <InvoiceTemplate
             ref="content"
@@ -201,16 +201,15 @@
             class="overflow"
           />
         </keep-alive>
-        <b-button style="margin-top: 50px;" @click="createPDF" variant="success">Download PDF</b-button>
       </b-modal>
 
-      <b-modal centered size="lg" id="productsModal" ref="productsModal" title="Add Products">
+      <b-modal hide-footer centered size="lg" id="productsModal" ref="productsModal" title="Add Products">
         <keep-alive>
           <ProductsModal @closeProductModal="closeProductModal" v-bind:transactions="items" />
         </keep-alive>
       </b-modal>
 
-      <b-modal ref="customerModal" centered size="lg" id="customerModal" title="Add Customer">
+      <b-modal hide-footer ref="customerModal" centered size="lg" id="customerModal" title="Add Customer">
         <keep-alive>
           <CustomerModal @selectCustomer="selectCustomer" />
         </keep-alive>
@@ -270,7 +269,9 @@ import "axios";
 import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
-
+const axios = require("axios");
+const productPath = "http://localhost:5000/api/product";
+const customerPath = "http://localhost:5000/api/customer";
 
 export default {
   name: "Invoice",
@@ -395,6 +396,7 @@ export default {
       });
     },
     closeProductModal() {
+      this.inLineTotal();
       this.$refs["productsModal"].hide();
     },
     deleteRow(index) {
@@ -414,7 +416,28 @@ export default {
       this.customer.address = customer.address;
       this.$refs["customerModal"].hide();
     },
-    
+    getProducts() {
+      axios
+        .get(productPath)
+        .then(res => {
+          this.products = res.data.products;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    }
+  },
+  getCustomers() {
+    axios
+      .get(customerPath)
+      .then(res => {
+        this.customers = res.data.customers;
+      })
+      .catch(error => {
+        // eslint-disable-next-line
+        console.error(error);
+      });
   },
   filters: {
     currency(value) {

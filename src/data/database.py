@@ -266,13 +266,14 @@ def get_Product(id):
 @app.route('/api/product/<id>', methods=['PUT'])
 def update_Product(id):
     product = Product.query.get(id)
-
     name = request.json['name']
     description = request.json['description']
+    price = request.json['price']
 
     product.name = name
     product.description = description
-
+    product.price = price
+    
     product_data = {}
     product_data['id'] = product.id
     product_data['name'] = product.name

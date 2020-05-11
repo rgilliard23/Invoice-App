@@ -34,9 +34,16 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
+const axios = require("axios");
+const path = "http://localhost:5000/api/customer";
+
 export default {
   mixins: [validationMixin],
   name: "AddCustomer",
+  props: {
+    edit: Boolean,
+    customer: Object
+  },
   data: function() {
     return {
       form: {
@@ -65,8 +72,33 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
+      if (this.edit) {
+        axios
+          .put(path + "/" + this.customer.id, this.customer)
+          .then(res => {
+            console.log(res.data);
+          })
+          .catch(err => {
+            console.log(err.data);
+          });
+        this.edit = false;
+      } else {
+        let temp = { name: "", address: "" };
+        temp.name = this.form.name;
+        temp.address = this.form.address;
+        axios
+          .post(path, temp)
+          .then(res => {
+            this.$emit("addedCustomer");
+            alert("Added Customer");
+            console.log(res.data);
+            this.getCustomers();
+          })
+          .catch(error => {
+            console.log(error.data);
+          });
+      }
 
-      alert("Form submitted!");
       this.customer.name = this.form.name;
       this.customer.address = this.form.address;
     }
@@ -81,6 +113,12 @@ export default {
         required,
         minLength: minLength(3)
       }
+    }
+  },
+  created() {
+    if (this.customer != null) {
+      this.form.name = this.customer.name;
+      this.form.address = this.customer.address;
     }
   }
 };

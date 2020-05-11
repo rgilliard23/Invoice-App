@@ -30,6 +30,19 @@
 
         <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
       </b-form-group>
+      <b-form-group label="Product Description:">
+        <b-form-textarea
+          id="textarea"
+          v-model="$v.form.description.$model"
+          placeholder="Description.."
+          :state="validateState('description')"
+          aria-describedby="input-2-live-feedback"
+          rows="6"
+          max-rows="6"
+        ></b-form-textarea>
+
+        <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
+      </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button class="ml-2" @click="resetForm()">Reset</b-button>
     </b-form>
@@ -38,21 +51,28 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  between
+} from "vuelidate/lib/validators";
+const axios = require("axios");
+const path = "http://localhost:5000/api/product";
+
 export default {
   mixins: [validationMixin],
   name: "AddProductInvoice",
+  props: {
+    edit: Boolean,
+    product: Object
+  },
   data: function() {
     return {
       form: {
-        name: null,
-        price: null,
-        description: null
-      },
-      product: {
-        name: null,
-        price: null,
-        description: null
+        name: "",
+        price: 0,
+        description: ""
       }
     };
   },
@@ -65,6 +85,9 @@ export default {
       name: {
         required,
         minLength: minLength(3)
+      },
+      description: {
+        maxLength: maxLength(10000)
       }
     }
   },
@@ -88,11 +111,32 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
-      alert("Product Saved and Added To List!");
-      this.product.name = this.form.name;
-      this.product.price = this.form.price;
-      this.product.description = this.form.description;
-      this.product.quantity = this.form.quantity;
+      if (this.edit) {
+        axios
+          .put(path + "/" + this.product.id, this.product)
+          .then(res => {
+            alert("Product Updated");
+            console.log(res.data);
+          })
+          .catch(error => {
+            console.log(error.data);
+          });
+      } else {
+        let temp = { name: "", price: 0, description: "" };
+        temp.name = this.form.name;
+        temp.price = this.form.price;
+        temp.description = this.form.description;
+        axios
+          .post(path,temp)
+          .then(res => {
+            this.$emit("addedProduct");
+            alert("Added Product");
+            console.log(res.data);
+          })
+          .catch(error => {
+            console.log(error.data);
+          });
+      }
     }
   }
 };

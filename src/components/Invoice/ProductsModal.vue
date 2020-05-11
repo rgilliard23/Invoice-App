@@ -22,11 +22,11 @@
           <b-button @click="addToInvoice" block variant="success">Add Products To Invoice</b-button>
         </b-list-item>
         <b-button style="margin-top: 2vh;" variant="info" v-b-modal.addProductModal>Add Product</b-button>
-        <b-modal centered id="addProductModal" ref="addProductModal" title="Add Product">
-          <AddProductInvoice @addToProductList="addToProductList"/>
+        <b-modal hide-footer centered id="addProductModal" ref="addProductModal" title="Add Product">
+          <AddProductInvoice @addToProductList="addToProductList" />
         </b-modal>
 
-        <b-modal ref="productListModal" centered id="productListModal" title="Product List">
+        <b-modal hide-footer ref="productListModal" centered id="productListModal" title="Product List">
           <b-list-group>
             <b-list-group-item v-for="(product, index) in productList" :key="index">{{product.name}}</b-list-group-item>
           </b-list-group>
@@ -53,6 +53,9 @@
 
 <script>
 import AddProductInvoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Products/AddProductInvoice.vue";
+const axios = require("axios");
+const path = "http://localhost:5000/api/product";
+
 export default {
   name: "InvoiceProductsModal",
   components: {
@@ -75,17 +78,28 @@ export default {
       },
       quantity: 0,
       products: [
-        {
-          name: " Nails",
-          price: 12.54,
-          description: "Long Nails",
-          quantity: 0
-        },
-        { name: " Nails", price: 12.54, description: "Long Nails", quantity: 0 }
+        // {
+        //   name: " Nails",
+        //   price: 12.54,
+        //   description: "Long Nails",
+        //   quantity: 0
+        // },
+        // { name: " Nails", price: 12.54, description: "Long Nails", quantity: 0 }
       ]
     };
   },
   methods: {
+    getProducts() {
+      axios
+        .get(path)
+        .then(res => {
+          this.products = res.data.products;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
     showProductList() {
       this.$refs["productListModal"].show();
     },
@@ -122,18 +136,19 @@ export default {
       } else {
         temp = 0;
       }
-      if(product.quantity === 0){
-        product.quantity = this.quantity;
+      if (product.quantity === 0) {
+        product.quantity = Number(this.quantity);
       }
-      
+
       this.productList.push({
         uniqueId: temp,
         quantity: product.quantity,
         name: product.name,
         price: product.price,
         description: product.description,
-        total: product.quantity * product.price,
+        total: product.quantity * product.price
       });
+      this.$refs["addProductModal"].hide();
     }
   },
   computed: {
@@ -145,6 +160,9 @@ export default {
           .every(v => item.name.toLowerCase().includes(v));
       });
     }
+  },
+  created(){
+    this.getProducts();
   }
 };
 </script>
