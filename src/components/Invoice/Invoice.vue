@@ -192,24 +192,35 @@
         </b-form-group>
       </b-container>
       <b-modal hide-footer title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
-        <keep-alive>
-          <InvoiceTemplate
-            ref="content"
-            v-bind:transactions="items"
-            v-bind:dateDue="dateDue"
-            v-bind:createdDate="createdDate"
-            class="overflow"
-          />
-        </keep-alive>
+        <InvoiceTemplate
+          ref="content"
+          v-bind:transactions="items"
+          v-bind:dateDue="dateDue"
+          v-bind:createdDate="createdDate"
+          class="overflow"
+        />
       </b-modal>
-
-      <b-modal hide-footer centered size="lg" id="productsModal" ref="productsModal" title="Add Products">
+      <b-modal
+        hide-footer
+        centered
+        size="lg"
+        id="productsModal"
+        ref="productsModal"
+        title="Add Products"
+      >
         <keep-alive>
           <ProductsModal @closeProductModal="closeProductModal" v-bind:transactions="items" />
         </keep-alive>
       </b-modal>
 
-      <b-modal hide-footer ref="customerModal" centered size="lg" id="customerModal" title="Add Customer">
+      <b-modal
+        hide-footer
+        ref="customerModal"
+        centered
+        size="lg"
+        id="customerModal"
+        title="Add Customer"
+      >
         <keep-alive>
           <CustomerModal @selectCustomer="selectCustomer" />
         </keep-alive>
