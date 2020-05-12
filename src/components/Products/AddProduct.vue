@@ -112,9 +112,14 @@ export default {
         return;
       }
       if (this.edit) {
+        let temp = { name: "", price: 0, description: "" };
+        temp.name = this.form.name;
+        temp.price = this.form.price;
+        temp.description = this.form.description;
         axios
-          .put(path + "/" + this.product.id, this.product)
+          .put(path + "/" + this.product.id, temp)
           .then(res => {
+            this.$emit("addedProduct");
             alert("Product Updated");
             console.log(res.data);
           })
@@ -127,7 +132,7 @@ export default {
         temp.price = this.form.price;
         temp.description = this.form.description;
         axios
-          .post(path,temp)
+          .post(path, temp)
           .then(res => {
             this.$emit("addedProduct");
             alert("Added Product");
@@ -137,6 +142,14 @@ export default {
             console.log(error.data);
           });
       }
+    }
+  },
+  created() {
+    if (this.edit) {
+      this.form.name = this.product.name;
+      this.form.description = this.product.description;
+      this.form.price = this.product.price;
+      
     }
   }
 };

@@ -55,6 +55,7 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     address = db.Column(db.String(150))
+
     def __init__(self, name, address):
         self.name = name
         self.address = address
@@ -68,7 +69,7 @@ class Invoice(db.Model):
     notes = db.Column(db.String)
     customer_id = db.Column(db.Integer, db.ForeignKey(
         'customers.id'), nullable=False)
-    customer = db.relationship("Customer", backref="customer")
+    customer = db.relationship('Customer', backref="invoices")
     total = db.Column(db.Float)
 
     def __init__(self, date_created, date_due, notes, customer_id, total):
@@ -86,7 +87,7 @@ class Transaction(db.Model):
     quantity = db.Column(db.Integer, unique=False)
     invoice_id = db.Column(db.Integer, db.ForeignKey(
         'invoices.id'), nullable=False)
-    invoice = db.relationship("Invoice", backref="invoices")    
+    invoice = db.relationship("Invoice", backref="invoices")
     product_id = db.Column(db.Integer, db.ForeignKey(
         'products.id'), nullable=False)
     product = db.relationship("Product", backref="transactions")
@@ -111,33 +112,41 @@ class Product(db.Model):
         self.price = price
 
 
-class ProductSchema(Schema):
+class ProductSchema(ma.Schema):
     class Meta:
         model = Product
 
 
-class TransactionSchema(Schema):
-    class Meta:
-        model = Transaction
-    invoice = fields.Nested(lambda: InvoiceSchema(only=(None)))
-
-
-class InvoiceSchema(Schema):
+class TransactionSchema(ma.Schema):
     id = fields.Int(dump_only=True)
-    customer = fields.Nested(lambda: CustomerSchema(exclude=("customer",)))
+    date_created = fields.DateTime()
+    quantity = fields.Int()
+    product = fields.Nested(ProductSchema)
+    invoice = fields.Nested(lambda: InvoiceSchema(only=None))
+
+
+class InvoiceSchema(ma.Schema):
+    id = fields.Int(dump_only=True)
+    customer = fields.Nested(lambda: CustomerSchema)
     date_created = fields.DateTime(required=True)
     date_due = fields.DateTime(required=True)
-    transactions = fields.List(fields.Nested(TransactionSchema(many=True,only=(None))))
+    transactions = fields.List(fields.Nested(TransactionSchema(many=True)))
 
-class CustomerSchema(Schema):
+
+class CustomerSchema(ma.Schema):
+
+    invoices = fields.Nested(InvoiceSchema, many=True, exclude=("customer",))
+
     class Meta:
-        model = Customer
-    invoices = fields.List(fields.Nested(InvoiceSchema(many=True,only=(None))))
-
-
+        fields = ("id", "name", "address", "invoices")
 
 
 #* API methods ###################
+productSchema = ProductSchema()
+transactionSchema = TransactionSchema()
+invoiceSchema = InvoiceSchema()
+customerSchema = CustomerSchema()
+customersSchema = CustomerSchema(many=True)
 
 
 # * Create Customer
@@ -145,7 +154,7 @@ class CustomerSchema(Schema):
 def add_Customer():
     name = request.json['name']
     address = request.json['address']
-    
+
     customer = Customer(name, address)
     db.session.add(customer)
     db.session.commit()
@@ -157,6 +166,8 @@ def add_Customer():
 @app.route('/api/customer', methods=['GET'])
 def get_products():
     customers = Customer.query.all()
+    print(customers)
+    result = customersSchema.dump(customers)
     output = []
 
     for customer in customers:
@@ -166,21 +177,16 @@ def get_products():
         customer_data['address'] = customer.address
         output.append(customer_data)
 
-    return jsonify({'customers': output})
+    return jsonify({'customers': result})
 
 
 # * Get Customer
 @app.route('/api/customer/<id>', methods=['GET'])
 def get_Customer(id):
     customer = Customer.query.get(id)
+    result = customerSchema.dump(customer)
 
-    customer_data = {}
-
-    customer_data['id'] = customer.id
-    customer_data['name'] = customer.name
-    customer_data['address'] = customer.address
-
-    return jsonify({'customer': customer_data})
+    return jsonify({'customer': result})
 
 
 # * Update a Customer
@@ -273,7 +279,7 @@ def update_Product(id):
     product.name = name
     product.description = description
     product.price = price
-    
+
     product_data = {}
     product_data['id'] = product.id
     product_data['name'] = product.name
@@ -282,7 +288,7 @@ def update_Product(id):
 
     db.session.commit()
 
-    return jsonify({'customer': 'Updated'})
+    return jsonify({'Product': 'Updated'})
 
 
 # * Delete Product
@@ -322,8 +328,8 @@ def add_Invoice():
 
     date1 = datetime.strptime(date_created, "%Y/%m/%d")
     date2 = date1 = datetime.strptime(date_due, "%Y/%m/%d")
-    
-    invoice = Invoice(date1, date2,notes, customerId, total)
+
+    invoice = Invoice(date1, date2, notes, customerId, total)
     db.session.add(invoice)
     db.session.commit()
 

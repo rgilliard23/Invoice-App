@@ -43,7 +43,7 @@
           </tr>
         </template>
       </b-table>
-      <b-modal :title="modalName" centered ref="addProduct" id="addProduct">
+      <b-modal hide-footer :title="modalName" centered ref="addProduct" id="addProduct">
         <keep-alive>
           <AddProduct @addedProduct="addedProduct" v-bind:edit="edit" v-bind:product="product" />
         </keep-alive>

@@ -1,7 +1,7 @@
 <template>
   <div ref="content">
-    <div  class="invoice-box">
-      <table id="InvoiceTemplate"  cellpadding="0" cellspacing="0">
+    <div id="invoiceBox" class="invoice-box">
+      <table id="InvoiceTemplate" cellpadding="0" cellspacing="0">
         <tr class="top">
           <td colspan="4">
             <table>
@@ -118,21 +118,25 @@ export default {
       // var canvasElement = document.createElement("canvas");
       // console.log(this.$refs.content);
       return new Promise((resolve, reject) => {
-        let windowHeight = window.outerHeight;
-        let windowWidth = window.outerWidth;
+        let windowHeight = window.innerHeight;
+        let windowWidth = window.innerWidth;
+        console.log(windowWidth);
+        console.log(windowHeight);
         var doc = new jsPDF("p", "mm", "a4");
-        var canvasElement = document.createElement("canvas");
-        canvasElement.width = windowWidth;
-        canvasElement.height = windowHeight;
-        html2canvas(this.$refs.content, {
-          canvas: canvasElement,
-          width: windowWidth,
-          height: windowHeight
-        })
+       
+        // html2canvas(this.$refs.content, {
+        //   canvas: canvasElement,
+        //   width: windowWidth,
+        //   height: windowHeight
+        // })
+
+        window.scrollTo(0,0);
+        html2canvas(document.querySelector("#invoiceBox"))
           .then(function(canvas) {
-            const img = canvas.toDataURL("image/jpeg", 1);
-            document.body.appendChild(canvas);
-            doc.addImage(img, "JPEG", 10, 10);
+            const img = canvas.toDataURL("image/png",1.0);
+            window.open(img);
+            // document.body.appendChild(canvas);
+            doc.addImage(img, "png", 10, 10,180,150);
             doc.save("sample.pdf");
             resolve();
           })
@@ -147,8 +151,6 @@ export default {
       //  doc.save('relatorio-remoto.pdf');
       //  }
       // )
-   
-
     }
   },
   filters: {

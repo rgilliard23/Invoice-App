@@ -25,6 +25,11 @@
         ></b-form-input>
         <b-form-invalid-feedback id="input-2-live-feedback">Address be at least 5 characters</b-form-invalid-feedback>
       </b-form-group>
+      <b-list-group v-if="edit">
+        <b-list-group-item v-for="invoice in invoices" :key="invoice.id">
+          {{invoice.date_created}}
+        </b-list-group-item>
+      </b-list-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button class="ml-2" @click="resetForm()">Reset</b-button>
     </b-form>
@@ -46,6 +51,7 @@ export default {
   },
   data: function() {
     return {
+      invoices: [],
       form: {
         name: null,
         address: null
@@ -119,6 +125,8 @@ export default {
     if (this.customer != null) {
       this.form.name = this.customer.name;
       this.form.address = this.customer.address;
+
+      this.invoices = this.customer.invoices;
     }
   }
 };

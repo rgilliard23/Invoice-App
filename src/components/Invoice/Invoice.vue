@@ -107,9 +107,9 @@
             <b-form-input
               @change="inLineTotal"
               type="number"
+              step="1"
               v-model="data.item.price"
               read-only
-              placeholder="Price"
             ></b-form-input>
           </template>
           <template v-slot:cell(quantity)="data">
@@ -118,11 +118,10 @@
               @change="inLineTotal"
               v-model="data.item.quantity"
               read-only
-              placeholder="Quantity"
             ></b-form-input>
           </template>
           <template v-slot:cell(total)="data">
-            <b-form-input readonly type="number" v-model="data.item.total" read-only></b-form-input>
+            <b-form-input readonly type="number" :value="lineTotal(data.item)" read-only></b-form-input>
           </template>
           <template v-slot:cell(actions)="data">
             <b-button variant="danger" @click="deleteRow(data.item.uniqueId)">Remove</b-button>
@@ -225,52 +224,6 @@
           <CustomerModal @selectCustomer="selectCustomer" />
         </keep-alive>
       </b-modal>
-      <!-- <b-table-simple fixed sticky-header="60vh">
-        <b-thead>
-          <b-tr>
-            <b-th>Country</b-th>
-            <b-th>City</b-th>
-            <b-th>Trousers</b-th>
-            <b-th>Skirts</b-th>
-            <b-th>Dresses</b-th>
-            <b-th>Bracelets</b-th>
-            <b-th>Rings</b-th>
-          </b-tr>
-        </b-thead>
-        <b-tbody>
-          <b-tr>
-            <b-td>
-              <b-form-input class="w-100" v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-            <b-td>
-              <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
-            </b-td>
-          </b-tr>
-        </b-tbody>
-        <b-tfoot>
-          <b-tr>
-            <b-td colspan="7" class="text-right">
-              Total Rows:
-              <b>5</b>
-            </b-td>
-          </b-tr>
-        </b-tfoot>
-      </b-table-simple>-->
     </b-container>
   </div>
 </template>
@@ -402,7 +355,7 @@ export default {
         id: 0,
         name: "",
         quantity: 1,
-        price: 0,
+        price: Number(0),
         total: 0
       });
     },
@@ -414,11 +367,15 @@ export default {
       this.inLineTotal();
       this.items.splice(index, 1);
     },
+    lineTotal(product) {
+      return Number((product.price * product.quantity).toFixed(2));
+    },
     inLineTotal() {
       let count = 0;
       this.items.forEach(element => {
         element.uniqueId = count;
         element.total = Number((element.price * element.quantity).toFixed(2));
+        element.price = Number(element.price);
         count++;
       });
     },
