@@ -304,12 +304,17 @@ def delete_Product(id):
 #*Item API ###########################
 @app.route('/api/transaction', methods=['POST'])
 def add_Transaction():
-    date_created = date.today()
+
+    
     quantity = request.json['quantity']
     invoice_id = request.json['invoice_id']
     product_id = request.json['product_id']
+    date_created = request.json['date_created']
+    
+    date1 = datetime.strptime(date_created, "%Y-%m-%d")
+    # date1 = datetime.now()
 
-    transaction = Transaction(date_created, quantity, invoice_id, product_id)
+    transaction = Transaction(date1, quantity, invoice_id, product_id)
     db.session.add(transaction)
     db.session.commit()
 
@@ -326,8 +331,8 @@ def add_Invoice():
     customerId = request.json['customer_id']
     total = request.json['total']
 
-    date1 = datetime.strptime(date_created, "%Y/%m/%d")
-    date2 = date1 = datetime.strptime(date_due, "%Y/%m/%d")
+    date1 = datetime.strptime(date_created, "%Y-%m-%d")
+    date2 = date1 = datetime.strptime(date_due, "%Y-%m-%d")
 
     invoice = Invoice(date1, date2, notes, customerId, total)
     db.session.add(invoice)

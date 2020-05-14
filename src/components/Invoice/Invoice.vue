@@ -24,6 +24,7 @@
               variant="secondary"
             >Export To Excel</b-button>
             <b-button
+              v-on:click="saveInvoice"
               :disabled="InvoiceIncomplete"
               class="margin"
               size="lg"
@@ -236,6 +237,8 @@ import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/comp
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
 const customerPath = "http://localhost:5000/api/customer";
+const invoicePath = "http://localhost:5000/api/invoice";
+const transactionPath = "http://localhost:5000/api/transaction";
 
 export default {
   name: "Invoice",
@@ -251,11 +254,13 @@ export default {
       createdDate: null,
       dateDue: null,
       customer: {
+        id: null,
         name: null,
         address: null
       },
       customers: [],
       products: [],
+      invoices: null,
       tax: 0,
       discount: 0,
       notes: "",
@@ -380,6 +385,7 @@ export default {
       });
     },
     selectCustomer(customer) {
+      this.customer.id = customer.id;
       this.customer.name = customer.name;
       this.customer.address = customer.address;
       this.$refs["customerModal"].hide();
@@ -394,19 +400,79 @@ export default {
           // eslint-disable-next-line
           console.error(error);
         });
+    },
+    getCustomers() {
+      axios
+        .get(customerPath)
+        .then(res => {
+          this.customers = res.data.customers;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    saveInvoice() {
+      let temp = {
+        date_created: this.createdDate,
+        date_due: this.dateDue,
+        notes: this.notes,
+        customer_id: 1,
+        total: this.grandTotal
+      };
+
+      axios
+        .post(invoicePath, temp)
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+          console.log("Invoice Error");
+        });
+
+      var invoiceId = 0;
+
+      axios
+        .get(invoicePath)
+        .then(res => {
+          this.invoices = res.data.invoices;
+          console.log(typeof this.invoices);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+      setTimeout(1000);
+      invoiceId = 1;
+      if (this.invoices.length > 0) {
+        invoiceId = this.invoices[this.invoices.length - 1].id;
+      }
+
+      console.log(this.invoices[this.invoices.length - 1].id);
+
+      this.items.forEach(item => {
+        let temp2 = {
+          date_created: this.createdDate,
+          quantity: item.quantity,
+          invoice_id: invoiceId,
+          product_id: item.id
+        };
+        console.log(temp2);
+        axios
+          .post(transactionPath, temp2)
+          .then(res => {
+            alert("howdy");
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+            console.log("Transaction Error");
+          });
+      });
     }
   },
-  getCustomers() {
-    axios
-      .get(customerPath)
-      .then(res => {
-        this.customers = res.data.customers;
-      })
-      .catch(error => {
-        // eslint-disable-next-line
-        console.error(error);
-      });
-  },
+
   filters: {
     currency(value) {
       return Number(value.toFixed(2));

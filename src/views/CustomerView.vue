@@ -20,8 +20,17 @@
 
       <b-table fixed :fields="customerFields" :items="filterCustomerList">
         <template v-slot:cell(actions)="data">
-          <b-button variant="warning" @click="showCustomer(data.item, true)">Edit</b-button>
-          <b-button variant="danger" @click="deleteCustomer(data.item)">Delete</b-button>
+          <b-dropdown no-caret id="dropdown-1" text="Options" class="m-md-2">
+            <template v-slot:button-content variant="link">
+              <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
+            </template>
+            <b-dropdown-group id="dropdown-group-1">
+              <b-dropdown-item @click="showCustomer(data.item, true)">Edit</b-dropdown-item>
+              <b-dropdown-item @click="deleteCustomer(data.item)">Delete</b-dropdown-item>
+            </b-dropdown-group>
+            <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
+            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
+          </b-dropdown>
         </template>
         <template v-slot:custom-foot v-if="filterCustomerList == 0">
           <tr>
