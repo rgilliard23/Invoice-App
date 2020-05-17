@@ -68,7 +68,18 @@
           <td>{{transaction.quantity}}</td>
           <td>${{ transaction.price * transaction.quantity | currency }}</td>
         </tr>
-
+        <tr class="total">
+          <td colspan="3"></td>
+          <td>Sub Total: ${{ total | currency }}</td>
+        </tr>
+        <tr class="total">
+          <td colspan="3"></td>
+          <td>Tax: ${{ total | currency }}</td>
+        </tr>
+        <tr class="total">
+          <td colspan="3"></td>
+          <td>Discount: ${{ total | currency }}</td>
+        </tr>
         <tr class="total">
           <td colspan="3"></td>
           <td>Total: ${{ total | currency }}</td>
@@ -76,7 +87,7 @@
       </table>
     </div>
     <div id="pdf"></div>
-    <b-button variant="success" @click="createPDF">Download</b-button>
+    <b-button block variant="success" @click="createPDF">Download</b-button>
   </div>
 </template>
 
@@ -155,7 +166,7 @@ export default {
   },
   filters: {
     currency(value) {
-      return value.toFixed(2);
+      return value.toFixed(2).toLocaleString();
     }
   }
 };
@@ -237,6 +248,11 @@ export default {
 
 .invoice-box input[type="number"] {
   width: 60px;
+}
+
+#invoiceBox {
+  overflow: scroll;
+  height: 60vh;
 }
 
 @media only screen and (max-width: 600px) {

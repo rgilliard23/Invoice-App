@@ -25,8 +25,10 @@
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>
             <b-dropdown-group id="dropdown-group-1">
+            <b-dropdown-item @click="viewCustomer">View</b-dropdown-item>
               <b-dropdown-item @click="showCustomer(data.item, true)">Edit</b-dropdown-item>
               <b-dropdown-item @click="deleteCustomer(data.item)">Delete</b-dropdown-item>
+              
             </b-dropdown-group>
             <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
             <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
@@ -52,19 +54,26 @@
           />
         </keep-alive>
       </b-modal>
+    <b-modal>
+    
+      <ViewCustomer/>
+    </b-modal>
     </b-container>
   </div>
 </template>
 
 <script>
 import AddCustomer from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/AddCustomer.vue";
+import ViewCustomer from "/Users/ronaldgilliard/invoice-app-electron/src/components/Customer/ViewCustomer.vue";
+
 const axios = require("axios");
 const path = "http://localhost:5000/api/customer";
 
 export default {
   name: "CustomerView",
   components: {
-    AddCustomer
+    AddCustomer,
+    ViewCustomer
   },
   data: function() {
     return {

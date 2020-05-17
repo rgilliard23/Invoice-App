@@ -381,6 +381,7 @@ export default {
         element.uniqueId = count;
         element.total = Number((element.price * element.quantity).toFixed(2));
         element.price = Number(element.price);
+        element.quantity = Number(element.quantity);
         count++;
       });
     },
