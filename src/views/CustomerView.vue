@@ -7,13 +7,18 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-input type="text" v-model="searchCustomer" placeholder="Search"></b-input>
+            <b-input
+              type="text"
+              v-model="searchCustomer"
+              placeholder="Search"
+            ></b-input>
             <b-button
-              @click="showCustomer(null,false)"
+              @click="showCustomer(null, false)"
               class="margin"
               size="lg"
               variant="success"
-            >Add Customer</b-button>
+              >Add Customer</b-button
+            >
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
@@ -25,10 +30,15 @@
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>
             <b-dropdown-group id="dropdown-group-1">
-            <b-dropdown-item @click="viewCustomer">View</b-dropdown-item>
-              <b-dropdown-item @click="showCustomer(data.item, true)">Edit</b-dropdown-item>
-              <b-dropdown-item @click="deleteCustomer(data.item)">Delete</b-dropdown-item>
-              
+              <b-dropdown-item @click="viewCustomer(data.item)"
+                >View</b-dropdown-item
+              >
+              <b-dropdown-item @click="showCustomer(data.item, true)"
+                >Edit</b-dropdown-item
+              >
+              <b-dropdown-item @click="deleteCustomer(data.item)"
+                >Delete</b-dropdown-item
+              >
             </b-dropdown-group>
             <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
             <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
@@ -45,7 +55,13 @@
           </tr>
         </template>
       </b-table>
-      <b-modal hide-footer centered :title="modalName" ref="addCustomer" id="addCustomer">
+      <b-modal
+        hide-footer
+        centered
+        :title="modalName"
+        ref="addCustomer"
+        id="addCustomer"
+      >
         <keep-alive>
           <AddCustomer
             @addedCustomer="addedCustomer"
@@ -54,10 +70,11 @@
           />
         </keep-alive>
       </b-modal>
-    <b-modal>
-    
-      <ViewCustomer/>
-    </b-modal>
+      <b-modal hide-footer size="lg" :title="customer.name" ref="viewCustomer">
+        <keep-alive>
+          <ViewCustomer v-bind:customer="customer" />
+        </keep-alive>
+      </b-modal>
     </b-container>
   </div>
 </template>
@@ -106,6 +123,10 @@ export default {
       this.customer = customer;
       this.edit = edit;
       this.$refs["addCustomer"].show();
+    },
+    viewCustomer(customer) {
+      this.customer = customer;
+      this.$refs["viewCustomer"].show();
     },
     //* gets all customers
     getCustomers() {
@@ -185,5 +206,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

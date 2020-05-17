@@ -1,7 +1,13 @@
 <template>
   <div class="clear">
     <b-container class="clear fullHeight" fluid>
-      <b-navbar style="height:10vh;" class="clear" toggleable="lg" type="dark" variant="info">
+      <b-navbar
+        style="height:10vh;"
+        class="clear"
+        toggleable="lg"
+        type="dark"
+        variant="info"
+      >
         <b-navbar-brand class="margin" tag="h1" href="#">
           <h1>Create Invoice</h1>
         </b-navbar-brand>
@@ -16,20 +22,23 @@
               class="margin"
               size="lg"
               variant="danger"
-            >Invoice Pdf</b-button>
+              >Invoice Pdf</b-button
+            >
             <b-button
               :disabled="InvoiceIncomplete"
               class="margin"
               size="lg"
               variant="secondary"
-            >Export To Excel</b-button>
+              >Export To Excel</b-button
+            >
             <b-button
               v-on:click="saveInvoice"
               :disabled="InvoiceIncomplete"
               class="margin"
               size="lg"
               variant="success"
-            >Save Invoice</b-button>
+              >Save Invoice</b-button
+            >
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
@@ -43,7 +52,12 @@
             label-for="sortBySelect"
             class="mb-0"
           >
-            <b-form-datepicker v-model="createdDate" size="lg" id="example-datepicker" class="mb-2"></b-form-datepicker>
+            <b-form-datepicker
+              v-model="createdDate"
+              size="lg"
+              id="example-datepicker"
+              class="mb-2"
+            ></b-form-datepicker>
           </b-form-group>
         </b-col>
 
@@ -55,7 +69,12 @@
             label-for="initialSortSelect"
             class="mb-0"
           >
-            <b-form-datepicker size="lg" id="example-datepicker" v-model="dateDue" class="mb-2"></b-form-datepicker>
+            <b-form-datepicker
+              size="lg"
+              id="example-datepicker"
+              v-model="dateDue"
+              class="mb-2"
+            ></b-form-datepicker>
           </b-form-group>
         </b-col>
 
@@ -67,7 +86,9 @@
             label-for="filterInput"
             class="mb-0"
           >
-            <b-button v-b-modal.productsModal block variant="success">Add Products</b-button>
+            <b-button v-b-modal.productsModal block variant="success"
+              >Add Products</b-button
+            >
           </b-form-group>
         </b-col>
 
@@ -81,7 +102,7 @@
             class="mb-0"
           >
             <b-button v-b-modal.customerModal block variant="outline-success">
-              <span v-if="customer.name != null">{{customer.name}}</span>
+              <span v-if="customer.name != null">{{ customer.name }}</span>
               <span v-else>Select Customer</span>
             </b-button>
           </b-form-group>
@@ -99,10 +120,21 @@
           :fields="invoiceFields"
         >
           <template v-slot:cell(id)="data">
-            <b-form-input readonly type="number" v-model="data.item.id" read-only placeholder="Id"></b-form-input>
+            <b-form-input
+              readonly
+              type="number"
+              v-model="data.item.id"
+              read-only
+              placeholder="Id"
+            ></b-form-input>
           </template>
           <template v-slot:cell(name)="data">
-            <b-form-input type="text" v-model="data.item.name" read-only placeholder="Name"></b-form-input>
+            <b-form-input
+              type="text"
+              v-model="data.item.name"
+              read-only
+              placeholder="Name"
+            ></b-form-input>
           </template>
           <template v-slot:cell(price)="data">
             <b-form-input
@@ -122,10 +154,17 @@
             ></b-form-input>
           </template>
           <template v-slot:cell(total)="data">
-            <b-form-input readonly type="number" :value="lineTotal(data.item)" read-only></b-form-input>
+            <b-form-input
+              readonly
+              type="number"
+              :value="lineTotal(data.item)"
+              read-only
+            ></b-form-input>
           </template>
           <template v-slot:cell(actions)="data">
-            <b-button variant="danger" @click="deleteRow(data.item.uniqueId)">Remove</b-button>
+            <b-button variant="danger" @click="deleteRow(data.item.uniqueId)"
+              >Remove</b-button
+            >
           </template>
           <template v-slot:custom-foot>
             <tr>
@@ -133,7 +172,7 @@
               <td></td>
               <td></td>
               <td>Sub Total:</td>
-              <td>${{subTotal.toLocaleString()}}</td>
+              <td>${{ subTotal.toLocaleString() }}</td>
               <td></td>
             </tr>
             <tr>
@@ -143,7 +182,12 @@
               <td>Tax:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input append="%" min="0" v-model="tax" type="number"></b-form-input>
+                  <b-form-input
+                    append="%"
+                    min="0"
+                    v-model="tax"
+                    type="number"
+                  ></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -155,7 +199,11 @@
               <td>Discount:</td>
               <td>
                 <b-input-group append="%">
-                  <b-form-input min="0" v-model="discount" type="number"></b-form-input>
+                  <b-form-input
+                    min="0"
+                    v-model="discount"
+                    type="number"
+                  ></b-form-input>
                 </b-input-group>
               </td>
               <td></td>
@@ -165,7 +213,7 @@
               <td></td>
               <td></td>
               <td>Grand Total:</td>
-              <td>${{grandTotal.toLocaleString()}}</td>
+              <td>${{ grandTotal.toLocaleString() }}</td>
               <td></td>
             </tr>
             <tr>
@@ -191,7 +239,13 @@
           ></b-form-textarea>
         </b-form-group>
       </b-container>
-      <b-modal hide-footer title="Invoice" size="xl" id="InvoiceTemplate" ref="InvoiceTemplate">
+      <b-modal
+        hide-footer
+        title="Invoice"
+        size="xl"
+        id="InvoiceTemplate"
+        ref="InvoiceTemplate"
+      >
         <InvoiceTemplate
           ref="content"
           v-bind:transactions="items"
@@ -209,7 +263,10 @@
         title="Add Products"
       >
         <keep-alive>
-          <ProductsModal @closeProductModal="closeProductModal" v-bind:transactions="items" />
+          <ProductsModal
+            @closeProductModal="closeProductModal"
+            v-bind:transactions="items"
+          />
         </keep-alive>
       </b-modal>
 
@@ -246,6 +303,11 @@ export default {
     CustomerModal,
     ProductsModal,
     InvoiceTemplate
+  },
+  props: {
+    invoiceCustomer: Object,
+    edit: Boolean,
+    invoice: Object
   },
   data: function() {
     return {
@@ -473,10 +535,16 @@ export default {
       });
     }
   },
-
   filters: {
     currency(value) {
       return Number(value.toFixed(2));
+    }
+  },
+  created(){
+    if(this.invoice !== null){
+      this.createdDate = this.invoice.date_created;
+      this.dateDue = this.invoice.date_due;
+      this.customer = this.invoiceCustomer;
     }
   }
 };

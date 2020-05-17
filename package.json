@@ -19,6 +19,7 @@
     "core-js": "^3.6.4",
     "html2canvas": "^1.0.0-rc.5",
     "jspdf": "^1.5.3",
+    "jw-vue-pagination": "^1.0.3",
     "python-shell": "^2.0.0",
     "vue": "^2.6.11",
     "vue-moment": "^4.1.0",

@@ -3,44 +3,58 @@
     <b-form @submit.stop.prevent="onSubmit">
       <b-form-group
         id="input-group-1"
-        label="Customer Name:"
+        label="Customer Address:"
         label-for="input-1"
       >
-        <b-form-input
-          id="input-1"
-          v-model="$v.form.name.$model"
-          type="text"
-          required
-          :state="validateState('name')"
-          placeholder="Enter Name"
-          aria-describedby="input-1-live-feedback"
-        ></b-form-input>
+        <h5>{{ customer.address }}</h5>
         <b-form-invalid-feedback id="input-1-live-feedback"
           >Name must be at least 3 characters</b-form-invalid-feedback
         >
       </b-form-group>
-      <b-form-group label="Customer Address:">
-        <b-form-input
-          id="input-1"
-          v-model="$v.form.address.$model"
-          type="text"
-          required
-          :state="validateState('address')"
-          placeholder="Enter Address"
-          aria-describedby="input-2-live-feedback"
-        ></b-form-input>
-        <b-form-invalid-feedback id="input-2-live-feedback"
-          >Address be at least 5 characters</b-form-invalid-feedback
-        >
+      <b-form-group label="Customer Invoices:">
+        <b-list-group>
+          <b-list-group-item
+            v-for="(invoice, index) in pageOfItems"
+            :key="index"
+          >
+            <b-row align-h="between">
+              <b-col>
+                <div>Invoice:</div>
+                <div>INV-00{{ invoice.id }}</div>
+              </b-col>
+              <b-col>
+                <div>Date Due:</div>
+                <div>{{ invoice.date_created | moment("MMMM Do YYYY") }}</div>
+              </b-col>
+              <b-col>
+                <div>Total:</div>
+                <div>{{ invoice.total }}</div>
+              </b-col>
+              <b-col>
+                <b-button @click="editInvoice(invoice)" variant="info">Details</b-button>
+              </b-col>
+            </b-row>
+          </b-list-group-item>
+        </b-list-group>
       </b-form-group>
-      <b-list-group v-if="edit">
-        <b-list-group-item v-for="invoice in invoices" :key="invoice.id">
-          {{ invoice.date_created }}
-        </b-list-group-item>
-      </b-list-group>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button class="ml-2" @click="resetForm()">Reset</b-button>
+      <b-row class="w-100" align-h="center">
+        <JwPagination
+          :pageSize="8"
+          :items="invoices"
+          @changePage="onChangePage"
+          :labels="customLabels"
+        ></JwPagination>
+      </b-row>
+      <b-row style="margin-top: 1vh;" align-h="center">
+        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button class="ml-2" @click="resetForm()">Reset</b-button>
+      </b-row>
     </b-form>
+    <b-modal size="xl" ref="editInvoice">
+      <keep-alive>
+        <Invoice v-bind:invoiceCustomer="customer" v-bind:edit="true" v-bind:invoice="invoice"/>
+      </keep-alive>
+    </b-modal>
   </div>
 </template>
 
@@ -49,21 +63,41 @@ const axios = require("axios");
 const path = "http://localhost:5000/api/customer";
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
-
+import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
+import JwPagination from "jw-vue-pagination";
 
 export default {
-    mixins: [validationMixin],
+  mixins: [validationMixin],
   name: "ViewCustomer",
+  components: {
+    JwPagination,
+    Invoice
+  },
   data: function() {
     return {
+      invoice: null,
+      pageOfItems: [],
       invoices: [],
       form: {
         name: null,
         address: null
+      },
+      customLabels: {
+        first: "<<",
+        last: ">>",
+        previous: "<",
+        next: ">"
       }
     };
   },
+  props: {
+    customer: Object
+  },
   methods: {
+    onChangePage(pageOfItems) {
+      // update page of items
+      this.pageOfItems = pageOfItems;
+    },
     validateState(name) {
       const { $dirty, $error } = this.$v.form[name];
       return $dirty ? !$error : null;
@@ -77,6 +111,10 @@ export default {
       this.$nextTick(() => {
         this.$v.$reset();
       });
+    },
+    editInvoice(invoice) {
+      this.invoice = invoice;
+      this.$refs["editInvoice"].show();
     },
     onSubmit() {
       this.$v.form.$touch();

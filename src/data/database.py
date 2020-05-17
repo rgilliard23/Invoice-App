@@ -87,7 +87,7 @@ class Transaction(db.Model):
     quantity = db.Column(db.Integer, unique=False)
     invoice_id = db.Column(db.Integer, db.ForeignKey(
         'invoices.id'), nullable=False)
-    invoice = db.relationship("Invoice", backref="invoices")
+    invoice = db.relationship('Invoice', backref="transactions")
     product_id = db.Column(db.Integer, db.ForeignKey(
         'products.id'), nullable=False)
     product = db.relationship("Product", backref="transactions")
@@ -126,11 +126,10 @@ class TransactionSchema(ma.Schema):
 
 
 class InvoiceSchema(ma.Schema):
-    id = fields.Int(dump_only=True)
-    customer = fields.Nested(lambda: CustomerSchema)
-    date_created = fields.DateTime(required=True)
-    date_due = fields.DateTime(required=True)
-    transactions = fields.List(fields.Nested(TransactionSchema(many=True)))
+    transactions = fields.Nested(lambda: TransactionSchema(many = True, exclude=("invoice",) ))
+
+    class Meta:
+        fields = ("id", "date_due", "notes", "date_created","transactions")
 
 
 class CustomerSchema(ma.Schema):
@@ -145,6 +144,7 @@ class CustomerSchema(ma.Schema):
 productSchema = ProductSchema()
 transactionSchema = TransactionSchema()
 invoiceSchema = InvoiceSchema()
+invoiceSchemas = InvoiceSchema(many=True)
 customerSchema = CustomerSchema()
 customersSchema = CustomerSchema(many=True)
 
@@ -305,12 +305,11 @@ def delete_Product(id):
 @app.route('/api/transaction', methods=['POST'])
 def add_Transaction():
 
-    
     quantity = request.json['quantity']
     invoice_id = request.json['invoice_id']
     product_id = request.json['product_id']
     date_created = request.json['date_created']
-    
+
     date1 = datetime.strptime(date_created, "%Y-%m-%d")
     # date1 = datetime.now()
 
@@ -344,6 +343,8 @@ def add_Invoice():
 @app.route('/api/invoice', methods=['GET'])
 def get_Invoices():
     invoices = Invoice.query.all()
+    print(invoices)
+    result = invoiceSchemas.dump(invoices)
     output = []
 
     for invoice in invoices:
@@ -354,7 +355,7 @@ def get_Invoices():
         invoice_data['total'] = invoice.total
         output.append(invoice_data)
 
-    return jsonify({'invoices': output})
+    return jsonify({'invoices': result})
 
 
 @app.route('/api/invoice/<id>', methods=['GET'])
