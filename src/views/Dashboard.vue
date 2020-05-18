@@ -52,17 +52,18 @@
 </template>
 
 <script>
-import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
+// import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
 import ProductView from "/Users/ronaldgilliard/invoice-app-electron/src/views/ProductView.vue";
 import CustomerView from "/Users/ronaldgilliard/invoice-app-electron/src/views/CustomerView.vue";
-
+import InvoiceView from "/Users/ronaldgilliard/invoice-app-electron/src/views/InvoiceView.vue"
 import BIconHouse from "bootstrap-vue";
 // import { BIconPeople, BIconHouse, BIconLayers, BIconFolderPlus, } from "bootstrap-vue";
 export default {
   name: "Dashboard",
   components: {
-    Invoice,
+    // Invoice,
     ProductView,
+    InvoiceView,
     CustomerView,
     // BIconPeople,
     BIconHouse
@@ -86,7 +87,7 @@ export default {
       if (this.currentTab === ("Customers")) {
         return CustomerView;
       }
-      return Invoice;
+      return InvoiceView;
     }
   }
 };

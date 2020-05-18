@@ -28,7 +28,7 @@
               </b-col>
               <b-col>
                 <div>Total:</div>
-                <div>{{ invoice.total }}</div>
+                <div>${{ invoice.total }}</div>
               </b-col>
               <b-col>
                 <b-button @click="editInvoice(invoice)" variant="info">Details</b-button>

@@ -9,7 +9,8 @@
         variant="info"
       >
         <b-navbar-brand class="margin" tag="h1" href="#">
-          <h1>Create Invoice</h1>
+          <h1 v-if="!edit">Create Invoice</h1>
+          <h1 v-else>Edit Invoice</h1>
         </b-navbar-brand>
 
         <!-- //* Invoice Table -->
@@ -43,7 +44,12 @@
         </b-navbar-nav>
       </b-navbar>
       <div style="height: 10px;"></div>
-      <b-row class="margin" style="height: 10vh;">
+
+      <b-row
+        align-h="center"
+        class="margin"
+        style="height: 15vh; max-height: 20vh;"
+      >
         <b-col lg="6" class="my-1">
           <b-form-group
             label="Date Created:"
@@ -107,6 +113,12 @@
             </b-button>
           </b-form-group>
         </b-col>
+        <JwPagination
+          :pageSize="8"
+          :items="items"
+          @changePage="onChangePage"
+          :labels="customLabels"
+        ></JwPagination>
       </b-row>
       <div style="height: 2vh;"></div>
       <b-container fluid>
@@ -115,7 +127,8 @@
           striped
           fixed
           sticky-header="50vh"
-          :items="items"
+          :items="pageOfItems"
+          perPage="6"
           :key="index"
           :fields="invoiceFields"
         >
@@ -291,6 +304,7 @@ import "axios";
 import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
+import JwPagination from "jw-vue-pagination";
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
 const customerPath = "http://localhost:5000/api/customer";
@@ -302,7 +316,8 @@ export default {
   components: {
     CustomerModal,
     ProductsModal,
-    InvoiceTemplate
+    InvoiceTemplate,
+    JwPagination
   },
   props: {
     invoiceCustomer: Object,
@@ -326,6 +341,7 @@ export default {
       tax: 0,
       discount: 0,
       notes: "",
+      pageOfItems: [],
       invoiceFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
@@ -334,6 +350,12 @@ export default {
         { key: "total", label: "Total" },
         { key: "actions", label: "" }
       ],
+      customLabels: {
+        first: "<<",
+        last: ">>",
+        previous: "<",
+        next: ">"
+      },
       items: [
         {
           uniqueId: 0,
@@ -408,6 +430,10 @@ export default {
     }
   },
   methods: {
+    onChangePage(pageOfItems) {
+      // update page of items
+      this.pageOfItems = pageOfItems;
+    },
     addRow() {
       this.inLineTotal();
       let temp = 0;
@@ -540,11 +566,20 @@ export default {
       return Number(value.toFixed(2));
     }
   },
-  created(){
-    if(this.invoice !== null){
+  created() {
+    if (this.invoice !== null) {
       this.createdDate = this.invoice.date_created;
       this.dateDue = this.invoice.date_due;
       this.customer = this.invoiceCustomer;
+      this.items = [];
+      this.invoice.transactions.forEach(element => {
+        this.items.push({
+          id: element.product.id,
+          name: element.product.name,
+          quantity: element.quantity,
+          price: element.product.price
+        });
+      });
     }
   }
 };

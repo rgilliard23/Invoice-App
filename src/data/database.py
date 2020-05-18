@@ -114,27 +114,27 @@ class Product(db.Model):
 
 class ProductSchema(ma.Schema):
     class Meta:
-        model = Product
+        fields = ("id","name","description","price")
 
 
 class TransactionSchema(ma.Schema):
-    id = fields.Int(dump_only=True)
-    date_created = fields.DateTime()
-    quantity = fields.Int()
     product = fields.Nested(ProductSchema)
     invoice = fields.Nested(lambda: InvoiceSchema(only=None))
+
+    class Meta:
+        fields = ("id","date_created","quantity","invoice","product")
 
 
 class InvoiceSchema(ma.Schema):
     transactions = fields.Nested(lambda: TransactionSchema(many = True, exclude=("invoice",) ))
-
+    customer = fields.Nested(lambda: CustomerSchema(only=("name","address")))
     class Meta:
-        fields = ("id", "date_due", "notes", "date_created","transactions")
+        fields = ("id", "date_due", "notes", "date_created","transactions","total","customer")
 
 
 class CustomerSchema(ma.Schema):
 
-    invoices = fields.Nested(InvoiceSchema, many=True, exclude=("customer",))
+    invoices = fields.Nested(InvoiceSchema(many=True))
 
     class Meta:
         fields = ("id", "name", "address", "invoices")
@@ -154,7 +154,6 @@ customersSchema = CustomerSchema(many=True)
 def add_Customer():
     name = request.json['name']
     address = request.json['address']
-
     customer = Customer(name, address)
     db.session.add(customer)
     db.session.commit()
