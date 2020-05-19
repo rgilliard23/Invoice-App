@@ -1,46 +1,52 @@
 <template>
   <div id="app">
-    <Dashboard/>
-    <!-- <Invoice/> -->
+    <!-- <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view/> -->
+    <Dashboard />
   </div>
 </template>
 
 <script>
-
-// import Invoice from './components/Invoice/Invoice';
-import Dashboard from './views/Dashboard';
+import Dashboard from "/Users/ronaldgilliard/invoice-app-electron/src/views/Dashboard.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    // Invoice,
     Dashboard
   }
-}
+};
 </script>
 
-<style>
+<style lang="scss">
+.danger {
+  background-color: purple;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 0;
 }
 
-*{
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+
+.fullHeight {
+  height: 100vh;
   margin: 0;
   padding: 0;
 }
-.clear{
-     margin:0;
-     padding: 0;
- }
- html, body {
-  height: 100%;
-}
- .fullHeight{
-   min-height: 100vh;
-   height: 100%;
- }
 </style>

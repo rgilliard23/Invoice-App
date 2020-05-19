@@ -30,8 +30,11 @@
               class="margin"
               size="lg"
               variant="secondary"
-              >Export To Excel</b-button
             >
+              <JsonExcel :disabled="InvoiceIncomplete" :data="items">
+                Export To Excel
+              </JsonExcel>
+            </b-button>
             <b-button
               v-on:click="saveInvoice"
               :disabled="InvoiceIncomplete"
@@ -305,6 +308,8 @@ import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/compon
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
 import JwPagination from "jw-vue-pagination";
+import JsonExcel from "vue-json-excel";
+
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
 const customerPath = "http://localhost:5000/api/customer";
@@ -317,7 +322,8 @@ export default {
     CustomerModal,
     ProductsModal,
     InvoiceTemplate,
-    JwPagination
+    JwPagination,
+    JsonExcel
   },
   props: {
     invoiceCustomer: Object,
@@ -342,6 +348,7 @@ export default {
       discount: 0,
       notes: "",
       pageOfItems: [],
+      excelFields: ["name","price","quantity","total"],
       invoiceFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },

@@ -2,6 +2,7 @@ import Vue from "vue";
 import "./plugins/bootstrap-vue";
 import App from "./App.vue";
 import Vuelidate from "vuelidate";
+import router from './router'
 Vue.use(Vuelidate);
 Vue.use(require("vue-moment"));
 
@@ -13,5 +14,6 @@ PythonShell.run("src/data/database.py", function(err, results) {
   if (err) console.log(err);
 });
 new Vue({
-  render: (h) => h(App),
+  router,
+  render: (h) => h(App)
 }).$mount("#app");
