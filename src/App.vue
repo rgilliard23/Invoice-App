@@ -20,6 +20,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import "~bootstrap/scss/bootstrap.scss";
+@import "~bootstrap-vue/dist/bootstrap-vue.css";
+
+html { height: 100%; }
+body { height: 100%; display: flex; }
+body > div { flex: 1; }
+
 .danger {
   background-color: purple;
 }

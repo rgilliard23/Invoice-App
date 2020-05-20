@@ -29,19 +29,29 @@
               :disabled="InvoiceIncomplete"
               class="margin"
               size="lg"
-              variant="secondary"
+              variant="success"
             >
               <JsonExcel :disabled="InvoiceIncomplete" :data="items">
                 Export To Excel
               </JsonExcel>
             </b-button>
             <b-button
-              v-on:click="saveInvoice"
+              v-if="!edit"
+              v-on:click="updateInvoice"
               :disabled="InvoiceIncomplete"
-              class="margin"
+              class="margin text-light"
               size="lg"
-              variant="success"
+              variant="secondary"
               >Save Invoice</b-button
+            >
+            <b-button
+              v-else
+              v-on:click="updateInvoice"
+              :disabled="InvoiceIncomplete"
+              class="margin text-light"
+              size="lg"
+              variant="secondary"
+              >Update Invoice</b-button
             >
           </b-nav-form>
         </b-navbar-nav>
@@ -50,7 +60,7 @@
 
       <b-row
         align-h="center"
-        class="margin"
+        class="margin w-100"
         style="height: 15vh; max-height: 20vh;"
       >
         <b-col lg="6" class="my-1">
@@ -116,12 +126,13 @@
             </b-button>
           </b-form-group>
         </b-col>
-        <JwPagination
-          :pageSize="8"
-          :items="items"
-          @changePage="onChangePage"
-          :labels="customLabels"
-        ></JwPagination>
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="perPage"
+          aria-controls="my-table"
+          align="fill"
+        ></b-pagination>
       </b-row>
       <div style="height: 2vh;"></div>
       <b-container fluid>
@@ -129,9 +140,10 @@
           small
           striped
           fixed
+          :currentPage="currentPage"
           sticky-header="50vh"
-          :items="pageOfItems"
-          perPage="6"
+          :items="items"
+          :perPage="perPage"
           :key="index"
           :fields="invoiceFields"
         >
@@ -292,7 +304,7 @@
         centered
         size="lg"
         id="customerModal"
-        title="Add Customer"
+        title="Select Customer"
       >
         <keep-alive>
           <CustomerModal @selectCustomer="selectCustomer" />
@@ -307,7 +319,7 @@ import "axios";
 import ProductsModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/ProductsModal.vue";
 import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/CustomerModal.vue";
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
-import JwPagination from "jw-vue-pagination";
+// import JwPagination from "jw-vue-pagination";
 import JsonExcel from "vue-json-excel";
 
 const axios = require("axios");
@@ -322,7 +334,7 @@ export default {
     CustomerModal,
     ProductsModal,
     InvoiceTemplate,
-    JwPagination,
+    // JwPagination,
     JsonExcel
   },
   props: {
@@ -342,13 +354,15 @@ export default {
         address: null
       },
       customers: [],
+      currentPage: 1,
       products: [],
       invoices: null,
+      perPage: 5,
       tax: 0,
       discount: 0,
       notes: "",
       pageOfItems: [],
-      excelFields: ["name","price","quantity","total"],
+      excelFields: ["name", "price", "quantity", "total"],
       invoiceFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
@@ -434,6 +448,9 @@ export default {
       } else {
         return true;
       }
+    },
+    rows() {
+      return this.items.length;
     }
   },
   methods: {
@@ -458,6 +475,8 @@ export default {
         price: Number(0),
         total: 0
       });
+
+      this.currentPage = Math.ceil(this.items.length / this.perPage);
     },
     closeProductModal() {
       this.inLineTotal();
@@ -508,6 +527,66 @@ export default {
           console.error(error);
         });
     },
+    updateInvoice(){
+      let temp = {
+        date_created: this.createdDate,
+        date_due: this.dateDue,
+        notes: this.notes,
+        customer_id: this.customer.id,
+        total: this.grandTotal
+      }
+
+      axios
+        .put(invoicePath + "/" + this.invoice.id, temp)
+        .then(res => {
+          alert("Invoice Updated");
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+          console.log("Invoice Error");
+        });
+
+      var invoiceId = 0;
+
+      axios
+        .get(invoicePath)
+        .then(res => {
+          this.invoices = res.data.invoices;
+          console.log(typeof this.invoices);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+      setTimeout(1000);
+      invoiceId = 1;
+      if (this.invoices.length > 0) {
+        invoiceId = this.invoices[this.invoices.length - 1].id;
+      }
+
+
+      this.items.forEach(item => {
+        let temp2 = {
+          date_created: this.createdDate,
+          quantity: item.quantity,
+          invoice_id: invoiceId,
+          product_id: item.id
+        };
+        console.log(temp2);
+        axios
+          .put(transactionPath + "/" + item.id, temp2)
+          .then(res => {
+            alert("howdy");
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+            console.log("Transaction Error");
+          });
+      });
+
+    },
     saveInvoice() {
       let temp = {
         date_created: this.createdDate,
@@ -520,6 +599,7 @@ export default {
       axios
         .post(invoicePath, temp)
         .then(res => {
+          alert("Invoice Saved");
           console.log(res);
         })
         .catch(err => {
@@ -599,7 +679,7 @@ export default {
 }
 .overflow {
   overflow: scroll;
-  max-height: 70vh;
-  height: 70vh;
+  max-height: 85vh;
+  height: 85vh;
 }
 </style>

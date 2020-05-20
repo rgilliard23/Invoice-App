@@ -81,38 +81,44 @@
               </b-form-group>
             </b-col>
             <b-col>
-                <b-form-group
-                  label="Sort"
-                  label-cols-sm="3"
-                  label-align-sm="right"
-                  label-size="sm"
-                  label-for="sortBySelect"
-                  class="mb-0"
-                >
-                  <b-input-group size="sm">
-                    <b-form-select
-                      v-model="sortBy"
-                      id="sortBySelect"
-                      class="w-75"
+              <b-form-group
+                label="Sort"
+                label-cols-sm="3"
+                label-align-sm="right"
+                label-size="sm"
+                label-for="sortBySelect"
+                class="mb-0"
+              >
+                <b-input-group size="sm">
+                  <b-form-select
+                    v-model="sortBy"
+                    id="sortBySelect"
+                    class="w-75"
+                  >
+                    <template v-slot:first>
+                      <option value="">-- none --</option>
+                    </template>
+                    <b-form-select-option value="name"
+                      >Name</b-form-select-option
                     >
-                      <template v-slot:first>
-                        <option value="">-- none --</option>
-                      </template>
-                      <b-form-select-option value="name">Name</b-form-select-option>
-                      <b-form-select-option value="date_due">Due Date</b-form-select-option>
-                      <b-form-select-option value="created_date">Created Date</b-form-select-option>
-                    </b-form-select>
-                    <b-form-select
-                      v-model="sortDesc"
-                      size="sm"
-                      :disabled="!sortBy"
-                      class="w-25"
+                    <b-form-select-option value="date_due"
+                      >Due Date</b-form-select-option
                     >
-                      <option :value="false">Asc</option>
-                      <option :value="true">Desc</option>
-                    </b-form-select>
-                  </b-input-group>
-                </b-form-group>
+                    <b-form-select-option value="created_date"
+                      >Created Date</b-form-select-option
+                    >
+                  </b-form-select>
+                  <b-form-select
+                    v-model="sortDesc"
+                    size="sm"
+                    :disabled="!sortBy"
+                    class="w-25"
+                  >
+                    <option :value="false">Ascending</option>
+                    <option :value="true">Descending</option>
+                  </b-form-select>
+                </b-input-group>
+              </b-form-group>
             </b-col>
           </b-row>
         </b-col>
@@ -156,6 +162,33 @@
               <b-col>
                 <div>Total:</div>
                 <div>{{ data.item.total | currency }}</div>
+              </b-col>
+              <b-col>
+                <b-dropdown
+                  variant="primary"
+                  no-caret
+                  id="dropdown-1"
+                  text="Options"
+                  class="m-md-2 bg-transparent"
+                >
+                  <template v-slot:button-content>
+                    <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
+                  </template>
+                  <b-dropdown-group id="dropdown-group-1">
+                    <b-dropdown-item @click="addProduct(data.item, true)"
+                      >View</b-dropdown-item
+                    >
+                    <b-dropdown-item @click="addProduct(data.item, true)"
+                      >Edit</b-dropdown-item
+                    >
+
+                    <b-dropdown-item @click="deleteProduct(data.item)"
+                      >Delete</b-dropdown-item
+                    >
+                  </b-dropdown-group>
+                  <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
+            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
+                </b-dropdown>
               </b-col>
             </b-row>
           </b-list-group-item>

@@ -25,7 +25,7 @@
 
       <b-table fixed :fields="customerFields" :items="filterCustomerList">
         <template v-slot:cell(actions)="data">
-          <b-dropdown no-caret id="dropdown-1" text="Options" class="m-md-2">
+          <b-dropdown variant="primary" no-caret id="dropdown-1" text="Options" class="m-md-2">
             <template v-slot:button-content variant="link">
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>

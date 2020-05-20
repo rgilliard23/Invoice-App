@@ -86,8 +86,7 @@
         </tr>
       </table>
     </div>
-    <div id="pdf"></div>
-    <b-button block variant="success" @click="createPDF">Download</b-button>
+    <b-button style="margin-top: 8vh;" block variant="success" @click="createPDF">Download</b-button>
   </div>
 </template>
 
@@ -250,10 +249,10 @@ export default {
   width: 60px;
 }
 
-#invoiceBox {
+/* #invoiceBox {
   overflow: scroll;
-  height: 60vh;
-}
+  height: 70vh;
+} */
 
 @media only screen and (max-width: 600px) {
   .invoice-box table tr.top table td {

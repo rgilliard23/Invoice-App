@@ -2,43 +2,67 @@
   <div>
     <b-container style="margin: 0; padding: 0;" class="w-100" fluid>
       <b-row style="margin: 0; padding: 0;">
-        <b-col
-          col
-          lg="3"
-          class="w-100 fullHeight m-0 p-0"
-          variant="dark"
-        >
-          <b-nav type="light" style="margin: 0; padding: 0;" vertical class="w-100 fullHeight bg-dark">
+        <b-col col lg="3" class="w-100 fullHeight m-0 p-0" variant="dark">
+          <b-nav
+            type="light"
+            style="margin: 0; padding: 0;"
+            vertical
+            class="w-100 fullHeight bg-dark"
+          >
             <b-list-group-item
-              class="profile bg-dark text-light d-flex justify-content-center align-items-center"
+              class="profile border-light border-left-0 border-top-0 border-right-0 bg-dark text-light d-flex justify-content-center align-items-center"
             >
-              <h1>Howdy</h1>
+              <h1>Invoice App</h1>
             </b-list-group-item>
-           
             <b-nav-item class="sidebarItems">
-              <h3>
+              <h3 class="text-primary">
+                <b-row class=" w-100 m-auto" align-h="center">
+                  <span class="marginNavItems">
+                  <b-icon-house></b-icon-house>
+                </span>
+                <router-link class="noMargin  text-light" to="/">
+                  Home</router-link
+                >
+                </b-row>
+                
+                <!-- <span>Invoice</span> -->
+              </h3>
+            </b-nav-item>
+            <b-nav-item class="sidebarItems">
+              <h3 class="text-primary">
                 <span>
                   <span><b-icon-people></b-icon-people></span>
                 </span>
-                <router-link class="noMargin" to="/customer"> Customers</router-link>
+                <router-link class="noMargin text-light" to="/customer">
+                  Customers</router-link
+                >
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
             <b-nav-item class="sidebarItems">
-              <h3>
-                <span>
-                  <span><b-icon-layers></b-icon-layers></span>
-                </span>
-                <router-link class="noMargin" to="/product">Products</router-link>
+              <h3 class="text-primary">
+                <b-row class=" w-100 m-auto" align-h="center">
+                  <span class="marginNavItems">
+                    <b-icon-layers></b-icon-layers>
+                  </span>
+                  <router-link class="noMargin marginNavItems text-light" to="/product">
+                    Products
+                  </router-link>
+                </b-row>
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
             <b-nav-item class="sidebarItems">
-              <h3>
-                <span>
-                  <b-icon-house></b-icon-house>
-                </span>
-                <router-link class="noMargin" to="/"> Invoice</router-link>
+              <h3 class="text-primary">
+                <b-row class=" w-100 m-auto" align-h="center">
+                  <span class="marginNavItems">
+                    <b-icon-archive-fill></b-icon-archive-fill>
+                  </span>
+                  <router-link class="noMargin marginNavItems text-light" to="/">
+                    Invoices</router-link
+                  >
+                </b-row>
+
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
@@ -91,7 +115,12 @@
 // import CustomerView from "/Users/ronaldgilliard/invoice-app-electron/src/views/CustomerView.vue";
 // import InvoiceView from "/Users/ronaldgilliard/invoice-app-electron/src/views/InvoiceView.vue";
 // import BIconHouse from "bootstrap-vue";
-import { BIconPeople, BIconHouse, BIconLayers,  } from "bootstrap-vue";
+import {
+  BIconPeople,
+  BIconHouse,
+  BIconLayers,
+  BIconArchiveFill
+} from "bootstrap-vue";
 export default {
   name: "Dashboard",
   components: {
@@ -102,7 +131,7 @@ export default {
     BIconPeople,
     BIconHouse,
     BIconLayers,
-
+    BIconArchiveFill
   },
   data: function() {
     return {
@@ -125,14 +154,23 @@ export default {
 </script>
 
 <style scoped>
-.noMargin{
-    margin: 0;
-    padding: 0;
+.listRow {
+  width: 45%;
+}
+
+.noMargin {
+  margin: 0;
+  padding: 0;
+}
+.marginNavItems{
+  margin: 0 5px;
+
 }
 .profile {
   height: 10vh;
 }
 .sidebarItems {
+  height: 15vh;
   padding: 3vh;
   color: white;
 }

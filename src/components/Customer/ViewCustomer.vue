@@ -11,6 +11,14 @@
           >Name must be at least 3 characters</b-form-invalid-feedback
         >
       </b-form-group>
+      <b-row class="w-100" align-h="center">
+        <JwPagination
+          :pageSize="8"
+          :items="invoices"
+          @changePage="onChangePage"
+          :labels="customLabels"
+        ></JwPagination>
+      </b-row>
       <b-form-group label="Customer Invoices:">
         <b-list-group>
           <b-list-group-item
@@ -31,28 +39,27 @@
                 <div>${{ invoice.total }}</div>
               </b-col>
               <b-col>
-                <b-button @click="editInvoice(invoice)" variant="info">Details</b-button>
+                <b-button @click="editInvoice(invoice)" variant="info"
+                  >Details</b-button
+                >
               </b-col>
             </b-row>
           </b-list-group-item>
         </b-list-group>
       </b-form-group>
-      <b-row class="w-100" align-h="center">
-        <JwPagination
-          :pageSize="8"
-          :items="invoices"
-          @changePage="onChangePage"
-          :labels="customLabels"
-        ></JwPagination>
-      </b-row>
-      <b-row style="margin-top: 1vh;" align-h="center">
+
+      <!-- <b-row style="margin-top: 1vh;" align-h="center">
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button class="ml-2" @click="resetForm()">Reset</b-button>
-      </b-row>
+      </b-row> -->
     </b-form>
-    <b-modal size="xl" ref="editInvoice">
+    <b-modal hide-footer size="xl" ref="editInvoice">
       <keep-alive>
-        <Invoice v-bind:invoiceCustomer="customer" v-bind:edit="true" v-bind:invoice="invoice"/>
+        <Invoice
+          v-bind:invoiceCustomer="customer"
+          v-bind:edit="true"
+          v-bind:invoice="invoice"
+        />
       </keep-alive>
     </b-modal>
   </div>

@@ -20,8 +20,8 @@
       </b-navbar>
       <b-table fixed :fields="productFields" :items="filterProductList">
         <template v-slot:cell(actions)="data">
-          <b-dropdown no-caret id="dropdown-1" text="Options" class="m-md-2">
-            <template v-slot:button-content variant="link">
+          <b-dropdown variant="primary" no-caret id="dropdown-1" text="Options" class="m-md-2 bg-transparent">
+            <template v-slot:button-content >
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>
             <b-dropdown-group id="dropdown-group-1" >

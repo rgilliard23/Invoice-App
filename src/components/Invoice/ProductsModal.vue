@@ -21,7 +21,7 @@
           </b-button>
           <b-button @click="addToInvoice" block variant="success">Add Products To Invoice</b-button>
         </b-list-item>
-        <b-button style="margin-top: 2vh;" variant="info" v-b-modal.addProductModal>Add Product</b-button>
+        <b-button style="margin-top: 2vh;" variant="info" v-b-modal.addProductModal>Add New Product</b-button>
         <b-modal hide-footer centered id="addProductModal" ref="addProductModal" title="Add Product">
           <AddProductInvoice @addToProductList="addToProductList" />
         </b-modal>

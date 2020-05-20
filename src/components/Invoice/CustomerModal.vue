@@ -12,7 +12,7 @@
             </b-row>
           </b-list-group-item>
         </b-list-group>
-        <b-button style="margin-top: 10px;" v-b-modal.addCustomerModal variant="info">Add Customer</b-button>
+        <b-button style="margin-top: 10px;" v-b-modal.addCustomerModal variant="success">Add New Customer</b-button>
 
         <b-modal hide-footer busy centered ref="addCustomerModal" id="addCustomerModal" title="Add Customer">
           <AddCustomerInvoice />
