@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-light">
     <b-container class="clear fullHeight" fluid>
       <b-navbar style="height:10vh;" type="dark" variant="info">
         <b-navbar-brand>
@@ -72,7 +72,7 @@
       </b-modal>
       <b-modal hide-footer size="lg" :title="customer.name" ref="viewCustomer">
         <keep-alive>
-          <ViewCustomer v-bind:customer="customer" />
+          <ViewCustomer @invoiceDeleted="getInvoice" v-bind:customer="customer" />
         </keep-alive>
       </b-modal>
     </b-container>

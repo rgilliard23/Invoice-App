@@ -20,7 +20,7 @@
                   <span class="marginNavItems">
                   <b-icon-house></b-icon-house>
                 </span>
-                <router-link class="noMargin  text-light" to="/">
+                <router-link class="noMargin link text-light" to="/home">
                   Home</router-link
                 >
                 </b-row>
@@ -33,7 +33,7 @@
                 <span>
                   <span><b-icon-people></b-icon-people></span>
                 </span>
-                <router-link class="noMargin text-light" to="/customer">
+                <router-link class="noMargin link text-light" to="/customer">
                   Customers</router-link
                 >
                 <!-- <span>Invoice</span> -->
@@ -45,7 +45,7 @@
                   <span class="marginNavItems">
                     <b-icon-layers></b-icon-layers>
                   </span>
-                  <router-link class="noMargin marginNavItems text-light" to="/product">
+                  <router-link class="noMargin link text-light" to="/product">
                     Products
                   </router-link>
                 </b-row>
@@ -58,7 +58,7 @@
                   <span class="marginNavItems">
                     <b-icon-archive-fill></b-icon-archive-fill>
                   </span>
-                  <router-link class="noMargin marginNavItems text-light" to="/">
+                  <router-link class="link text-light" to="/">
                     Invoices</router-link
                   >
                 </b-row>
@@ -177,5 +177,8 @@ export default {
 .sidebarItems:hover {
   background: #495057;
   color: #17a2b8;
+}
+.link:hover{
+text-decoration: none;
 }
 </style>

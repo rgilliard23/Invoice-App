@@ -8,10 +8,8 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <router-link class="noMargin" to="/newinvoice"
-              ><b-button size="lg" variant="success"
-                >New Invoice</b-button
-              ></router-link
-            >
+              ><b-button size="lg" variant="success">New Invoice</b-button>
+            </router-link>
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
@@ -19,22 +17,33 @@
         <b-col>
           <b-row>
             <b-col>
-              <b-card
+              <!-- <b-card
                 header-bg-variant="white"
-                border-variant="success"
                 header-tag="header"
                 footer-tag="footer"
+                bg-variant="success"
               >
                 <template v-slot:header>
-                  <h3 class="mb-0">Completed</h3>
+                  <h3 class="mb-0 text-success">Completed</h3>
                 </template>
-                <b-card-text><h4>$ 45,000.00</h4></b-card-text>
+                <b-card-text class="text-white"><h4>$ 45,000.00</h4></b-card-text>
+              </b-card> -->
+              <b-card
+                bg-variant="success"
+                text-variant="white"
+                class="text-center"
+              >
+                <template v-slot:header>
+                  <h4 class="mb-0">Completed</h4>
+                </template>
+                <b-card-text
+                  ><h5>$ {{ invoicesComplete }}</h5></b-card-text
+                >
               </b-card>
             </b-col>
             <b-col>
-              <b-card
+              <!-- <b-card
                 header-bg-variant="white"
-                border-variant="danger"
                 header-tag="header"
                 footer-tag="footer"
               >
@@ -42,6 +51,18 @@
                   <h3 class="mb-0">Outstanding</h3>
                 </template>
                 <b-card-text><h4>$ 15,000.00</h4></b-card-text>
+              </b-card> -->
+              <b-card
+                bg-variant="danger"
+                text-variant="white"
+                class="text-center"
+              >
+                <template v-slot:header>
+                  <h4 class="mb-0">Outstanding</h4>
+                </template>
+                <b-card-text
+                  ><h5>$ {{ invoicesOutstanding }}</h5></b-card-text
+                >
               </b-card>
             </b-col>
           </b-row>
@@ -65,12 +86,7 @@
                 label-for="perPageSelect"
                 class="mb-0"
               >
-                <b-form-select
-                  v-model="perPage"
-                  id="perPageSelect"
-                  size="sm"
-                  :options="pageOptions"
-                >
+                <b-form-select v-model="perPage" id="perPageSelect" size="sm">
                   <!-- These options will appear after the ones from 'options' prop -->
                   <b-form-select-option value="5">5</b-form-select-option>
                   <b-form-select-option value="10">10</b-form-select-option>
@@ -154,7 +170,18 @@
                 <div>INV-00{{ data.item.id }}</div>
               </b-col>
               <b-col>
-                <b-button variant="primary">Mark As Completed</b-button>
+                <b-button
+                  variant="primary"
+                  @click="markInvoice(false, data.item)"
+                  v-if="data.item.completed"
+                  >Mark As Incomplete</b-button
+                >
+                <b-button
+                  variant="primary"
+                  @click="markInvoice(true, data.item)"
+                  v-else
+                  >Mark As Complete</b-button
+                >
                 <div>
                   {{ data.item.date_due }}
                 </div>
@@ -175,14 +202,14 @@
                     <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
                   </template>
                   <b-dropdown-group id="dropdown-group-1">
-                    <b-dropdown-item @click="addProduct(data.item, true)"
+                    <b-dropdown-item @click="viewInvoice(data.item)"
                       >View</b-dropdown-item
                     >
-                    <b-dropdown-item @click="addProduct(data.item, true)"
+                    <b-dropdown-item @click="editInvoice(data.item)"
                       >Edit</b-dropdown-item
                     >
 
-                    <b-dropdown-item @click="deleteProduct(data.item)"
+                    <b-dropdown-item @click="deleteInvoice(data.item)"
                       >Delete</b-dropdown-item
                     >
                   </b-dropdown-group>
@@ -193,6 +220,15 @@
             </b-row>
           </b-list-group-item>
         </template>
+        <b-modal title="Invoice" hide-footer size="xl" ref="viewInvoice">
+          <keep-alive>
+            <InvoiceTemplate
+              v-bind:transactions="transactions"
+              v-bind:dateDue="invoice.date_due"
+              v-bind:createdDate="invoice.createdDate"
+            />
+          </keep-alive>
+        </b-modal>
       </b-table>
       <!-- <JwPagination
             class="w-100"
@@ -232,6 +268,8 @@
 
 <script>
 const invoicePath = "http://localhost:5000/api/invoice";
+const customerPath = "http://localhost:5000/api/customer";
+// const productPath = "http://localhost:5000/api/product";
 const axios = require("axios");
 
 export default {
@@ -240,13 +278,16 @@ export default {
   data: function() {
     return {
       invoices: [],
+      invoice: [],
       searchInvoices: "",
+      transactions: [],
       totalRows: 1,
       filter: null,
       perPage: 6,
       sortBy: "",
       sortDesc: false,
       sortDirection: "asc",
+      customer: {},
       currentPage: 1,
       pageOfItems: [],
       invoiceTableFields: [
@@ -265,6 +306,27 @@ export default {
     };
   },
   methods: {
+    markInvoice(bool, invoice) {
+      let temp = {
+        date_created: invoice.date_created,
+        date_due: invoice.date_due,
+        notes: invoice.notes,
+        customer_id: invoice.customer.id,
+        completed: bool,
+        total: invoice.total
+      };
+
+      axios
+        .put(invoicePath + "/" + invoice.id, temp)
+        .then(res => {
+          console.log(res.data);
+          alert("Invoice Marked");
+          this.getInvoices();
+        })
+        .catch(err => {
+          console.log(err.data);
+        });
+    },
     onChangePage(pageOfItems) {
       // update page of items
       this.pageOfItems = pageOfItems;
@@ -275,10 +337,52 @@ export default {
         .then(res => {
           console.log(res);
           this.invoices = res.data.invoices;
+          this.customer = res.data.invoices.customer;
+          this.transactions = res.data.invoices.transactions;
         })
         .catch(err => {
           console.log(err);
         });
+    },
+    viewInvoice(invoice) {
+      this.invoice = invoice;
+
+      this.transactions = [];
+
+      this.invoice.transactions.forEach(element => {
+        this.transactions.push({
+          price: element.product.price,
+          name: element.product.name,
+          quantity: element.quantity
+        });
+      });
+      this.$refs["viewInvoice"].show();
+    },
+    deleteInvoice(invoice) {
+      if (confirm("Are You Sure You Want To Delete This Invoice")) {
+        axios
+          .delete(invoicePath + "/" + invoice.id)
+          .then(res => {
+            alert("Invoice Deleted");
+            console.log(res.data);
+            axios
+              .get(customerPath + "/" + this.customer.id)
+              .then(res => {
+                this.customer = res.data.customer;
+                this.invoices = res.data.customer.invoices;
+              })
+              .catch(err => {
+                console.log(err.data);
+              });
+          })
+          .catch(err => {
+            console.log(err.data);
+          });
+      }
+    },
+    editInvoice(invoice) {
+      this.invoice = invoice;
+      this.$refs["editInvoice"].show();
     }
   },
   filters: {
@@ -295,6 +399,24 @@ export default {
         .map(f => {
           return { text: f.label, value: f.key };
         });
+    },
+    invoicesComplete() {
+      let temp = 0;
+      this.invoices.forEach(element => {
+        if (element.completed) {
+          temp += element.total;
+        }
+      });
+      return temp;
+    },
+    invoicesOutstanding() {
+      let temp = 0;
+      this.invoices.forEach(element => {
+        if (!element.completed) {
+          temp = +element.total;
+        }
+      });
+      return temp;
     },
     rows() {
       return this.invoices.length;

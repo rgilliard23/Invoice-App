@@ -165,7 +165,8 @@ export default {
   },
   filters: {
     currency(value) {
-      return value.toFixed(2).toLocaleString();
+      // return value.toFixed(2).toLocaleString();
+      return value;
     }
   }
 };

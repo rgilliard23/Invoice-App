@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-light">
     <b-container class="clear fullHeight" fluid>
       <b-navbar style="height:10vh;" type="dark" variant="info">
         <b-navbar-brand>

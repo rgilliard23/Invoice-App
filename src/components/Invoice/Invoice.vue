@@ -9,8 +9,11 @@
         variant="info"
       >
         <b-navbar-brand class="margin" tag="h1" href="#">
-          <h1 v-if="!edit">Create Invoice</h1>
-          <h1 v-else>Edit Invoice</h1>
+          <b-row>
+            <h1 class="navMargin" v-if="!edit">Back</h1>
+            <h1 class="navMargin" v-if="!edit">Create Invoice</h1>
+            <h1 v-else>Edit Invoice</h1></b-row
+          >
         </b-navbar-brand>
 
         <!-- //* Invoice Table -->
@@ -37,7 +40,7 @@
             </b-button>
             <b-button
               v-if="!edit"
-              v-on:click="updateInvoice"
+              v-on:click="saveInvoice"
               :disabled="InvoiceIncomplete"
               class="margin text-light"
               size="lg"
@@ -321,6 +324,7 @@ import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/compon
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
 // import JwPagination from "jw-vue-pagination";
 import JsonExcel from "vue-json-excel";
+import BIcon
 
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
@@ -356,7 +360,7 @@ export default {
       customers: [],
       currentPage: 1,
       products: [],
-      invoices: null,
+      invoices: [],
       perPage: 5,
       tax: 0,
       discount: 0,
@@ -527,14 +531,14 @@ export default {
           console.error(error);
         });
     },
-    updateInvoice(){
+    updateInvoice() {
       let temp = {
         date_created: this.createdDate,
         date_due: this.dateDue,
         notes: this.notes,
         customer_id: this.customer.id,
         total: this.grandTotal
-      }
+      };
 
       axios
         .put(invoicePath + "/" + this.invoice.id, temp)
@@ -561,10 +565,10 @@ export default {
 
       setTimeout(1000);
       invoiceId = 1;
+
       if (this.invoices.length > 0) {
         invoiceId = this.invoices[this.invoices.length - 1].id;
       }
-
 
       this.items.forEach(item => {
         let temp2 = {
@@ -585,67 +589,75 @@ export default {
             console.log("Transaction Error");
           });
       });
-
     },
     saveInvoice() {
       let temp = {
         date_created: this.createdDate,
         date_due: this.dateDue,
         notes: this.notes,
-        customer_id: 1,
+        customer_id: this.customer.id,
         total: this.grandTotal
       };
 
-      axios
-        .post(invoicePath, temp)
-        .then(res => {
-          alert("Invoice Saved");
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-          console.log("Invoice Error");
-        });
+      axios.post(invoicePath, temp).then(res => {
+        alert("Invoice Saved");
+        console.log(res);
 
-      var invoiceId = 0;
+        var invoiceId = 1;
 
-      axios
-        .get(invoicePath)
-        .then(res => {
-          this.invoices = res.data.invoices;
-          console.log(typeof this.invoices);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        setTimeout(1000);
 
-      setTimeout(1000);
-      invoiceId = 1;
-      if (this.invoices.length > 0) {
-        invoiceId = this.invoices[this.invoices.length - 1].id;
-      }
-
-      console.log(this.invoices[this.invoices.length - 1].id);
-
-      this.items.forEach(item => {
-        let temp2 = {
-          date_created: this.createdDate,
-          quantity: item.quantity,
-          invoice_id: invoiceId,
-          product_id: item.id
-        };
-        console.log(temp2);
         axios
-          .post(transactionPath, temp2)
+          .get(invoicePath)
           .then(res => {
-            alert("howdy");
-            console.log(res);
+            this.invoices = res.data.invoices;
+
+            console.log("howdyyyyyy" + this.invoices);
+
+            alert(this.invoices.length);
+
+            if (this.invoices.length > 0) {
+              alert("invoice");
+              invoiceId = this.invoices[this.invoices.length - 1].id;
+            }
+
+            console.log(this.invoices[this.invoices.length - 1].id);
+
+            this.items
+              .forEach(item => {
+                let temp2 = {
+                  date_created: this.createdDate,
+                  quantity: item.quantity,
+                  invoice_id: invoiceId,
+                  product_id: item.id
+                };
+
+                console.log(temp2);
+
+                axios
+                  .post(transactionPath, temp2)
+                  .then(res => {
+                    alert("howdy");
+                    console.log(res);
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    console.log("Transaction Error");
+                  });
+              })
+              .catch(err => {
+                console.log(err);
+                console.log("Invoice Error");
+              });
           })
           .catch(err => {
             console.log(err);
-            console.log("Transaction Error");
           });
       });
+    },
+    viewInvoice(invoice) {
+      this.invoice = invoice;
+      this.$refs["viewInvoice"].show();
     }
   },
   filters: {
@@ -681,5 +693,8 @@ export default {
   overflow: scroll;
   max-height: 85vh;
   height: 85vh;
+}
+.navMargin{
+  margin: 0 5px;
 }
 </style>

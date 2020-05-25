@@ -66,18 +66,20 @@ class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.Date, nullable=False)
     date_due = db.Column(db.Date, nullable=False)
+    completed = db.Column(db.Boolean, nullable=False)
     notes = db.Column(db.String)
     customer_id = db.Column(db.Integer, db.ForeignKey(
         'customers.id'), nullable=False)
     customer = db.relationship('Customer', backref="invoices")
     total = db.Column(db.Float)
 
-    def __init__(self, date_created, date_due, notes, customer_id, total):
+    def __init__(self, date_created, date_due, notes, customer_id, total, completed):
         self.date_created = date_created
         self.date_due = date_due
         self.notes = notes
         self.customer_id = customer_id
         self.total = total
+        self.completed = completed
 
 
 class Transaction(db.Model):
@@ -128,11 +130,11 @@ class TransactionSchema(ma.Schema):
 class InvoiceSchema(ma.Schema):
     transactions = fields.Nested(
         lambda: TransactionSchema(many=True, exclude=("invoice",)))
-    customer = fields.Nested(lambda: CustomerSchema(only=("name", "address")))
+    customer = fields.Nested(lambda: CustomerSchema(only=("name", "address","id")))
 
     class Meta:
         fields = ("id", "date_due", "notes", "date_created",
-                  "transactions", "total", "customer")
+                  "transactions", "total", "customer","completed")
 
 
 class CustomerSchema(ma.Schema):
@@ -145,7 +147,9 @@ class CustomerSchema(ma.Schema):
 
 #* API methods ###################
 productSchema = ProductSchema()
+productsSchema = ProductSchema(many=True)
 transactionSchema = TransactionSchema()
+transactionsSchema = TransactionSchema(many=True)
 invoiceSchema = InvoiceSchema()
 invoiceSchemas = InvoiceSchema(many=True)
 customerSchema = CustomerSchema()
@@ -303,7 +307,7 @@ def delete_Product(id):
     return jsonify({'message': 'Deleted Product'})
 
 
-#*Item API ###########################
+#*Transaction API ###########################
 @app.route('/api/transaction', methods=['POST'])
 def add_Transaction():
 
@@ -321,24 +325,31 @@ def add_Transaction():
 
     return jsonify({'transaction': 'New Transaction Created'})
 
-@app.route('/api/transaction/<id>', methods = ['PUT'])
+@app.route('/api/transaction', methods = ['GET'])
+def get_Transaction():
+    transactions = Transaction.query.all() 
+    print(transactions)
+    result = transactionsSchema.dump(transactions)
+
+    return jsonify({'transactions': result})
+
+
+@app.route('/api/transaction/<id>', methods=['PUT'])
 def update_Transaction(id):
     product = Product.query.get(id)
-    
+
     quantity = request.json['quantity']
     invoice_id = request.json['invoice_id']
     product_id = request.json['product_id']
     date_created = request.json['date_created']
 
-    product_data ={}
+    product_data = {}
 
     product_data['quantity'] = quantity
     product_data['invoice_id'] = invoice_id
     product_data['product_id'] = product_id
     product_data['date_created'] = date_created
-
-
-    return jsonify({'transaction' : 'Transaction Updated'})
+    return jsonify({'transaction': 'Transaction Updated'})
 
 
 #####################*Invoice ###########################
@@ -351,11 +362,12 @@ def add_Invoice():
     notes = request.json['notes']
     customerId = request.json['customer_id']
     total = request.json['total']
+    completed = False
 
     date1 = datetime.strptime(date_created, "%Y-%m-%d")
     date2 = date1 = datetime.strptime(date_due, "%Y-%m-%d")
 
-    invoice = Invoice(date1, date2, notes, customerId, total)
+    invoice = Invoice(date1, date2, notes, customerId, total, completed)
     db.session.add(invoice)
     db.session.commit()
 
@@ -375,6 +387,7 @@ def get_Invoices():
         invoice_data['date_created'] = invoice.date_created
         invoice_data['customer_id'] = invoice.customer_id
         invoice_data['total'] = invoice.total
+        invoice_data['completed'] = invoice.completed
         output.append(invoice_data)
 
     return jsonify({'invoices': result})
@@ -382,36 +395,36 @@ def get_Invoices():
 
 @app.route('/api/invoice/<id>', methods=['PUT'])
 def update_Invoice(id):
-        invoice = Invoice.query.get(id)
+    invoice = Invoice.query.get(id)
 
-        date_created = request.json['date_created']
-        date_due = request.json['date_due']
-        notes = request.json['notes']
-        total = request.json['total']
-        customer_id = request.json['customer_id']
+    date_created = request.json['date_created']
+    date_due = request.json['date_due']
+    notes = request.json['notes']
+    total = request.json['total']
+    customer_id = request.json['customer_id']
+    completed = request.json['completed']
 
-        date1 = datetime.strptime(date_created, "%Y-%m-%d")
-        date2 = date1 = datetime.strptime(date_due, "%Y-%m-%d")
+    date1 = datetime.strptime(date_created, "%Y-%m-%d")
+    date2 = date1 = datetime.strptime(date_due, "%Y-%m-%d")
 
+    invoice.date_created = date1
+    invoice.notes = notes
+    invoice.date_due = date2
+    invoice.total = total
+    invoice.customer_id = customer_id
+    invoice.completed = completed
 
-        invoice.date_created = date1
-        invoice.notes = notes
-        invoice.date_due = date2
-        invoice.total = total
-        invoice.customer_id = customer_id
-        
+    invoice_data = {}
+    invoice_data['date_created'] = invoice.date_created
+    invoice_data['notes'] = invoice.notes
+    invoice_data['date_due'] = invoice.date_due
+    invoice_data['total'] = invoice.total
+    invoice_data['customer_id'] = invoice.customer_id
+    invoice_data['completed'] = invoice.completed
 
+    db.session.commit()
 
-        invoice_data = {}
-        invoice_data['date_created'] = invoice.date_created
-        invoice_data['notes'] = invoice.notes
-        invoice_data['date_due'] = invoice.date_due
-        invoice_data['total'] = invoice.total
-        invoice_data['customer_id'] = invoice.customer_id
-
-        db.session.commit()
-
-        return jsonify({'invoice': 'Updated'})
+    return jsonify({'invoice': 'Updated'})
 
 
 @app.route('/api/invoice/<id>', methods=['DELETE'])
