@@ -18,13 +18,13 @@
               <h3 class="text-primary">
                 <b-row class=" w-100 m-auto" align-h="center">
                   <span class="marginNavItems">
-                  <b-icon-house></b-icon-house>
-                </span>
-                <router-link class="noMargin link text-light" to="/home">
-                  Home</router-link
-                >
+                    <b-icon-house></b-icon-house>
+                  </span>
+                  <router-link class="noMargin link text-light" to="/home">
+                    Home</router-link
+                  >
                 </b-row>
-                
+
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
@@ -119,7 +119,7 @@ import {
   BIconPeople,
   BIconHouse,
   BIconLayers,
-  BIconArchiveFill
+  BIconArchiveFill,
 } from "bootstrap-vue";
 export default {
   name: "Dashboard",
@@ -131,7 +131,7 @@ export default {
     BIconPeople,
     BIconHouse,
     BIconLayers,
-    BIconArchiveFill
+    BIconArchiveFill,
   },
   data: function() {
     return {
@@ -149,7 +149,7 @@ export default {
     //   }
     //   return InvoiceView;
     // }
-  }
+  },
 };
 </script>
 
@@ -162,9 +162,8 @@ export default {
   margin: 0;
   padding: 0;
 }
-.marginNavItems{
+.marginNavItems {
   margin: 0 5px;
-
 }
 .profile {
   height: 10vh;
@@ -178,7 +177,7 @@ export default {
   background: #495057;
   color: #17a2b8;
 }
-.link:hover{
-text-decoration: none;
+.link:hover {
+  text-decoration: none;
 }
 </style>

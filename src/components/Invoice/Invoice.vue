@@ -10,7 +10,12 @@
       >
         <b-navbar-brand class="margin" tag="h1" href="#">
           <b-row>
-            <h1 class="navMargin" v-if="!edit">Back</h1>
+            <router-link to="/" class="text-white">
+              <h1 style="margin: 0 15px;" v-if="!edit">
+                <b-icon-arrow-left> </b-icon-arrow-left>
+              </h1>
+            </router-link>
+
             <h1 class="navMargin" v-if="!edit">Create Invoice</h1>
             <h1 v-else>Edit Invoice</h1></b-row
           >
@@ -324,7 +329,7 @@ import CustomerModal from "/Users/ronaldgilliard/invoice-app-electron/src/compon
 import InvoiceTemplate from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/InvoiceTemplate.vue";
 // import JwPagination from "jw-vue-pagination";
 import JsonExcel from "vue-json-excel";
-import BIcon
+import { BIconArrowLeft } from "bootstrap-vue";
 
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
@@ -338,13 +343,14 @@ export default {
     CustomerModal,
     ProductsModal,
     InvoiceTemplate,
+    BIconArrowLeft,
     // JwPagination,
-    JsonExcel
+    JsonExcel,
   },
   props: {
     invoiceCustomer: Object,
     edit: Boolean,
-    invoice: Object
+    invoice: Object,
   },
   data: function() {
     return {
@@ -355,7 +361,7 @@ export default {
       customer: {
         id: null,
         name: null,
-        address: null
+        address: null,
       },
       customers: [],
       currentPage: 1,
@@ -373,13 +379,13 @@ export default {
         { key: "price", label: "Price" },
         { key: "quantity", label: "Quantity" },
         { key: "total", label: "Total" },
-        { key: "actions", label: "" }
+        { key: "actions", label: "" },
       ],
       customLabels: {
         first: "<<",
         last: ">>",
         previous: "<",
-        next: ">"
+        next: ">",
       },
       items: [
         {
@@ -388,7 +394,7 @@ export default {
           name: "Ronald",
           quantity: 1,
           price: 300,
-          total: 300
+          total: 300,
         },
         {
           uniqueId: 0,
@@ -396,7 +402,7 @@ export default {
           name: "Ronald",
           quantity: 1,
           price: 300,
-          total: 300
+          total: 300,
         },
         {
           uniqueId: 0,
@@ -404,7 +410,7 @@ export default {
           name: "Ronald",
           quantity: 1,
           price: 300,
-          total: 300
+          total: 300,
         },
         {
           uniqueId: 0,
@@ -412,7 +418,7 @@ export default {
           name: "Ronald",
           quantity: 1,
           price: 300,
-          total: 300
+          total: 300,
         },
         {
           uniqueId: 0,
@@ -420,15 +426,15 @@ export default {
           name: "Ronald",
           quantity: 1,
           price: 300,
-          total: 300
-        }
-      ]
+          total: 300,
+        },
+      ],
     };
   },
   computed: {
     subTotal() {
       let subTotal = 0;
-      this.items.forEach(element => {
+      this.items.forEach((element) => {
         subTotal += element.total;
       });
       return Number(subTotal.toFixed(2));
@@ -455,7 +461,7 @@ export default {
     },
     rows() {
       return this.items.length;
-    }
+    },
   },
   methods: {
     onChangePage(pageOfItems) {
@@ -477,7 +483,7 @@ export default {
         name: "",
         quantity: 1,
         price: Number(0),
-        total: 0
+        total: 0,
       });
 
       this.currentPage = Math.ceil(this.items.length / this.perPage);
@@ -495,7 +501,7 @@ export default {
     },
     inLineTotal() {
       let count = 0;
-      this.items.forEach(element => {
+      this.items.forEach((element) => {
         element.uniqueId = count;
         element.total = Number((element.price * element.quantity).toFixed(2));
         element.price = Number(element.price);
@@ -512,10 +518,10 @@ export default {
     getProducts() {
       axios
         .get(productPath)
-        .then(res => {
+        .then((res) => {
           this.products = res.data.products;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -523,10 +529,10 @@ export default {
     getCustomers() {
       axios
         .get(customerPath)
-        .then(res => {
+        .then((res) => {
           this.customers = res.data.customers;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -537,16 +543,16 @@ export default {
         date_due: this.dateDue,
         notes: this.notes,
         customer_id: this.customer.id,
-        total: this.grandTotal
+        total: this.grandTotal,
       };
 
       axios
         .put(invoicePath + "/" + this.invoice.id, temp)
-        .then(res => {
+        .then((res) => {
           alert("Invoice Updated");
           console.log(res);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           console.log("Invoice Error");
         });
@@ -555,11 +561,11 @@ export default {
 
       axios
         .get(invoicePath)
-        .then(res => {
+        .then((res) => {
           this.invoices = res.data.invoices;
           console.log(typeof this.invoices);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
 
@@ -570,21 +576,21 @@ export default {
         invoiceId = this.invoices[this.invoices.length - 1].id;
       }
 
-      this.items.forEach(item => {
+      this.items.forEach((item) => {
         let temp2 = {
           date_created: this.createdDate,
           quantity: item.quantity,
           invoice_id: invoiceId,
-          product_id: item.id
+          product_id: item.id,
         };
         console.log(temp2);
         axios
           .put(transactionPath + "/" + item.id, temp2)
-          .then(res => {
+          .then((res) => {
             alert("howdy");
             console.log(res);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
             console.log("Transaction Error");
           });
@@ -596,10 +602,10 @@ export default {
         date_due: this.dateDue,
         notes: this.notes,
         customer_id: this.customer.id,
-        total: this.grandTotal
+        total: this.grandTotal,
       };
 
-      axios.post(invoicePath, temp).then(res => {
+      axios.post(invoicePath, temp).then((res) => {
         alert("Invoice Saved");
         console.log(res);
 
@@ -609,7 +615,7 @@ export default {
 
         axios
           .get(invoicePath)
-          .then(res => {
+          .then((res) => {
             this.invoices = res.data.invoices;
 
             console.log("howdyyyyyy" + this.invoices);
@@ -624,33 +630,33 @@ export default {
             console.log(this.invoices[this.invoices.length - 1].id);
 
             this.items
-              .forEach(item => {
+              .forEach((item) => {
                 let temp2 = {
                   date_created: this.createdDate,
                   quantity: item.quantity,
                   invoice_id: invoiceId,
-                  product_id: item.id
+                  product_id: item.id,
                 };
 
                 console.log(temp2);
 
                 axios
                   .post(transactionPath, temp2)
-                  .then(res => {
+                  .then((res) => {
                     alert("howdy");
                     console.log(res);
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     console.log(err);
                     console.log("Transaction Error");
                   });
               })
-              .catch(err => {
+              .catch((err) => {
                 console.log(err);
                 console.log("Invoice Error");
               });
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       });
@@ -658,12 +664,12 @@ export default {
     viewInvoice(invoice) {
       this.invoice = invoice;
       this.$refs["viewInvoice"].show();
-    }
+    },
   },
   filters: {
     currency(value) {
       return Number(value.toFixed(2));
-    }
+    },
   },
   created() {
     if (this.invoice !== null) {
@@ -671,16 +677,16 @@ export default {
       this.dateDue = this.invoice.date_due;
       this.customer = this.invoiceCustomer;
       this.items = [];
-      this.invoice.transactions.forEach(element => {
+      this.invoice.transactions.forEach((element) => {
         this.items.push({
           id: element.product.id,
           name: element.product.name,
           quantity: element.quantity,
-          price: element.product.price
+          price: element.product.price,
         });
       });
     }
-  }
+  },
 };
 </script>
 
@@ -694,7 +700,7 @@ export default {
   max-height: 85vh;
   height: 85vh;
 }
-.navMargin{
+.navMargin {
   margin: 0 5px;
 }
 </style>

@@ -1,27 +1,51 @@
 <template>
   <div>
-    <line-chart
-      v-if="loaded"
-      v-bind:chartdata="chartdata"
-      v-bind:options="options"
-    ></line-chart>
+    <line-chart v-if="loaded" :chartdata="chartData" :options="options" />
   </div>
 </template>
 
 <script>
-import { Bar, mixins } from "vue-chartjs";
+import LineChart from "./Chart";
 import axios from "axios";
 
 export default {
-  mixins: [mixins.reactiveData],
+  components: { LineChart },
   data() {
     return {
-      chartData: "",
+      loaded: false,
+      chartData: null,
     };
   },
-  extends: Bar,
-  mounted() {
-    this.renderChart(this.chartData);
+  async mounted() {
+    this.loaded = false;
+    try {
+      await axios.get(`http://localhost:5000/api/invoice`).then((response) => {
+        // JSON responses are automatically parsed.
+        const responseData = JSON.parse(response.data.invoices);
+        this.chartData = {
+          labels: responseData.map((item) => Object.keys(item)[2]),
+          datasets: [
+            {
+              label: "Date Due",
+              data: responseData.map((item) => item.total)
+            },
+          ],
+        };
+        this.loaded = true;
+        // this.chartData = {
+        //   labels: responseData.map((item) => item.date_due),
+        //   datasets: [
+        //     {
+        //       label: "Daily Students",
+        //       data: responseData.map((item) => item.total),
+        //     },
+        //   ],
+        // }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    // this.renderChart(this.chartData);
   },
   created() {
     axios

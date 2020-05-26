@@ -57,7 +57,7 @@
             header-text-variant="white"
             align="center"
           >
-            <RevenueChart></RevenueChart>
+            <RevenueChart class="revenueChart"></RevenueChart>
           </b-card>
         </b-col>
       </b-row>
@@ -159,5 +159,9 @@ export default {
 .noMargin {
   margin: 0;
   padding: 0;
+}
+.revenueChart{
+  max-width: 35vw;
+  max-height: 20vh;
 }
 </style>
