@@ -23,9 +23,16 @@ export default {
 @import "~bootstrap/scss/bootstrap.scss";
 @import "~bootstrap-vue/dist/bootstrap-vue.css";
 
-html { height: 100%; }
-body { height: 100%; display: flex; }
-body > div { flex: 1; }
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  display: flex;
+}
+body > div {
+  flex: 1;
+}
 
 .danger {
   background-color: purple;
@@ -43,12 +50,17 @@ body > div { flex: 1; }
 
   a {
     font-weight: bold;
-    color: #2c3e50;
+    // color: #2c3e50;
+    color: red !important;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: #42b983 !important;
     }
   }
+}
+
+#nav a.router-link-active {
+  color: red !important;
 }
 
 .fullHeight {

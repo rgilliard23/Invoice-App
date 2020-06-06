@@ -8,13 +8,14 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <b-input
+              class="navButtonMargin"
               type="text"
               v-model="searchCustomer"
               placeholder="Search"
             ></b-input>
             <b-button
               @click="showCustomer(null, false)"
-              class="margin"
+              class="margin navButtonMargin"
               size="lg"
               variant="success"
               >Add Customer</b-button
@@ -25,7 +26,13 @@
 
       <b-table fixed :fields="customerFields" :items="filterCustomerList">
         <template v-slot:cell(actions)="data">
-          <b-dropdown variant="primary" no-caret id="dropdown-1" text="Options" class="m-md-2">
+          <b-dropdown
+            variant="primary"
+            no-caret
+            id="dropdown-1"
+            text="Options"
+            class="m-md-2"
+          >
             <template v-slot:button-content variant="link">
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>
@@ -44,7 +51,7 @@
             <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
           </b-dropdown>
         </template>
-        <template v-slot:custom-foot v-if="filterCustomerList == 0">
+        <!-- <template v-slot:custom-foot v-if="filterCustomerList == 0">
           <tr>
             <td></td>
             <td>
@@ -53,8 +60,9 @@
             <td></td>
             <td></td>
           </tr>
-        </template>
+        </template> -->
       </b-table>
+      <div v-if="filterCustomerList == 0"><h1>No Data</h1></div>
       <b-modal
         hide-footer
         centered
@@ -70,9 +78,18 @@
           />
         </keep-alive>
       </b-modal>
-      <b-modal hide-footer size="lg" :title="customer.name" ref="viewCustomer">
+      <b-modal
+        centered
+        hide-footer
+        size="lg"
+        :title="customer.name"
+        ref="viewCustomer"
+      >
         <keep-alive>
-          <ViewCustomer @invoiceDeleted="getInvoice" v-bind:customer="customer" />
+          <ViewCustomer
+            @invoiceDeleted="getInvoice"
+            v-bind:customer="customer"
+          />
         </keep-alive>
       </b-modal>
     </b-container>
@@ -206,4 +223,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.navButtonMargin {
+  margin: 0 5px;
+}
+</style>

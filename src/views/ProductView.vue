@@ -7,32 +7,51 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-input type="text" v-model="searchProduct" placeholder="Search"></b-input>
+            <b-input
+              type="text"
+              class="navButtonMargin"
+              v-model="searchProduct"
+              placeholder="Search"
+            ></b-input>
             <b-button
-              @click="addProduct(null,false)"
+              @click="addProduct(null, false)"
               addProduct
-              class="margin"
+              class="navButtonMargin"
               size="lg"
               variant="success"
-            >Add Product</b-button>
+              >Add Product</b-button
+            >
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
       <b-table fixed :fields="productFields" :items="filterProductList">
         <template v-slot:cell(actions)="data">
-          <b-dropdown variant="primary" no-caret id="dropdown-1" text="Options" class="m-md-2 bg-transparent">
-            <template v-slot:button-content >
+          <b-dropdown
+            variant="primary"
+            no-caret
+            id="dropdown-1"
+            text="Options"
+            class="m-md-2 bg-transparent"
+          >
+            <template v-slot:button-content>
               <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
             </template>
-            <b-dropdown-group id="dropdown-group-1" >
-              <b-dropdown-item @click="addProduct(data.item,true)">Edit</b-dropdown-item>
-              <b-dropdown-item @click="deleteProduct(data.item)">Delete</b-dropdown-item>
+            <b-dropdown-group id="dropdown-group-1">
+              <b-dropdown-item @click="viewProduct(data.item)"
+                >View</b-dropdown-item
+              >
+              <b-dropdown-item @click="addProduct(data.item, true)"
+                >Edit</b-dropdown-item
+              >
+              <b-dropdown-item @click="deleteProduct(data.item)"
+                >Delete</b-dropdown-item
+              >
             </b-dropdown-group>
             <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
             <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
           </b-dropdown>
         </template>
-        <template v-slot:custom-foot v-if="filterProductList.length === 0">
+        <!-- <template v-slot:custom-foot v-if="filterProductList.length === 0">
           <tr>
             <td></td>
             <td></td>
@@ -41,11 +60,33 @@
             </td>
             <td></td>
           </tr>
-        </template>
+        </template> -->
       </b-table>
-      <b-modal hide-footer :title="modalName" centered ref="addProduct" id="addProduct">
+      <div v-if="filterProductList == 0"><h1>No Data</h1></div>
+      <b-modal
+        hide-footer
+        title="View Product"
+        centered
+        ref="viewProduct"
+        size="md"
+      >
         <keep-alive>
-          <AddProduct @addedProduct="addedProduct" v-bind:edit="edit" v-bind:product="product" />
+          <ViewProduct :product="product" />
+        </keep-alive>
+      </b-modal>
+      <b-modal
+        hide-footer
+        :title="modalName"
+        centered
+        ref="addProduct"
+        id="addProduct"
+      >
+        <keep-alive>
+          <AddProduct
+            @addedProduct="addedProduct"
+            v-bind:edit="edit"
+            v-bind:product="product"
+          />
         </keep-alive>
       </b-modal>
     </b-container>
@@ -57,11 +98,12 @@ const axios = require("axios");
 const path = "http://localhost:5000/api/product";
 import AddProduct from "/Users/ronaldgilliard/invoice-app-electron/src/components/Products/AddProduct.vue";
 import { BIconThreeDotsVertical } from "bootstrap-vue";
-
+import ViewProduct from "../components/Products/ViewProduct";
 export default {
   name: "ProductView",
   components: {
     AddProduct,
+    ViewProduct,
     BIconThreeDotsVertical
   },
   data: function() {
@@ -134,6 +176,10 @@ export default {
       this.product = product;
       this.edit = true;
     },
+    viewProduct(product) {
+      this.product = product;
+      this.$refs["viewProduct"].show();
+    },
     deleteProduct: function(product) {
       if (confirm("Are You Sure You Want To Delete This Product")) {
         axios
@@ -171,4 +217,7 @@ export default {
 </script>
 
 <style>
+.navButtonMargin {
+  margin: 0 5px;
+}
 </style>

@@ -65,7 +65,7 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
-
+      
       alert("Form submitted!");
       this.customer.name = this.form.name;
       this.customer.address = this.form.address;

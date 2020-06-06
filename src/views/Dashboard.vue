@@ -4,31 +4,39 @@
       <b-row style="margin: 0; padding: 0;">
         <b-col col lg="3" class="w-100 fullHeight m-0 p-0" variant="dark">
           <b-nav
+            fill
+            pills
+            onmouseover="toggleSidebar()"
             type="light"
             style="margin: 0; padding: 0;"
             vertical
             class="w-100 fullHeight bg-dark"
           >
-            <b-list-group-item
-              class="profile border-light border-left-0 border-top-0 border-right-0 bg-dark text-light d-flex justify-content-center align-items-center"
-            >
+            <b-nav-item class="profile">
               <h1>Invoice App</h1>
-            </b-list-group-item>
-            <b-nav-item class="sidebarItems">
+            </b-nav-item>
+            <hr class="w-75 brandLine" />
+            <b-nav-item class="">
               <h3 class="text-primary">
                 <b-row class=" w-100 m-auto" align-h="center">
                   <span class="marginNavItems">
                     <b-icon-house></b-icon-house>
                   </span>
-                  <router-link class="noMargin link text-light" to="/home">
-                    Home</router-link
+                  <li
+                    :class="[
+                      currentPage.includes('dashboard') ? activeClass : ''
+                    ]"
                   >
+                    <router-link class="noMargin link text-light" to="/home">
+                      Home</router-link
+                    >
+                  </li>
                 </b-row>
 
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
-            <b-nav-item class="sidebarItems">
+            <b-nav-item class="">
               <h3 class="text-primary">
                 <span>
                   <span><b-icon-people></b-icon-people></span>
@@ -39,7 +47,7 @@
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
-            <b-nav-item class="sidebarItems">
+            <b-nav-item class="">
               <h3 class="text-primary">
                 <b-row class=" w-100 m-auto" align-h="center">
                   <span class="marginNavItems">
@@ -52,7 +60,7 @@
                 <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
-            <b-nav-item class="sidebarItems">
+            <b-nav-item class="">
               <h3 class="text-primary">
                 <b-row class=" w-100 m-auto" align-h="center">
                   <span class="marginNavItems">
@@ -62,47 +70,15 @@
                     Invoices</router-link
                   >
                 </b-row>
-
-                <!-- <span>Invoice</span> -->
               </h3>
             </b-nav-item>
-            <!-- <b-nav-item
-              v-on:click="currentTab = tab"
-              v-for="tab in tabs"
-              :key="tab"
-              class="sidebarItems"
-            >
-              <b-nav-text v-on:click="currentTab = tab" class="sidebarItems">
-                <h3>
-                  <span>
-                    <b-icon-house></b-icon-house>
-                  </span>
-                  <span>{{tab}}</span>
-                </h3>
-              </b-nav-text>
-            </b-nav-item> -->
-            <!-- <b-nav-item class="sidebarItems">
-              <b-nav-text class="sidebarItems">
-                <h3><span><b-icon-people></b-icon-people></span><span>Customers</span></h3>
-              </b-nav-text>
-            </b-nav-item>
-            <b-nav-item class="sidebarItems">
-              <b-nav-text class="sidebarItems">
-                <h3><span><b-icon-layers></b-icon-layers></span><span>Products</span></h3>
-              </b-nav-text>
-            </b-nav-item>
-            <b-nav-item class="sidebarItems">
-              <b-nav-text class="sidebarItems">
-                <h3><span><b-icon-folder-plus></b-icon-folder-plus></span><span>Create Invoice</span></h3>
-              </b-nav-text>
-            </b-nav-item>-->
           </b-nav>
         </b-col>
         <b-col col lg="9" class="clear fullHeight">
           <!-- <keep-alive>
             <component v-bind:is="currentTabComponent" />
           </keep-alive> -->
-          <router-view></router-view>
+          <router-view class="overflow-scroll"></router-view>
         </b-col>
       </b-row>
     </b-container>
@@ -110,54 +86,50 @@
 </template>
 
 <script>
-// import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
-// import ProductView from "/Users/ronaldgilliard/invoice-app-electron/src/views/ProductView.vue";
-// import CustomerView from "/Users/ronaldgilliard/invoice-app-electron/src/views/CustomerView.vue";
-// import InvoiceView from "/Users/ronaldgilliard/invoice-app-electron/src/views/InvoiceView.vue";
-// import BIconHouse from "bootstrap-vue";
 import {
   BIconPeople,
   BIconHouse,
   BIconLayers,
-  BIconArchiveFill,
+  BIconArchiveFill
 } from "bootstrap-vue";
 export default {
   name: "Dashboard",
   components: {
-    // Invoice,
-    // ProductView,
-    // InvoiceView,
-    // CustomerView,
     BIconPeople,
     BIconHouse,
     BIconLayers,
-    BIconArchiveFill,
+    BIconArchiveFill
   },
   data: function() {
     return {
-      // currentTab: "Products",
-      // tabs: ["Customers", "Products", "Create Invoice"]
+      activeClass: "active"
     };
   },
   computed: {
-    // currentTabComponent: function() {
-    //   if (this.currentTab === "Products") {
-    //     return ProductView;
-    //   }
-    //   if (this.currentTab === "Customers") {
-    //     return CustomerView;
-    //   }
-    //   return InvoiceView;
-    // }
+    currentPage() {
+      return this.$route.path;
+    }
   },
+  methods: {
+    toggleSideBar() {
+      console.log("opening");
+    }
+  }
 };
 </script>
 
 <style scoped>
+.brandLine {
+  border: 1px solid white;
+}
+
 .listRow {
   width: 45%;
 }
-
+/* a.router-link-active {
+  border-left-color: orange;
+  color: red;
+} */
 .noMargin {
   margin: 0;
   padding: 0;
@@ -165,8 +137,13 @@ export default {
 .marginNavItems {
   margin: 0 5px;
 }
+.active{
+  color: red !important;
+}
 .profile {
-  height: 10vh;
+  margin-top: 1vh;
+  height: 8vh;
+  max-height: 8vh;
 }
 .sidebarItems {
   height: 15vh;

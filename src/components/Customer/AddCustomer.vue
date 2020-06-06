@@ -1,7 +1,11 @@
 <template>
   <div>
     <b-form @submit.stop.prevent="onSubmit">
-      <b-form-group id="input-group-1" label="Customer Name:" label-for="input-1">
+      <b-form-group
+        id="input-group-1"
+        label="Customer Name:"
+        label-for="input-1"
+      >
         <b-form-input
           id="input-1"
           v-model="$v.form.name.$model"
@@ -11,7 +15,9 @@
           placeholder="Enter Name"
           aria-describedby="input-1-live-feedback"
         ></b-form-input>
-        <b-form-invalid-feedback id="input-1-live-feedback">Name must be at least 3 characters</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-1-live-feedback"
+          >Name must be at least 3 characters</b-form-invalid-feedback
+        >
       </b-form-group>
       <b-form-group label="Customer Address:">
         <b-form-input
@@ -23,11 +29,13 @@
           placeholder="Enter Address"
           aria-describedby="input-2-live-feedback"
         ></b-form-input>
-        <b-form-invalid-feedback id="input-2-live-feedback">Address be at least 5 characters</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-2-live-feedback"
+          >Address be at least 5 characters</b-form-invalid-feedback
+        >
       </b-form-group>
       <b-list-group v-if="edit">
         <b-list-group-item v-for="invoice in invoices" :key="invoice.id">
-          {{invoice.date_created}}
+          {{ invoice.date_created }}
         </b-list-group-item>
       </b-list-group>
       <b-button type="submit" variant="primary">Submit</b-button>
@@ -79,15 +87,18 @@ export default {
         return;
       }
       if (this.edit) {
-        axios
-          .put(path + "/" + this.customer.id, this.customer)
-          .then(res => {
-            console.log(res.data);
-          })
-          .catch(err => {
-            console.log(err.data);
-          });
-        this.edit = false;
+        if (confirm("Are You Sure Want To Change This Customer")) {
+          axios
+            .put(path + "/" + this.customer.id, this.customer)
+            .then(res => {
+              console.log(res.data);
+            })
+            .catch(err => {
+              console.log(err.data);
+            });
+          this.edit = false;
+          this.$emit("addedCustomer");
+        }
       } else {
         let temp = { name: "", address: "" };
         temp.name = this.form.name;
@@ -132,5 +143,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -1,104 +1,196 @@
 <template>
   <div>
-    <line-chart v-if="loaded" :chartdata="chartData" :options="options" />
+    <line-chart v-if="loaded" :chartData="chartData" :options="options" />
+    <div v-else class="text-center"><h1>No Data</h1></div>
   </div>
 </template>
 
 <script>
 import LineChart from "./Chart";
 import axios from "axios";
-
+var moment = require("moment"); // require
 export default {
+  props: { invoicesRevenue: { type: Array } },
   components: { LineChart },
   data() {
     return {
+      data: [],
+      dates: [],
       loaded: false,
       chartData: null,
+      revenueTotal: 0
     };
   },
   async mounted() {
-    this.loaded = false;
+    // try{
+    // this.loaded = false;
+    // this.data = [];
+    // await this.invoicesRevenue.forEach(invoice => {
+    //   alert(invoice)
+    //   if (invoice.completed) {
+    //     this.data.push({ x: invoice.date_due, y: invoice.total });
+    //     this.revenueTotal += invoice.total;
+    //   }
+    // });
+    // alert(this.data[0].x);
+    // const responseData = [
+    //   {
+    //     label: "Total",
+    //     backgroundColor: "green",
+    //     data: this.data
+    //   }
+    // ];
+
+    // this.chartData = {
+    //   datasets: responseData,
+    //   // labels: response.data.invoices.map(item => item.date_due)
+    //   labels: this.data.map(item => moment(item.x, "YYYYMMDD").format("MMM YYYY"))
+    //   // labels: dates
+    // };
+    // this.loaded = true;
+    // this.$emit("revenue", this.revenueTotal);
+
+    // } catch(e){
+    //   console.log(e);
+    // }
+
     try {
-      await axios.get(`http://localhost:5000/api/invoice`).then((response) => {
-        // JSON responses are automatically parsed.
-        const responseData = JSON.parse(response.data.invoices);
-        this.chartData = {
-          labels: responseData.map((item) => Object.keys(item)[2]),
-          datasets: [
-            {
-              label: "Date Due",
-              data: responseData.map((item) => item.total)
-            },
-          ],
-        };
-        this.loaded = true;
+      await axios.get(`http://localhost:5000/api/invoice`).then(response => {
+        // let data = [];
+        // let dates = [];
+        this.revenueTotal = 0;
+        this.data = [];
+        if (this.invoicesRevenue !== null) {
+          this.data = [];
+          if (this.invoicesRevenue.length > 0) {
+            this.invoicesRevenue.forEach(invoice => {
+              alert(invoice.completed);
+              if (invoice.completed) {
+                this.data.push({ x: invoice.date_due, y: invoice.total });
+                this.revenueTotal += invoice.total;
+                this.dates.push(
+                  moment(invoice.date_due, "YYYYMMDD").format("MMM YYYY")
+                );
+              }
+            });
+            this.loaded = true;
+          } else {
+            this.loaded = false;
+          }
+        } else {
+          response.data.invoices.forEach(invoice => {
+            if (invoice.completed) {
+              this.data.push({ x: invoice.date_due, y: invoice.total });
+              this.revenueTotal += invoice.total;
+              this.dates.push(
+                moment(invoice.date_due, "YYYYMMDD").format("MMM YYYY")
+              );
+            }
+          });
+          this.loaded = true;
+        }
+
+        const responseData = [
+          {
+            label: "Total",
+            backgroundColor: "green",
+            data: this.data
+          }
+        ];
         // this.chartData = {
-        //   labels: responseData.map((item) => item.date_due),
+        //   labels: responseData.map((item) => Object.keys(item)[2]),
         //   datasets: [
         //     {
-        //       label: "Daily Students",
-        //       data: responseData.map((item) => item.total),
+        //       label: "Date Due",
+        //       data: responseData.map((item) => item.total)
         //     },
         //   ],
-        // }
+        // };
+        this.chartData = {
+          datasets: responseData,
+          // labels: response.data.invoices.map(item => item.date_due)
+          labels: this.data.map(item =>
+            moment(item.x, "YYYYMMDD").format("MMM YYYY")
+          )
+          // labels: dates
+        };
+
+        this.$emit("revenue", this.revenueTotal);
       });
     } catch (e) {
       console.log(e);
     }
-    // this.renderChart(this.chartData);
   },
-  created() {
-    axios
-      .get(`http://localhost:5000/api/invoice`)
-      .then((response) => {
-        // JSON responses are automatically parsed.
-        const responseData = response.data;
-        this.chartData = {
-          labels: responseData.map((item) => item.date_due),
-          datasets: [
+  watch: {
+    invoicesRevenue: function() {
+      try {
+        axios.get(`http://localhost:5000/api/invoice`).then(response => {
+          // let data = [];
+          // let dates = [];
+          this.revenueTotal = 0;
+          this.data = [];
+          if (this.invoicesRevenue !== null) {
+            this.data = [];
+            alert(this.invoicesRevenue > 0);
+            if (this.invoicesRevenue.length > 0) {
+              this.invoicesRevenue.forEach(invoice => {
+                alert(invoice.completed);
+                if (invoice.completed) {
+                  this.data.push({ x: invoice.date_due, y: invoice.total });
+                  this.revenueTotal += invoice.total;
+                  this.dates.push(
+                    moment(invoice.date_due, "YYYYMMDD").format("MMM YYYY")
+                  );
+                }
+              });
+              this.loaded = true;
+            } else {
+              this.loaded = false;
+            }
+          } else {
+            response.data.invoices.forEach(invoice => {
+              if (invoice.completed) {
+                this.data.push({ x: invoice.date_due, y: invoice.total });
+                this.revenueTotal += invoice.total;
+                this.dates.push(
+                  moment(invoice.date_due, "YYYYMMDD").format("MMM YYYY")
+                );
+              }
+            });
+            this.loaded = true;
+          }
+
+          const responseData = [
             {
-              label: "Daily Students",
-              data: responseData.map((item) => item.total),
-            },
-          ],
-        };
-      })
-      .catch((e) => {
+              label: "Total",
+              backgroundColor: "green",
+              data: this.data
+            }
+          ];
+          // this.chartData = {
+          //   labels: responseData.map((item) => Object.keys(item)[2]),
+          //   datasets: [
+          //     {
+          //       label: "Date Due",
+          //       data: responseData.map((item) => item.total)
+          //     },
+          //   ],
+          // };
+          this.chartData = {
+            datasets: responseData
+            // labels: response.data.invoices.map(item => item.date_due)
+            // labels: this.data.map(item =>
+            //   moment(item.x, "YYYYMMDD").format("MMM YYYY")
+            // )
+            // labels: dates
+          };
+
+          this.$emit("revenue", this.revenueTotal);
+        });
+      } catch (e) {
         console.log(e);
-      });
-  },
+      }
+    }
+  }
 };
-// import LineChart from "./Chart.vue";
-// // import Axios from "axios";
-// const invoicePath = "http://localhost:5000/api/invoice";
-
-// export default {
-//   name: "RevenueChart",
-//   components: { LineChart },
-//   data: () => ({
-//     loaded: false,
-//     chartdata: null,
-//     options: {
-//       responsive: true,
-//       maintainAspectRatio: false,
-//     },
-//   }),
-//   async mounted() {
-//     this.loaded = false;
-//     try {
-//       // await Axios.get(invoicePath).then((res) => {
-//       //   console.log("lfhwfehfheohfelh");
-//       //   console.log(res.data.invoices);
-//       //   this.chartdata = res.data.invoices;
-//       //   this.loaded = true;
-//       // });
-//       const { userlist } = await fetch(invoicePath)
-//       this.chartdata = userlist
-//       this.loaded = true
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   },
-
-// };
 </script>

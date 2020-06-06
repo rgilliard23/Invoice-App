@@ -1,25 +1,44 @@
-
 <script>
-import { Line } from 'vue-chartjs'
-
+import { Line, mixins } from "vue-chartjs";
+const { reactiveProp } = mixins;
 export default {
+  mixins: [reactiveProp],
   extends: Line,
-  props: {
-    chartdata: {
-      type: Array,
-      default: null
-    },
-    options: {
-      type: Object,
-      default: null
-    }
+  data: function() {
+    return {
+      options: {
+        responsive: false,
+        scales: {
+          xAxes: [
+            {
+              type: "time",
+              time: {
+                displayFormats: {
+                        quarter: 'MMM YYYY'
+                    }
+              },
+              // tooltipFormat: "MMMM YYYY",
+              offset: true,
+              // distribution: "linear"
+            }
+          ],
+          // yAxes: [
+          //   {
+          //     type: "linear",
+          //     ticks: {
+          //       reverse: false,
+          //       beginAtZero: true
+          //     }
+          //   }
+          // ]
+        }
+      }
+    };
   },
-  mounted () {
-    this.renderChart(this.chartdata, this.options)
+  mounted() {
+    this.renderChart(this.chartData, this.options);
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
