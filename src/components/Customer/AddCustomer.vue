@@ -38,8 +38,9 @@
           {{ invoice.date_created }}
         </b-list-group-item>
       </b-list-group>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button class="ml-2" @click="resetForm()">Reset</b-button>
+      <b-row class="w-50" align-h="center" style="margin: 10px auto;"> <b-button type="submit" variant="primary">Submit</b-button>
+      <b-button class="ml-2" variant="danger" @click="resetForm()">Reset</b-button></b-row>
+     
     </b-form>
   </div>
 </template>

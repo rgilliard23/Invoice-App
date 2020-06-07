@@ -38,11 +38,23 @@ body > div {
   background-color: purple;
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  // font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+h4{
+  font-family: Arial, Helvetica, sans-serif;
+}
+.boxShadow {
+  box-shadow: inset 5px 0 9px 0px rgba(0, 0, 0, 0.4) !important;
+  color: black;
+  overflow: hidden;
+}
+.cardShadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 #nav {
@@ -59,13 +71,13 @@ body > div {
   }
 }
 
-#nav a.router-link-active {
-  color: red !important;
-}
+// #nav a.router-link-active {
+//   color: red !important;
+// }
 
 .fullHeight {
   height: 100vh;
-  margin: 0;
-  padding: 0;
+  // margin: 0;
+  // padding: 0;
 }
 </style>

@@ -131,10 +131,8 @@ export default {
           this.data = [];
           if (this.invoicesRevenue !== null) {
             this.data = [];
-            alert(this.invoicesRevenue > 0);
             if (this.invoicesRevenue.length > 0) {
               this.invoicesRevenue.forEach(invoice => {
-                alert(invoice.completed);
                 if (invoice.completed) {
                   this.data.push({ x: invoice.date_due, y: invoice.total });
                   this.revenueTotal += invoice.total;

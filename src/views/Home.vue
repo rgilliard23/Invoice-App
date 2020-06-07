@@ -12,92 +12,86 @@
             style="margin-top: 2vh;"
             border-variant="primary"
             header="Overview"
+            class="cardShadow"
             header-bg-variant="primary"
             header-text-variant="white"
             align="center"
           >
             <b-row align-h="around"
-              ><b-card bg-variant="primary" text-variant="white">
-                <b-col
-                  ><b-row
-                    ><div class="cardText">Total Customers:</div>
-                    <div>{{ customers.length }}</div></b-row
-                  ></b-col
-                ></b-card
+              ><b-card
+                bg-variant="primary"
+                class="cardShadow overviewCard"
+                text-variant="white"
               >
-              <b-card class="productCard" text-variant="white">
-                <b-col
-                  ><b-row
-                    ><div class="cardText">Total Products:</div>
-                    <div>{{ products.length }}</div></b-row
-                  ></b-col
-                ></b-card
+                <b-col class="text-left text-uppercase">
+                  <!-- <b-row>
+                    <div class="cardText">Total Customers:</div>
+                    <div>{{ customers.length }}</div>
+                  </b-row> -->
+                  <b-row align-h="between"
+                    ><div>
+                      <h5 class="overviewCardHeader">Customers</h5>
+                      <h2 class="overviewCardText">{{ customers.length }}</h2>
+                    </div>
+                    <div style="font-size: 4rem;">
+                      <b-icon-people class="font-size: 50px;"></b-icon-people>
+                    </div>
+                  </b-row>
+
+                  <h1 class="float-right"></h1> </b-col
+              ></b-card>
+              <b-card
+                class="productCard overviewCard cardShadow"
+                text-variant="white"
               >
-              <b-card bg-variant="success" text-variant="white">
-                <b-col
-                  ><b-row
-                    ><div class="cardText">Revenue:</div>
-                    <div>${{ invoicesComplete.toLocaleString() }}</div></b-row
-                  ></b-col
-                ></b-card
+                <b-col class="text-left text-uppercase">
+                  <b-row align-h="between"
+                    ><div>
+                      <h5 class="overviewCardHeader">Products</h5>
+                      <h1 class="overviewCardText">{{ products.length }}</h1>
+                    </div>
+                    <div style="font-size: 4rem;">
+                      <b-icon-layers></b-icon-layers>
+                    </div>
+                  </b-row> </b-col
+              ></b-card>
+              <b-card
+                bg-variant="success"
+                class="cardShadow overviewCard"
+                text-variant="white"
               >
-              <b-card bg-variant="danger" text-variant="white">
-                <b-col
-                  ><b-row
-                    ><div class="cardText">Outstanding:</div>
+                <b-col class="text-left text-uppercase">
+                  <b-row align-h="between">
                     <div>
-                      ${{ invoicesOutstanding.toLocaleString() }}
-                    </div></b-row
-                  ></b-col
-                ></b-card
-              ></b-row
-            >
+                      <h5 class="overviewCardHeader">Completed</h5>
+                      <h1 class="overviewCardText">
+                        ${{ invoicesComplete.toLocaleString() }}
+                      </h1>
+                    </div>
+                    <div style="font-size: 4rem;">
+                      <b-icon-check-circle></b-icon-check-circle>
+                    </div>
+                  </b-row> </b-col
+              ></b-card>
+              <b-card
+                bg-variant="danger"
+                class="cardShadow overviewCard"
+                text-variant="white"
+              >
+                <b-col class="text-left text-uppercase">
+                  <b-row align-h="between">
+                    <div>
+                      <h5 class="overviewCardHeader">Outstanding</h5>
+                      <h1 class="overviewCardText">
+                        ${{ invoicesOutstanding.toLocaleString() }}
+                      </h1>
+                    </div>
+                    <div style="font-size: 4rem;">
+                      <b-icon-exclamation-circle></b-icon-exclamation-circle>
+                    </div>
+                  </b-row> </b-col></b-card
+            ></b-row>
           </b-card>
-          <!-- <b-row>
-            <b-col>
-              <b-card
-                border-variant="primary"
-                header="Number Of Customers"
-                header-bg-variant="primary"
-                header-text-variant="white"
-                align="center"
-              >
-                <b-card-text>{{ customers.length }}</b-card-text>
-              </b-card>
-              <b-card
-                border-variant="primary"
-                header="Number Of Invoices"
-                header-bg-variant="primary"
-                header-text-variant="white"
-                align="center"
-              >
-                <b-card-text>{{ invoices.length }}</b-card-text>
-              </b-card></b-col
-            >
-            <b-col>
-              <b-card
-                border-variant="primary"
-                header="Number Of Products"
-                header-bg-variant="primary"
-                header-text-variant="white"
-                align="center"
-              >
-                <b-card-text>{{ products.length }}</b-card-text>
-              </b-card>
-              <b-card
-                border-variant="primary"
-                header="Revenue"
-                header-bg-variant="primary"
-                header-text-variant="white"
-                align="center"
-              >
-                <b-card-text
-                  >Lorem ipsum dolor sit amet, consectetur adipiscing
-                  elit.</b-card-text
-                >
-              </b-card></b-col
-            >
-          </b-row> -->
         </b-col> </b-row
       ><b-card
         style="margin-top: 2vh;"
@@ -105,6 +99,7 @@
         border-variant="primary"
         header-bg-variant="primary"
         header-text-variant="white"
+        class="cardShadow"
         align="center"
         ><b-col>
           <b-select @change="filterRevenueChart($event, false)">
@@ -148,13 +143,13 @@
           ></b-row>
         </b-col>
         <b-row
-          ><b-col col lg="8">
+          ><b-col>
             <RevenueChart
               :invoicesRevenue="invoicesRevenue"
               @revenue="revenueTotal"
               class="revenueChart"
             ></RevenueChart></b-col
-          ><b-col>{{ revenue }}</b-col></b-row
+          ></b-row
         >
       </b-card>
     </b-col>
@@ -320,6 +315,17 @@ export default {
 </script>
 
 <style>
+.overviewCard {
+  width: 23%;
+}
+.overviewCardHeader {
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+.overviewCardText {
+  color: white;
+  text-shadow: horizontal-shadow vertical-shadow blur color;
+}
 .productCard {
   background-color: darkturquoise;
 }
@@ -337,7 +343,7 @@ export default {
   padding: 0;
 }
 .revenueChart {
-  max-width: 30vw;
-  max-height: 50vh;
+  max-width: 100%;
+  max-height: 50%;
 }
 </style>

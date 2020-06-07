@@ -1,5 +1,5 @@
 <template>
-  <div class="noMargin w-100">
+  <div class="noMargin h-100 w-100">
     <b-container fluid class="noMargin">
       <b-navbar style="height:10vh;" type="dark" variant="info">
         <b-navbar-brand>
@@ -154,7 +154,8 @@
         :current-page="currentPage"
         :per-page="perPage"
         borderless
-        sticky-header="60vh"
+        sticky-header="61vh"
+        style="height: 61vh;"
         :fields="invoiceTableFields"
         small
         :items="invoices"
@@ -271,8 +272,7 @@ const invoicePath = "http://localhost:5000/api/invoice";
 const customerPath = "http://localhost:5000/api/customer";
 // const productPath = "http://localhost:5000/api/product";
 const axios = require("axios");
-import InvoiceTemplate from "../components/Invoice/InvoiceTemplate.vue"
-
+import InvoiceTemplate from "../components/Invoice/InvoiceTemplate.vue";
 
 export default {
   name: "InvoiceView",
@@ -298,15 +298,15 @@ export default {
         {
           key: "list",
           label: "Invoices",
-          sortable: true,
-        },
+          sortable: true
+        }
       ],
       customLabels: {
         first: "<<",
         last: ">>",
         previous: "<",
-        next: ">",
-      },
+        next: ">"
+      }
     };
   },
   methods: {
@@ -317,17 +317,17 @@ export default {
         notes: invoice.notes,
         customer_id: invoice.customer.id,
         completed: bool,
-        total: invoice.total,
+        total: invoice.total
       };
 
       axios
         .put(invoicePath + "/" + invoice.id, temp)
-        .then((res) => {
+        .then(res => {
           console.log(res.data);
           alert("Invoice Marked");
           this.getInvoices();
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err.data);
         });
     },
@@ -338,13 +338,13 @@ export default {
     getInvoices() {
       axios
         .get(invoicePath)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           this.invoices = res.data.invoices;
           this.customer = res.data.invoices.customer;
           this.transactions = res.data.invoices.transactions;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -353,34 +353,34 @@ export default {
 
       this.transactions = [];
 
-      this.invoice.transactions.forEach((element) => {
+      this.invoice.transactions.forEach(element => {
         this.transactions.push({
           price: element.product.price,
           name: element.product.name,
-          quantity: element.quantity,
+          quantity: element.quantity
         });
       });
       // this.$refs["viewInvoice"].show();
-      this.$refs['invoice'].show();
+      this.$refs["invoice"].show();
     },
     deleteInvoice(invoice) {
       if (confirm("Are You Sure You Want To Delete This Invoice")) {
         axios
           .delete(invoicePath + "/" + invoice.id)
-          .then((res) => {
+          .then(res => {
             alert("Invoice Deleted");
             console.log(res.data);
             axios
               .get(customerPath + "/" + this.customer.id)
-              .then((res) => {
+              .then(res => {
                 this.customer = res.data.customer;
                 this.invoices = res.data.customer.invoices;
               })
-              .catch((err) => {
+              .catch(err => {
                 console.log(err.data);
               });
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err.data);
           });
       }
@@ -388,26 +388,26 @@ export default {
     editInvoice(invoice) {
       this.invoice = invoice;
       this.$refs["editInvoice"].show();
-    },
+    }
   },
   filters: {
     currency(number) {
       let temp = Number(number.toFixed(2));
       return temp.toLocaleString();
-    },
+    }
   },
   computed: {
     sortOptions() {
       // Create an options list from our fields
       return this.fields
-        .filter((f) => f.sortable)
-        .map((f) => {
+        .filter(f => f.sortable)
+        .map(f => {
           return { text: f.label, value: f.key };
         });
     },
     invoicesComplete() {
       let temp = 0;
-      this.invoices.forEach((element) => {
+      this.invoices.forEach(element => {
         if (element.completed) {
           temp += element.total;
         }
@@ -416,9 +416,9 @@ export default {
     },
     invoicesOutstanding() {
       let temp = 0;
-      this.invoices.forEach((element) => {
+      this.invoices.forEach(element => {
         if (!element.completed) {
-          temp = +element.total;
+          temp += element.total;
         }
       });
       return temp;
@@ -427,21 +427,21 @@ export default {
       return this.invoices.length;
     },
     filterInvoiceList() {
-      return this.invoices.filter((item) => {
+      return this.invoices.filter(item => {
         return this.searchInvoices
           .toLowerCase()
           .split(" ")
           .every(
-            (v) => item.customer.name.toLowerCase().includes(v)
+            v => item.customer.name.toLowerCase().includes(v)
             // item.date_cue.toLowerCase().includes(v)
             // item.customer.name.toLowerCase().includes(v);
           );
       });
-    },
+    }
   },
   created() {
     this.getInvoices();
-  },
+  }
 };
 </script>
 

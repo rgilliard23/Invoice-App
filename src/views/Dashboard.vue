@@ -1,84 +1,44 @@
 <template>
   <div>
-    <b-container style="margin: 0; padding: 0;" class="w-100" fluid>
+    <b-container style="margin: 0; padding: 0;" class="w-100 sidebar" fluid>
       <b-row style="margin: 0; padding: 0;">
-        <b-col col lg="3" class="w-100 fullHeight m-0 p-0" variant="dark">
-          <b-nav
-            fill
-            pills
-            onmouseover="toggleSidebar()"
-            type="light"
-            style="margin: 0; padding: 0;"
-            vertical
-            class="w-100 fullHeight bg-dark"
-          >
-            <b-nav-item class="profile">
+        <b-col col sm="3" class="w-100 shadow bg-dark fullHeight">
+          <b-nav fill type="light" vertical class="w-100 fullHeight bg-dark">
+            <b-nav-item class="navLogo">
               <h1>Invoice App</h1>
             </b-nav-item>
-            <hr class="w-75 brandLine" />
-            <b-nav-item class="">
-              <h3 class="text-primary">
-                <b-row class=" w-100 m-auto" align-h="center">
-                  <span class="marginNavItems">
-                    <b-icon-house></b-icon-house>
-                  </span>
-                  <li
-                    :class="[
-                      currentPage.includes('dashboard') ? activeClass : ''
-                    ]"
-                  >
-                    <router-link class="noMargin link text-light" to="/home">
-                      Home</router-link
-                    >
-                  </li>
-                </b-row>
-
-                <!-- <span>Invoice</span> -->
-              </h3>
+            <hr class="brandLine" />
+            <b-nav-item class="sideBarItem text-left " exact to="/home">
+              <h4><b-icon-house class="icon"></b-icon-house>Home</h4>
             </b-nav-item>
-            <b-nav-item class="">
-              <h3 class="text-primary">
-                <span>
-                  <span><b-icon-people></b-icon-people></span>
-                </span>
-                <router-link class="noMargin link text-light" to="/customer">
-                  Customers</router-link
-                >
-                <!-- <span>Invoice</span> -->
-              </h3>
+            <b-nav-item class="sideBarItem text-left" exact to="/customer">
+              <h4><b-icon-people class="icon"></b-icon-people>Customers</h4>
             </b-nav-item>
-            <b-nav-item class="">
-              <h3 class="text-primary">
-                <b-row class=" w-100 m-auto" align-h="center">
-                  <span class="marginNavItems">
-                    <b-icon-layers></b-icon-layers>
-                  </span>
-                  <router-link class="noMargin link text-light" to="/product">
-                    Products
-                  </router-link>
-                </b-row>
-                <!-- <span>Invoice</span> -->
-              </h3>
+            <b-nav-item class="sideBarItem text-left" exact to="/product">
+              <h4><b-icon-layers class="icon"></b-icon-layers>Products</h4>
             </b-nav-item>
-            <b-nav-item class="">
-              <h3 class="text-primary">
-                <b-row class=" w-100 m-auto" align-h="center">
-                  <span class="marginNavItems">
-                    <b-icon-archive-fill></b-icon-archive-fill>
-                  </span>
+            <!-- <b-nav-item to="/" class="">
+              <h3>
                   <router-link class="link text-light" to="/">
+                    <span class="marginNavItems">
+                      <b-icon-archive-fill></b-icon-archive-fill>
+                    </span>
                     Invoices</router-link
                   >
-                </b-row>
               </h3>
+               <b-icon-archive-fill></b-icon-archive-fill>
+            </b-nav-item> -->
+
+            <b-nav-item to="/" class="sideBarItem text-left" exact>
+              <h4>
+                <b-icon-archive-fill class="icon"></b-icon-archive-fill>
+                Invoices
+              </h4>
             </b-nav-item>
           </b-nav>
         </b-col>
-        <b-col col lg="9" class="clear fullHeight">
-          <!-- <keep-alive>
-            <component v-bind:is="currentTabComponent" />
-          </keep-alive> -->
-          <router-view class="overflow-scroll"></router-view>
+        <b-col col sm="9" class=" m-0 p-0 fullHeight">
+          <router-view class=" overflow-scroll"></router-view>
         </b-col>
       </b-row>
     </b-container>
@@ -102,7 +62,7 @@ export default {
   },
   data: function() {
     return {
-      activeClass: "active"
+      // activeClass: "active"
     };
   },
   computed: {
@@ -119,33 +79,57 @@ export default {
 </script>
 
 <style scoped>
+.boxShadow {
+  box-shadow: inset 5px 0 9px 0px rgba(0, 0, 0, 0.4) !important;
+  color: black;
+  overflow: hidden;
+}
 .brandLine {
+  width: 80%;
   border: 1px solid white;
 }
-
-.listRow {
-  width: 45%;
-}
-/* a.router-link-active {
-  border-left-color: orange;
-  color: red;
-} */
-.noMargin {
-  margin: 0;
-  padding: 0;
-}
-.marginNavItems {
-  margin: 0 5px;
-}
-.active{
-  color: red !important;
+.active {
+  /* background: white; */
+  /* color: red !important; */
+  /* margin: auto; */
+  /* width: 90%; */
+  /* border-radius: 12%/50% !important; */
+  color: white !important;
+  background: #6f42c1 !important;
 }
 .profile {
   margin-top: 1vh;
   height: 8vh;
   max-height: 8vh;
 }
-.sidebarItems {
+.sideBarItem > a {
+  /* border-radius: 12%/50% !important; */
+  border-radius: 6%/30%;
+  width: 100%;
+  color: white !important;
+}
+.sideBarItem > a :hover {
+  /* border-radius: 12%/50% !important; */
+  /* border-radius: 5%/40%; */
+  background: transparent;
+  color: white !important;
+}
+.sideBarItem > a > h4 :hover {
+  color: white !important;
+}
+.sideBarItem {
+  margin: 1vh 0;
+}
+.sideBarItem :hover {
+  color: white !important;
+  background: rgba(111, 66, 193, 0.4);
+}
+.icon {
+  margin-right: 10px;
+  color: rgba(255, 255, 255, 0.616);
+}
+
+/* .sideBarItems {
   height: 15vh;
   padding: 3vh;
   color: white;
@@ -153,8 +137,8 @@ export default {
 .sidebarItems:hover {
   background: #495057;
   color: #17a2b8;
-}
-.link:hover {
+} */
+/* .link:hover {
   text-decoration: none;
-}
+} */
 </style>

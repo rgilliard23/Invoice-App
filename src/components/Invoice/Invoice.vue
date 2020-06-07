@@ -1,6 +1,6 @@
 <template>
   <div class="clear">
-    <b-container class="clear fullHeight" fluid>
+    <b-container class="clear m-0 p-0 fullHeight" fluid>
       <b-navbar
         style="height:10vh;"
         class="clear"
@@ -135,6 +135,7 @@
           </b-form-group>
         </b-col>
         <b-pagination
+        class="w-100"
           v-model="currentPage"
           :total-rows="rows"
           :per-page="perPage"
