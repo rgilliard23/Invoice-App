@@ -44,7 +44,7 @@
         <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
       </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button class="ml-2" @click="resetForm()">Reset</b-button>
+      <b-button variant="danger" class="ml-2" @click="resetForm()">Reset</b-button>
     </b-form>
   </div>
 </template>

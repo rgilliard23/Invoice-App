@@ -264,6 +264,15 @@
         />
       </keep-alive>
     </b-modal>
+    <b-modal hide-footer size="xl" ref="editInvoice">
+      <keep-alive>
+        <Invoice
+          v-bind:invoiceCustomer="customer"
+          v-bind:edit="true"
+          v-bind:invoice="invoice"
+        />
+      </keep-alive>
+    </b-modal>
   </div>
 </template>
 
@@ -273,11 +282,12 @@ const customerPath = "http://localhost:5000/api/customer";
 // const productPath = "http://localhost:5000/api/product";
 const axios = require("axios");
 import InvoiceTemplate from "../components/Invoice/InvoiceTemplate.vue";
-
+import Invoice from "../components/Invoice/Invoice"
 export default {
   name: "InvoiceView",
   components: {
-    InvoiceTemplate
+    InvoiceTemplate,
+    Invoice
   },
   data: function() {
     return {
@@ -387,6 +397,7 @@ export default {
     },
     editInvoice(invoice) {
       this.invoice = invoice;
+      this.customer = invoice.customer;
       this.$refs["editInvoice"].show();
     }
   },

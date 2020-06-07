@@ -1,21 +1,26 @@
 <template>
   <div class="bg-light">
     <b-container class="clear m-0 p-0 fullHeight" fluid>
-      <b-navbar style="height:10vh;" type="dark" variant="info">
+      <b-navbar
+        style="height:10vh;"
+        class="navigation"
+        type="dark"
+        variant="info"
+      >
         <b-navbar-brand>
           <h1>Customers</h1>
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <b-input
-              class="navButtonMargin"
+              class="navButtonMargin navLinks"
               type="text"
               v-model="searchCustomer"
               placeholder="Search"
             ></b-input>
             <b-button
               @click="showCustomer(null, false)"
-              class="margin navButtonMargin"
+              class="margin navLinks navButtonMargin"
               size="lg"
               variant="success"
               >Add Customer</b-button
@@ -87,7 +92,7 @@
       >
         <keep-alive>
           <ViewCustomer
-            @invoiceDeleted="getInvoice"
+            @invoiceDeleted="getCustomer"
             v-bind:customer="customer"
           />
         </keep-alive>
@@ -157,6 +162,16 @@ export default {
           console.error(error);
         });
     },
+    getCustomer() {
+      axios
+        .get(path + "/" + this.customer.id)
+        .then(res => {
+          this.customer = res.data.customer;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     submitCustomer(edit) {
       this.edit = edit;
       if (this.edit) {
@@ -223,8 +238,40 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .navButtonMargin {
   margin: 0 5px;
+}
+.navLinks {
+  width: 45%;
+  font-size: 20px;
+}
+.navigation {
+  height: 25vh;
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .navLinks {
+    width: 45%;
+    font-size: 20px;
+  }
+
+}
+
+@media (min-width: 576px) and (max-width:767px) {
+  .navLinks {
+    width: 45%;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 200px)  and (max-width: 575px){
+   .navLinks {
+    width: 45%;
+    font-size: 12px;
+  }
+  .navButtonMargin {
+  margin: 0px;
+}
 }
 </style>

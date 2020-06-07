@@ -31,7 +31,8 @@
 
             <b-nav-item to="/" class="sideBarItem text-left" exact>
               <h4>
-                <b-icon-archive-fill class="icon"></b-icon-archive-fill>
+                <span><b-icon-archive-fill class="icon"></b-icon-archive-fill></span>
+                
                 Invoices
               </h4>
             </b-nav-item>

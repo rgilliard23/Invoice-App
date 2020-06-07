@@ -1,7 +1,7 @@
 <template>
   <div class="bg-light">
     <b-container class="clear m-0 p-0 fullHeight" fluid>
-      <b-navbar style="height:10vh;" type="dark" variant="info">
+      <b-navbar class="navigation" type="dark" variant="info">
         <b-navbar-brand>
           <h1>Products</h1>
         </b-navbar-brand>
@@ -9,14 +9,15 @@
           <b-nav-form>
             <b-input
               type="text"
-              class="navButtonMargin"
+              style="width: 45%"
+              class="margin navButtonMargin navLinks"
               v-model="searchProduct"
               placeholder="Search"
             ></b-input>
             <b-button
               @click="addProduct(null, false)"
               addProduct
-              class="navButtonMargin"
+              class="navButtonMargin navLinks"
               size="lg"
               variant="success"
               >Add Product</b-button
@@ -216,8 +217,42 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .navButtonMargin {
   margin: 0 5px;
+}
+.navLinks {
+  width: 45%;
+  font-size: 20px;
+}
+.navigation {
+  height: 10vh;
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .navLinks {
+    width: 45%;
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .navLinks {
+    width: 46%;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 575px) {
+  .navigation {
+    height: 15vh;
+  }
+  .navLinks {
+    width: 45%;
+    font-size: 12px;
+  }
+  .navButtonMargin {
+    margin: 0px;
+  }
 }
 </style>

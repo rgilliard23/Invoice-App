@@ -130,11 +130,12 @@ class TransactionSchema(ma.Schema):
 class InvoiceSchema(ma.Schema):
     transactions = fields.Nested(
         lambda: TransactionSchema(many=True, exclude=("invoice",)))
-    customer = fields.Nested(lambda: CustomerSchema(only=("name", "address","id")))
+    customer = fields.Nested(lambda: CustomerSchema(
+        only=("name", "address", "id")))
 
     class Meta:
         fields = ("id", "date_due", "notes", "date_created",
-                  "transactions", "total", "customer","completed")
+                  "transactions", "total", "customer", "completed")
 
 
 class CustomerSchema(ma.Schema):
@@ -325,9 +326,10 @@ def add_Transaction():
 
     return jsonify({'transaction': 'New Transaction Created'})
 
-@app.route('/api/transaction', methods = ['GET'])
+
+@app.route('/api/transaction', methods=['GET'])
 def get_Transaction():
-    transactions = Transaction.query.all() 
+    transactions = Transaction.query.all()
     print(transactions)
     result = transactionsSchema.dump(transactions)
 

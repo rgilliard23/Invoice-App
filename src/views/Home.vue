@@ -291,7 +291,7 @@ export default {
       let temp = 0;
       this.invoices.forEach(element => {
         if (!element.completed) {
-          temp = +element.total;
+          temp += element.total;
         }
       });
       return temp;
