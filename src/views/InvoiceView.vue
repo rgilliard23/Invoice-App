@@ -131,8 +131,8 @@
               </b-input-group>
             </b-form-group>
           </b-row> -->
-          <v-container fluid>
-            <v-row>
+          <!-- <v-container fluid>
+            <v-row class="justify-space-around">
               <v-autocomplete
                 v-model="customer"
                 :items="customersFiltered"
@@ -140,8 +140,7 @@
                 cache-items
                 item-value="name"
                 item-text="name"
-                class="mx-4"
-                width="25%;"
+                class="mx-2 filterItems"
                 return-object
                 hide-no-data
                 hide-details
@@ -150,20 +149,69 @@
                 outlined
                 rounded
               ></v-autocomplete>
-             <v-select clearable placeholder="All Statuses" :items="status" label="Status"  outlined rounded></v-select>
+              <v-select
+                clearable
+                placeholder="All Statuses"
+                :items="status"
+                label="Status"
+                outlined
+                class="filterItems"
+                rounded
+              ></v-select>
+
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="fromDate"
+                    label="From"
+                    append-icon="mdi-calendar"
+                    v-on="on"
+                    class="filterItems mx-2"
+                    outlined
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="fromDate" scrollable> </v-date-picker>
+              </v-menu>
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                class="filterItems"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    clearable
+                    v-model="toDate"
+                    label="To"
+                    append-icon="mdi-calendar"
+                    v-on="on"
+                    class="filterItems mx-2"
+                    outlined
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="toDate" scrollable> </v-date-picker>
+              </v-menu>
             </v-row>
-          </v-container>
+          </v-container> -->
         </b-col>
       </b-row>
 
-      <b-pagination
+      <!-- <b-pagination
         v-model="currentPage"
         :total-rows="rows"
         :per-page="perPage"
         align="fill"
         aria-controls="my-table"
-      ></b-pagination>
-      <b-table
+      ></b-pagination> -->
+      <!-- <b-table
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
         :filter="filter"
@@ -231,12 +279,115 @@
                   >Delete</b-dropdown-item
                 >
               </b-dropdown-group>
-              <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
-            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
             </b-dropdown>
           </div>
         </template>
-      </b-table>
+      </b-table> -->
+      <v-card elevation="0">
+        <v-card-title class="p-0">
+          <v-container class="my-0 px-4" fluid>
+            <v-row class="justify-space-around cardTitle">
+              <v-autocomplete
+                v-model="customer"
+                :items="customersFiltered"
+                :search-input.sync="searchCustomers"
+                cache-items
+                item-value="name"
+                item-text="name"
+                class="mx-2 filterItems"
+                return-object
+                hide-no-data
+                hide-details
+                label="Search For Customer"
+                justify="between"
+                outlined
+                rounded
+              ></v-autocomplete>
+              <v-select
+                clearable
+                placeholder="All Statuses"
+                :items="status"
+                label="Status"
+                outlined
+                class="filterItems"
+                rounded
+              ></v-select>
+
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="fromDate"
+                    label="From"
+                    append-icon="mdi-calendar"
+                    v-on="on"
+                    class="filterItems mx-2"
+                    outlined
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="fromDate" scrollable> </v-date-picker>
+              </v-menu>
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                class="filterItems"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    clearable
+                    v-model="toDate"
+                    label="To"
+                    append-icon="mdi-calendar"
+                    v-on="on"
+                    class="filterItems mx-2"
+                    outlined
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="toDate" scrollable> </v-date-picker>
+              </v-menu>
+            </v-row>
+          </v-container>
+          <v-spacer></v-spacer>
+        </v-card-title>
+        <v-data-table
+          :headers="tableHeaders"
+          :items="invoices"
+          :search="searchInvoices"
+        >
+          <template v-slot:item.actions="{ item }">
+            <div>
+              <v-icon small class="mr-2" @click="editInvoice(item)">
+                mdi-pencil
+              </v-icon>
+              <v-icon small @click="deleteInvoice(item)">
+                mdi-delete
+              </v-icon>
+            </div>
+          </template>
+          <template v-slot:item.completed="{ item }">
+            <div>
+              <v-btn
+                v-if="!item.completed"
+                readonly
+                style="width: 40%;"
+                color="error"
+                >Unpaid</v-btn
+              >
+              <v-btn color="success" readonly style="width: 40%;" v-else
+                >Completed</v-btn
+              >
+            </div>
+          </template>
+        </v-data-table>
+      </v-card>
     </b-container>
     <b-modal title="Invoice" hide-footer size="xl" ref="invoice">
       <keep-alive>
@@ -281,6 +432,8 @@ export default {
       transactions: [],
       totalRows: 1,
       filter: null,
+      fromDate: "",
+      toDate: "",
       perPage: 6,
       sortBy: "",
       sortDesc: false,
@@ -290,6 +443,18 @@ export default {
       customersFiltered: [],
       currentPage: 1,
       pageOfItems: [],
+      tableHeaders: [
+        { text: "Id", value: "id", sortable: true },
+        { text: "Status", value: "completed", sortable: true },
+        {
+          text: "Due",
+          sortable: true,
+          value: "date_due",
+        },
+
+        { text: "Created", value: "date_created" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
       invoiceTableFields: [
         { key: "status", label: "Status" },
         { key: "date_due", label: "Due", formatter: {} },
@@ -305,7 +470,7 @@ export default {
         },
         { key: "actions", label: "Actions" },
       ],
-      status: ['Completed','Overdue'],
+      status: ["Completed", "Unpaid"],
       customLabels: {
         first: "<<",
         last: ">>",
@@ -479,6 +644,13 @@ export default {
 </script>
 
 <style scoped>
+.cardTitle{
+  padding: 0 !important;
+}
+.filterItems {
+  max-width: 24% !important;
+  min-width: 5% !important;
+}
 .overviewCardHeader {
   font-family: Arial, Helvetica, sans-serif;
   color: rgba(255, 255, 255, 0.87) !important;
