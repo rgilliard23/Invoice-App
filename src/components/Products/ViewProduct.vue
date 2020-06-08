@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow: scroll; height: 100vh;">
     <b-form>
       <b-col class="w-100 m-auto"
         ><b-row class="w-100">

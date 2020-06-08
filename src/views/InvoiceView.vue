@@ -1,5 +1,5 @@
 <template>
-  <div class="noMargin h-100 w-100">
+  <div class="noMargin w-100" style="height: 100vh; overflow: hidden;">
     <b-container fluid class="noMargin">
       <b-navbar style="height:10vh;" type="dark" variant="info">
         <b-navbar-brand>
@@ -71,7 +71,7 @@
               </b-card>
             </b-col>
           </b-row>
-          <b-input-group style="margin-top: 1vh;">
+          <!-- <b-input-group style="margin-top: 1vh;">
             <b-input
               class="columnItem"
               v-model="filter"
@@ -91,7 +91,6 @@
               class="mb-0"
             >
               <b-form-select v-model="perPage" id="perPageSelect" size="sm">
-                <!-- These options will appear after the ones from 'options' prop -->
                 <b-form-select-option value="5">5</b-form-select-option>
                 <b-form-select-option value="10">10</b-form-select-option>
                 <b-form-select-option value="15"
@@ -99,20 +98,6 @@
                 ></b-form-select
               >
             </b-form-group>
-            <b-input-group>
-
-              <b-form-input></b-form-input>
-
-              <template v-slot:append>
-                <b-dropdown
-                  text="Dropdown"
-                  variant="none"
-                >
-                  <b-dropdown-item>Action C</b-dropdown-item>
-                  <b-dropdown-item>Action D</b-dropdown-item>
-                </b-dropdown>
-              </template>
-            </b-input-group>
             <b-form-group
               label="Sort"
               label-cols-sm="3"
@@ -145,7 +130,29 @@
                 </b-form-select>
               </b-input-group>
             </b-form-group>
-          </b-row>
+          </b-row> -->
+          <v-container fluid>
+            <v-row>
+              <v-autocomplete
+                v-model="customer"
+                :items="customersFiltered"
+                :search-input.sync="searchCustomers"
+                cache-items
+                item-value="name"
+                item-text="name"
+                class="mx-4"
+                width="25%;"
+                return-object
+                hide-no-data
+                hide-details
+                label="Search For Customer"
+                justify="between"
+                outlined
+                rounded
+              ></v-autocomplete>
+             <v-select clearable placeholder="All Statuses" :items="status" label="Status"  outlined rounded></v-select>
+            </v-row>
+          </v-container>
         </b-col>
       </b-row>
 
@@ -171,10 +178,8 @@
       >
         <template v-slot:cell(status)="data">
           <div>
-            <b-button variant="danger" v-if="!data.item.completed"
-              >Overdue</b-button
-            >
-            <b-button variant="success" v-else>Completed</b-button>
+            <v-btn v-if="!data.item.completed" color="error">Overdue</v-btn>
+            <v-btn color="success" v-else>Completed</v-btn>
           </div>
         </template>
         <template v-slot:cell(date_due)="data">
@@ -272,6 +277,7 @@ export default {
       invoices: [],
       invoice: [],
       searchInvoices: "",
+      searchCustomers: "",
       transactions: [],
       totalRows: 1,
       filter: null,
@@ -280,6 +286,8 @@ export default {
       sortDesc: false,
       sortDirection: "asc",
       customer: {},
+      customers: [],
+      customersFiltered: [],
       currentPage: 1,
       pageOfItems: [],
       invoiceTableFields: [
@@ -297,6 +305,7 @@ export default {
         },
         { key: "actions", label: "Actions" },
       ],
+      status: ['Completed','Overdue'],
       customLabels: {
         first: "<<",
         last: ">>",
@@ -306,6 +315,27 @@ export default {
     };
   },
   methods: {
+    getCustomers() {
+      axios
+        .get(customerPath)
+        .then((res) => {
+          this.customers = res.data.customers;
+          this.customersFiltered = this.customers;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    querySelections(v) {
+      // Simulated ajax query
+      setTimeout(() => {
+        this.customersFiltered = this.customers.filter((e) => {
+          return (
+            (e.name || "").toLowerCase().indexOf((v || "").toLowerCase()) > -1
+          );
+        });
+      }, 100);
+    },
     markInvoice(bool, invoice) {
       let temp = {
         date_created: invoice.date_created,
@@ -436,8 +466,14 @@ export default {
       });
     },
   },
+  watch: {
+    searchCustomers(val) {
+      val && val !== this.select && this.querySelections(val);
+    },
+  },
   created() {
     this.getInvoices();
+    this.getCustomers();
   },
 };
 </script>

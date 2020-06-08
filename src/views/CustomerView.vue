@@ -1,6 +1,10 @@
 <template>
   <div class="bg-light">
-    <b-container class="clear m-0 p-0 fullHeight" fluid>
+    <b-container
+      class="clear m-0 p-0"
+      style="height: 100vh; overflow: hidden;"
+      fluid
+    >
       <b-navbar
         style="height:10vh;"
         class="navigation"
@@ -12,24 +16,68 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-input
-              class="navButtonMargin navLinks"
-              type="text"
-              v-model="searchCustomer"
-              placeholder="Search"
-            ></b-input>
-            <b-button
+            <v-col align="center">
+              <v-row>
+                <!-- <v-text-field
+                  class="navSearch"
+                  label="Search"
+                  v-model="searchCustomer"
+                  solo
+                  hide-details
+                ></v-text-field> -->
+                <v-btn
+                  @click="showCustomer(null, false)"
+                  class="navLinks navButton navButtonMargin"
+                  block
+                  color="success"
+                  >Add Customer
+                </v-btn>
+              </v-row>
+            </v-col>
+
+            <!-- <b-button
               @click="showCustomer(null, false)"
               class="margin navLinks navButtonMargin"
               size="lg"
               variant="success"
               >Add Customer</b-button
-            >
+            > -->
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
+      <v-column style="height: 90vh">
+        <v-card style="height: 90vh; overflow: auto;">
+          <v-flexs style="overflow: auto;" class="w-100">
+            <v-card-title>
+              <v-text-field
+                v-model="searchCustomer"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-title>
+            <v-data-table
+              :headers="tableHeaders"
+              :items="customers"
+              :search="searchCustomer"
+            >
+              <template v-slot:item.actions="{ item }">
+                <div>
+                  <v-icon small class="mr-2" @click="showCustomer(item, true)">
+                    mdi-pencil
+                  </v-icon>
+                  <v-icon small @click="deleteCustomer(item)">
+                    mdi-delete
+                  </v-icon>
+                </div>
+              </template>
+            </v-data-table>
+          </v-flexs>
+        </v-card>
+      </v-column>
 
-      <b-table fixed :fields="customerFields" :items="filterCustomerList">
+      <!-- <b-table fixed :fields="customerFields" :items="filterCustomerList">
         <template v-slot:cell(actions)="data">
           <b-dropdown
             v-b-popover.hover.top="'Actions'"
@@ -53,22 +101,10 @@
                 >Delete</b-dropdown-item
               >
             </b-dropdown-group>
-            <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
-            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
           </b-dropdown>
         </template>
-        <!-- <template v-slot:custom-foot v-if="filterCustomerList == 0">
-          <tr>
-            <td></td>
-            <td>
-              <h1>No Data</h1>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        </template> -->
       </b-table>
-      <div v-if="filterCustomerList == 0"><h1>No Data</h1></div>
+      <div v-if="filterCustomerList == 0"><h1>No Data</h1></div> -->
       <b-modal
         hide-footer
         centered
@@ -130,6 +166,16 @@ export default {
         buttons: ["Yes", "No", "Cancel"],
         message: "Do you really want to quit?",
       },
+      tableHeaders: [
+        { text: "Id", value: "id" },
+        {
+          text: "Name",
+          sortable: false,
+          value: "name",
+        },
+        { text: "Address", value: "address" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
       customerFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
@@ -244,32 +290,56 @@ export default {
 .navButtonMargin {
   margin: 0 5px;
 }
+.v-input__slot {
+  min-height: unset;
+  min-width: unset;
+  width: 25%;
+  height: 5vh;
+}
+
 .navLinks {
   width: 45%;
   font-size: 20px;
 }
+.navSearch {
+  width: 45%;
+  min-width: 5px !important;
+}
+.navButton {
+  min-width: 2vh;
+  padding: 0;
+  font-size: 14px;
+  height: 4.7vh;
+  min-height: 4.7vh;
+}
+.v-text-field.v-text-field--enclosed .v-text-field__details,
+.v-text-field.v-text-field--enclosed > .v-input__control > .v-input__slot {
+  margin: 0;
+  min-height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+}
 .navigation {
   height: 25vh;
 }
-
 @media (min-width: 768px) and (max-width: 992px) {
   .navLinks {
     width: 45%;
-    font-size: 18px;
+    /* font-size: 18px; */
   }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
   .navLinks {
     width: 45%;
-    font-size: 16px;
+    /* font-size: 16px; */
   }
 }
 
 @media (min-width: 200px) and (max-width: 575px) {
   .navLinks {
     width: 100%;
-    font-size: 12px;
+    /* font-size: 12px; */
   }
   .navButtonMargin {
     margin: 0px;

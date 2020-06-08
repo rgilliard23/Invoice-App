@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-light">
-    <b-container class="clear m-0 p-0 fullHeight" fluid>
+  <div class="bg-light" style="height: 100vh; overflow: hidden;">
+    <b-container class="clear m-0 p-0" fluid>
       <b-navbar class="navigation" type="dark" variant="info">
         <b-navbar-brand>
           <h1>Products</h1>

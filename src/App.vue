@@ -1,24 +1,29 @@
 <template>
-  <div id="app">
+  <div id="app" style="height: 100vh; overflow: hidden;">
+    <v-app class="h-100"><Dashboard /></v-app>
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div>
     <router-view/> -->
-    <Dashboard />
   </div>
 </template>
 
 <script>
 import Dashboard from "/Users/ronaldgilliard/invoice-app-electron/src/views/Dashboard.vue";
+
 export default {
   name: "App",
+
   components: {
-    Dashboard
-  }
+    Dashboard,
+  },
+
+  data: () => ({
+    //
+  }),
 };
 </script>
-
 <style lang="scss">
 @import "~bootstrap/scss/bootstrap.scss";
 @import "~bootstrap-vue/dist/bootstrap-vue.css";
@@ -45,7 +50,7 @@ body > div {
   text-align: center;
   color: #2c3e50;
 }
-h4{
+h4 {
   font-family: Arial, Helvetica, sans-serif;
 }
 .boxShadow {

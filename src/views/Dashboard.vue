@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-container style="margin: 0; padding: 0;" class="w-100 sidebar" fluid>
-      <b-row style="margin: 0; padding: 0;">
-        <b-col col sm="3" class="w-100 shadow bg-dark fullHeight">
-          <b-nav fill type="light" vertical class="w-100 fullHeight bg-dark">
+    <b-container style="margin: 0; padding: 0;" class="w-100 m-0 p-0 h-100 sidebar" fluid>
+      <b-row class="h-100" style="margin: 0; padding: 0;">
+        <b-col col sm="3" class="w-100 h-100 shadow bg-dark fullHeight">
+          <b-nav fill type="light" vertical class="w-100 h-100 bg-dark">
             <b-nav-item class="navLogo">
               <h1>Invoice App</h1>
             </b-nav-item>
@@ -38,8 +38,8 @@
             </b-nav-item>
           </b-nav>
         </b-col>
-        <b-col col sm="9" class=" m-0 p-0 fullHeight">
-          <router-view class=" overflow-scroll"></router-view>
+        <b-col col sm="9" class=" m-0 p-0 h-100">
+          <router-view class="fullHeight overflow-scroll"></router-view>
         </b-col>
       </b-row>
     </b-container>

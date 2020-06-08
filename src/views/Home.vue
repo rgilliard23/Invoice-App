@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-light h-100">
+  <div class="bg-light" style="height:100vh; overflow: auto;">
     <b-navbar style="height:10vh;" type="dark" variant="info">
       <b-navbar-brand class="text-center">
         <h1>Home</h1>
       </b-navbar-brand>
     </b-navbar>
     <b-col>
-      <b-row class="noMargin w-100" align-h="between">
+      <b-row class="noMargin w-100 h-100" align-h="between">
         <b-col>
           <b-card
             style="margin-top: 2vh;"
@@ -344,6 +344,6 @@ export default {
 }
 .revenueChart {
   max-width: 100%;
-  max-height: 50%;
+  max-height: 40%;
 }
 </style>
