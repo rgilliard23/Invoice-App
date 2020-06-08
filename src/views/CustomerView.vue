@@ -32,6 +32,7 @@
       <b-table fixed :fields="customerFields" :items="filterCustomerList">
         <template v-slot:cell(actions)="data">
           <b-dropdown
+            v-b-popover.hover.top="'Actions'"
             variant="primary"
             no-caret
             id="dropdown-1"
@@ -71,6 +72,7 @@
       <b-modal
         hide-footer
         centered
+        size="lg"
         :title="modalName"
         ref="addCustomer"
         id="addCustomer"
@@ -87,7 +89,7 @@
         centered
         hide-footer
         size="lg"
-        :title="customer.name"
+        title="Customer Details"
         ref="viewCustomer"
       >
         <keep-alive>
@@ -112,7 +114,7 @@ export default {
   name: "CustomerView",
   components: {
     AddCustomer,
-    ViewCustomer
+    ViewCustomer,
   },
   data: function() {
     return {
@@ -122,18 +124,18 @@ export default {
       customer: {
         id: 0,
         name: "",
-        address: ""
+        address: "",
       },
       options: {
         buttons: ["Yes", "No", "Cancel"],
-        message: "Do you really want to quit?"
+        message: "Do you really want to quit?",
       },
       customerFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
         { key: "address", label: "Address" },
-        { key: "actions", label: "" }
-      ]
+        { key: "actions", label: "Actions" },
+      ],
     };
   },
   methods: {
@@ -154,10 +156,10 @@ export default {
     getCustomers() {
       axios
         .get(path)
-        .then(res => {
+        .then((res) => {
           this.customers = res.data.customers;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -165,10 +167,10 @@ export default {
     getCustomer() {
       axios
         .get(path + "/" + this.customer.id)
-        .then(res => {
+        .then((res) => {
           this.customer = res.data.customer;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -177,21 +179,21 @@ export default {
       if (this.edit) {
         axios
           .put(path + "/" + this.customer.id, this.customer)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.data);
           });
         this.edit = false;
       } else {
         axios
           .post(path, this.customer)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error.data);
           });
         console.log("Submitted Product");
@@ -205,15 +207,15 @@ export default {
       if (confirm("Do you really want to delete?")) {
         axios
           .delete(path + "/" + customer.id)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.data);
           });
       }
-    }
+    },
   },
   //* Calls function on load
   created() {
@@ -227,14 +229,14 @@ export default {
       return "Add Customer";
     },
     filterCustomerList() {
-      return this.customers.filter(item => {
+      return this.customers.filter((item) => {
         return this.searchCustomer
           .toLowerCase()
           .split(" ")
-          .every(v => item.name.toLowerCase().includes(v));
+          .every((v) => item.name.toLowerCase().includes(v));
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -253,25 +255,24 @@ export default {
 @media (min-width: 768px) and (max-width: 992px) {
   .navLinks {
     width: 45%;
-    font-size: 20px;
+    font-size: 18px;
   }
-
 }
 
-@media (min-width: 576px) and (max-width:767px) {
+@media (min-width: 576px) and (max-width: 767px) {
   .navLinks {
     width: 45%;
     font-size: 16px;
   }
 }
 
-@media (min-width: 200px)  and (max-width: 575px){
-   .navLinks {
-    width: 45%;
+@media (min-width: 200px) and (max-width: 575px) {
+  .navLinks {
+    width: 100%;
     font-size: 12px;
   }
   .navButtonMargin {
-  margin: 0px;
-}
+    margin: 0px;
+  }
 }
 </style>

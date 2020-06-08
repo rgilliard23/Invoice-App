@@ -28,6 +28,7 @@
       <b-table fixed :fields="productFields" :items="filterProductList">
         <template v-slot:cell(actions)="data">
           <b-dropdown
+            v-b-popover.hover.top="'Actions'"
             variant="primary"
             no-caret
             id="dropdown-1"
@@ -66,7 +67,7 @@
       <div v-if="filterProductList == 0"><h1>No Data</h1></div>
       <b-modal
         hide-footer
-        title="View Product"
+        title="Product Details"
         centered
         ref="viewProduct"
         size="md"
@@ -105,7 +106,7 @@ export default {
   components: {
     AddProduct,
     ViewProduct,
-    BIconThreeDotsVertical
+    BIconThreeDotsVertical,
   },
   data: function() {
     return {
@@ -116,14 +117,14 @@ export default {
         id: 0,
         name: "",
         price: 0,
-        description: ""
+        description: "",
       },
       productFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
         { key: "price", label: "Price" },
-        { key: "actions", label: "" }
-      ]
+        { key: "actions", label: "Actions" },
+      ],
     };
   },
   methods: {
@@ -139,10 +140,10 @@ export default {
     getProducts() {
       axios
         .get(path)
-        .then(res => {
+        .then((res) => {
           this.products = res.data.products;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -151,10 +152,10 @@ export default {
       if (this.edit) {
         axios
           .put(path + "/" + this.product.id, this.product)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error.data);
           });
         this.$emit("currentTab", "Product");
@@ -163,10 +164,10 @@ export default {
       } else {
         axios
           .post(path, this.product)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error.data);
           });
         this.$emit("currentTab", "Product");
@@ -185,23 +186,23 @@ export default {
       if (confirm("Are You Sure You Want To Delete This Product")) {
         axios
           .delete(path + "/" + product.id)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
             this.getProducts();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error.data);
           });
       }
-    }
+    },
   },
   computed: {
     filterProductList() {
-      return this.products.filter(item => {
+      return this.products.filter((item) => {
         return this.searchProduct
           .toLowerCase()
           .split(" ")
-          .every(v => item.name.toLowerCase().includes(v));
+          .every((v) => item.name.toLowerCase().includes(v));
       });
     },
     modalName() {
@@ -209,11 +210,11 @@ export default {
         return "Edit Product";
       }
       return "Add Product";
-    }
+    },
   },
   created() {
     this.getProducts();
-  }
+  },
 };
 </script>
 
@@ -232,7 +233,7 @@ export default {
 @media (min-width: 768px) and (max-width: 992px) {
   .navLinks {
     width: 45%;
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 

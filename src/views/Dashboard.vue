@@ -105,7 +105,7 @@ export default {
 }
 .sideBarItem > a {
   /* border-radius: 12%/50% !important; */
-  border-radius: 6%/30%;
+  border-radius: 6%/35%;
   width: 100%;
   color: white !important;
 }
