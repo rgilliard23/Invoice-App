@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <!-- <div>
     <b-form @submit.stop.prevent="onSubmit">
       <b-col class="w-100 m-auto" align-h="between"
-        ><b-row class="w-100">
-          <h4>Customer Name:</h4>
-          <b-form-input
+        ><b-row class="w-100"> -->
+  <!-- <h4>Customer Name:</h4> -->
+  <!-- <b-form-input
             id="input-1"
             v-model="$v.form.name.$model"
             type="text"
@@ -16,7 +16,6 @@
         </b-row>
         <b-row class="w-100" style="margin-top: 1vh;">
           <h4>Customer Address:</h4>
-          <!-- <h3>{{ customer.address }}</h3> -->
           <b-form-input
             id="input-1"
             v-model="$v.form.address.$model"
@@ -27,38 +26,7 @@
             aria-describedby="input-2-live-feedback"
           ></b-form-input> </b-row
       ></b-col>
-      <!-- <b-form-group
-        id="input-group-1"
-        label="Customer Name:"
-        label-for="input-1"
-      >
-        <b-form-input
-          id="input-1"
-          v-model="$v.form.name.$model"
-          type="text"
-          required
-          :state="validateState('name')"
-          placeholder="Enter Name"
-          aria-describedby="input-1-live-feedback"
-        ></b-form-input>
-        <b-form-invalid-feedback id="input-1-live-feedback"
-          >Name must be at least 3 characters</b-form-invalid-feedback
-        >
-      </b-form-group>
-      <b-form-group label="Customer Address:">
-        <b-form-input
-          id="input-1"
-          v-model="$v.form.address.$model"
-          type="text"
-          required
-          :state="validateState('address')"
-          placeholder="Enter Address"
-          aria-describedby="input-2-live-feedback"
-        ></b-form-input>
-        <b-form-invalid-feedback id="input-2-live-feedback"
-          >Address be at least 5 characters</b-form-invalid-feedback
-        >
-      </b-form-group> -->
+
       <b-pagination
         v-if="invoices.length > perPage"
         style="margin-top: 2vh;"
@@ -71,7 +39,7 @@
       ></b-pagination>
       <b-table
         :currentPage="currentPage"
-        :perPage ="perPage"
+        :perPage="perPage"
         style="margin-top: 1vh;"
         v-if="edit && invoices.length > 0"
         :items="invoices"
@@ -100,13 +68,12 @@
                   >Delete</b-dropdown-item
                 >
               </b-dropdown-group>
-              <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
-            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
+
             </b-dropdown>
           </div>
         </template>
       </b-table>
-      <!-- <b-row class="w-50" align-h="center" style="margin: 10px auto;"> </b-row> -->
+
 
       <b-button
         type="submit"
@@ -145,15 +112,138 @@
         />
       </keep-alive>
     </b-modal>
-  </div>
+  </div> -->
+
+  <!-- <div class="text-center">
+    <v-dialog v-model="dialog" width="500">
+      <template v-slot:activator="{ on }">
+        <v-btn color="success" v-on="on">
+          Add Customer
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title class="headline grey lighten-2" primary-title>
+          <div v-if="!edit">Add Customer</div>
+          <div v-else>Edit Customer</div>
+        </v-card-title>
+
+        <v-card-text>
+          <v-form ref="form" class="px-3">
+            <v-text-field
+              prepend-icon="mdi-account"
+              label="Name"
+              v-model="name"
+              :rules="inputRules"
+            ></v-text-field>
+            <v-text-field
+              prepend-icon="mdi-map-marker"
+              label="Address"
+              v-model="address"
+              :rules="inputRules"
+            ></v-text-field>
+            <v-btn flat class="success mx-0 mt-3" @click="submit">Add Customer</v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </div> -->
+  <v-row justify="center">
+    <v-dialog persistent v-model="dialog" max-width="600px">
+      <template v-slot:activator="{ on }">
+        <v-btn color="success" dark v-on="on">Add Customer</v-btn>
+      </template>
+      <v-card>
+        <v-form ref="form">
+          <v-card-title class="headline">
+            <span v-if="!edit" class="headline">Add Customer</span>
+            <span v-else class="headline">Edit Customer</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    :rules="inputRules"
+                    v-model="customer.name"
+                    label="Name*"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    :rules="inputRules"
+                    v-model="customer.address"
+                    label="Address*"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field label="Email"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+
+            <v-flex v-if="edit" style="overflow: auto;" class="w-100">
+              <v-card-title>
+                <v-text-field
+                  v-model="searchInvoices"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                :headers="tableHeaders"
+                :items="customer.invoices"
+                :search="searchInvoices"
+              >
+                <template v-slot:item.actions="{ item }">
+                  <div>
+                    <v-icon small class="mr-2" @click="editInvoice(item)">
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon small @click="deleteInvoice(item)">
+                      mdi-delete
+                    </v-icon>
+                  </div>
+                </template>
+                <template v-slot:item.completed="{ item }">
+                  <div>
+                    <v-btn
+                      v-if="!item.completed"
+                      readonly
+                      style="width: 70%;"
+                      color="error"
+                      >Unpaid</v-btn
+                    >
+                    <v-btn color="success" readonly style="width: 70%;" v-else
+                      >Completed</v-btn
+                    >
+                  </div>
+                </template>
+              </v-data-table>
+            </v-flex>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="close">Close</v-btn>
+            <v-btn color="success" text @click="submit">Save</v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 
 <script>
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 import moment from "moment";
-import InvoiceTemplate from "../Invoice/InvoiceTemplate";
-import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
+// import InvoiceTemplate from "../Invoice/InvoiceTemplate";
+// import Invoice from "/Users/ronaldgilliard/invoice-app-electron/src/components/Invoice/Invoice.vue";
 
 const axios = require("axios");
 const path = "http://localhost:5000/api/customer";
@@ -163,19 +253,40 @@ export default {
   mixins: [validationMixin],
   name: "AddCustomer",
   props: {
-    edit: Boolean,
+    edit: {
+      type: Boolean,
+      default: false,
+    },
     customer: Object,
+    dialog: {
+      type: Boolean,
+      default: false,
+    },
   },
-  components: {
-    Invoice,
-    InvoiceTemplate,
-  },
+  // components: {
+  //   Invoice,
+  //   InvoiceTemplate,
+  // },
   data: function() {
     return {
+      inputRules: [(v) => v.length >= 3 || "Minimum length is 3 characters"],
       invoices: [],
+      tableHeaders: [
+        { text: "Id", value: "id", sortable: true },
+        { text: "Status", value: "completed", sortable: true },
+        {
+          text: "Due",
+          sortable: true,
+          value: "date_due",
+        },
+
+        { text: "Created", value: "date_created" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
       invoice: [],
       currentPage: 1,
       transactions: [],
+      searchInvoices: "",
       perPage: 5,
       invoiceFields: [
         { key: "id", label: "Id" },
@@ -203,6 +314,8 @@ export default {
         },
         { key: "actions", label: "Actions" },
       ],
+      name: null,
+      address: null,
       form: {
         name: null,
         address: null,
@@ -227,6 +340,15 @@ export default {
       });
 
       this.$refs["viewInvoice"].show();
+    },
+    close() {
+      if (this.edit) {
+        this.name = null;
+        this.address = null;
+      }
+      this.edit = false;
+      this.dialog = false;
+      this.$emit("close");
     },
     deleteInvoice(invoice) {
       if (confirm("Are You Sure You Want To Delete This Invoice")) {
@@ -264,9 +386,8 @@ export default {
         this.$v.$reset();
       });
     },
-    onSubmit() {
-      this.$v.form.$touch();
-      if (this.$v.form.$anyError) {
+    submit() {
+      if (!this.$refs.form.validate()) {
         return;
       }
       if (this.edit) {
@@ -275,6 +396,7 @@ export default {
             .put(path + "/" + this.customer.id, this.customer)
             .then((res) => {
               this.$emit("addedCustomer");
+              this.dialog = false;
               console.log(res.data);
             })
             .catch((err) => {
@@ -284,13 +406,14 @@ export default {
         }
       } else {
         let temp = { name: "", address: "" };
-        temp.name = this.form.name;
-        temp.address = this.form.address;
+        temp.name = this.name;
+        temp.address = this.address;
         axios
           .post(path, temp)
           .then((res) => {
             this.$emit("addedCustomer");
             alert("Added Customer");
+            this.dialog = false;
             console.log(res.data);
             this.getCustomers();
           })
@@ -315,6 +438,7 @@ export default {
       },
     },
   },
+
   computed: {
     rows() {
       return this.invoices.length;
@@ -322,8 +446,8 @@ export default {
   },
   created() {
     if (this.customer != null) {
-      this.form.name = this.customer.name;
-      this.form.address = this.customer.address;
+      this.name = this.customer.name;
+      this.address = this.customer.address;
 
       this.invoices = this.customer.invoices;
     }

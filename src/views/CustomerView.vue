@@ -25,13 +25,21 @@
                   solo
                   hide-details
                 ></v-text-field> -->
-                <v-btn
+                <!-- <v-btn
                   @click="showCustomer(null, false)"
                   class="navLinks navButton navButtonMargin"
                   block
                   color="success"
                   >Add Customer
-                </v-btn>
+                </v-btn> -->
+                <AddCustomer
+                  :edit="edit"
+                  :dialog="dialog"
+                  @close="closeAddCustomer"
+                  :customer="customer"
+                  @addedCustomer="addedCustomer"
+                  class="navLinks navButton navButtonMargin"
+                ></AddCustomer>
               </v-row>
             </v-col>
 
@@ -47,7 +55,7 @@
       </b-navbar>
       <v-column style="height: 90vh">
         <v-card style="height: 90vh; overflow: auto;">
-          <v-flexs style="overflow: auto;" class="w-100">
+          <v-flex style="overflow: auto;" class="w-100">
             <v-card-title>
               <v-text-field
                 v-model="searchCustomer"
@@ -73,7 +81,7 @@
                 </div>
               </template>
             </v-data-table>
-          </v-flexs>
+          </v-flex>
         </v-card>
       </v-column>
 
@@ -105,7 +113,7 @@
         </template>
       </b-table>
       <div v-if="filterCustomerList == 0"><h1>No Data</h1></div> -->
-      <b-modal
+      <!-- <b-modal
         hide-footer
         centered
         size="lg"
@@ -115,12 +123,14 @@
       >
         <keep-alive>
           <AddCustomer
+            @closeAddCustomer="closeAddCustomer"
             @addedCustomer="addedCustomer"
+            :dialog="dialog"
             v-bind:edit="edit"
             v-bind:customer="customer"
           />
         </keep-alive>
-      </b-modal>
+      </b-modal> -->
       <b-modal
         centered
         hide-footer
@@ -156,6 +166,7 @@ export default {
     return {
       edit: false,
       customers: [],
+      dialog: false,
       searchCustomer: "",
       customer: {
         id: 0,
@@ -189,10 +200,10 @@ export default {
       this.getCustomers();
       this.$refs["addCustomer"].hide();
     },
-    showCustomer(customer, edit) {
+    showCustomer(customer) {
       this.customer = customer;
-      this.edit = edit;
-      this.$refs["addCustomer"].show();
+      this.edit = true;
+      this.dialog = true;
     },
     viewCustomer(customer) {
       this.customer = customer;
@@ -219,6 +230,11 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    closeAddCustomer() {
+      this.dialog = false;
+      this.edit = false;
+      this.customer = { id: 0, name: null, address: null, invoices: [] };
     },
     submitCustomer(edit) {
       this.edit = edit;
@@ -248,6 +264,7 @@ export default {
     editCustomer(customer) {
       this.customer = customer;
       this.edit = true;
+      this.dialog = true;
     },
     deleteCustomer(customer) {
       if (confirm("Do you really want to delete?")) {
@@ -267,6 +284,7 @@ export default {
   created() {
     this.getCustomers();
   },
+
   computed: {
     modalName() {
       if (this.edit) {
@@ -322,6 +340,7 @@ export default {
 .navigation {
   height: 25vh;
 }
+
 @media (min-width: 768px) and (max-width: 992px) {
   .navLinks {
     width: 45%;

@@ -288,6 +288,7 @@
           <v-container class="my-0 px-4" fluid>
             <v-row class="justify-space-around cardTitle">
               <v-autocomplete
+                clearable
                 v-model="customer"
                 :items="customersFiltered"
                 :search-input.sync="searchCustomers"
@@ -322,6 +323,7 @@
               >
                 <template v-slot:activator="{ on }">
                   <v-text-field
+                    clearable
                     v-model="fromDate"
                     label="From"
                     append-icon="mdi-calendar"
@@ -644,7 +646,7 @@ export default {
 </script>
 
 <style scoped>
-.cardTitle{
+.cardTitle {
   padding: 0 !important;
 }
 .filterItems {

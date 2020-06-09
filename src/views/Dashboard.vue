@@ -86,7 +86,8 @@ export default {
   overflow: hidden;
 }
 .brandLine {
-  width: 80%;
+  width: 90%;
+  height: .1px;
   border: 1px solid white;
 }
 .active {

@@ -39,9 +39,6 @@ body > div {
   flex: 1;
 }
 
-.danger {
-  background-color: purple;
-}
 #app {
   // font-family: Avenir, Helvetica, Arial, sans-serif;
   font-family: Arial, Helvetica, sans-serif;
