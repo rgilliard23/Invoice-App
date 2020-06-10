@@ -501,7 +501,7 @@ export default {
         uniqueId: temp,
         id: 0,
         name: "",
-        quantity: 1,
+        quantity: Number(1),
         price: Number(0),
         total: 0,
       });
@@ -599,7 +599,7 @@ export default {
       this.items.forEach((item) => {
         let temp2 = {
           date_created: this.createdDate,
-          quantity: item.quantity,
+          quantity: Number(item.quantity),
           invoice_id: invoiceId,
           product_id: item.id,
         };

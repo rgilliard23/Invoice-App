@@ -1,19 +1,19 @@
 <template>
   <div class="noMargin w-100" style="height: 100vh; overflow: hidden;">
-    <b-container fluid class="noMargin">
-      <b-navbar style="height:10vh;" type="dark" variant="info">
+    <b-container fluid>
+      <b-navbar style="height:10vh;" class="navBAR" type="light">
         <b-navbar-brand>
-          <h1>Invoices</h1>
+          <h1 class="text-dark">Invoices</h1>
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <router-link class="noMargin" to="/newinvoice"
-              ><b-button size="lg" variant="success">New Invoice</b-button>
+            <router-link class="noMargin routerLink" to="/newinvoice">
+              <v-btn large flat color="success">New Invoice</v-btn>
             </router-link>
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
-      <b-row style="padding: 10px;" class="w-100">
+      <b-row class="w-100">
         <b-col>
           <b-row>
             <b-col>
@@ -23,10 +23,6 @@
                 class="text-center cardShadow"
               >
                 <b-col class="text-left text-uppercase">
-                  <!-- <b-row>
-                    <div class="cardText">Total Customers:</div>
-                    <div>{{ customers.length }}</div>
-                  </b-row> -->
                   <b-row align-h="between"
                     ><div>
                       <h1 class="overviewCardText">
@@ -71,221 +67,11 @@
               </b-card>
             </b-col>
           </b-row>
-          <!-- <b-input-group style="margin-top: 1vh;">
-            <b-input
-              class="columnItem"
-              v-model="filter"
-              placeholder="Search"
-              type="text"
-            ></b-input>
-          </b-input-group>
-          <b-row class="w-100 m-auto" align-h="around">
-            <b-form-group
-              label="Per page"
-              label-cols-sm="6"
-              label-cols-md="4"
-              label-cols-lg="3"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="perPageSelect"
-              class="mb-0"
-            >
-              <b-form-select v-model="perPage" id="perPageSelect" size="sm">
-                <b-form-select-option value="5">5</b-form-select-option>
-                <b-form-select-option value="10">10</b-form-select-option>
-                <b-form-select-option value="15"
-                  >15</b-form-select-option
-                ></b-form-select
-              >
-            </b-form-group>
-            <b-form-group
-              label="Sort"
-              label-cols-sm="3"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="sortBySelect"
-              class="mb-0"
-            >
-              <b-input-group size="sm">
-                <b-form-select v-model="sortBy" id="sortBySelect" class="w-75">
-                  <template v-slot:first>
-                    <option value="">-- none --</option>
-                  </template>
-                  <b-form-select-option value="name">Name</b-form-select-option>
-                  <b-form-select-option value="date_due"
-                    >Due Date</b-form-select-option
-                  >
-                  <b-form-select-option value="created_date"
-                    >Created Date</b-form-select-option
-                  >
-                </b-form-select>
-                <b-form-select
-                  v-model="sortDesc"
-                  size="sm"
-                  :disabled="!sortBy"
-                  class="w-25"
-                >
-                  <option :value="false">Ascending</option>
-                  <option :value="true">Descending</option>
-                </b-form-select>
-              </b-input-group>
-            </b-form-group>
-          </b-row> -->
-          <!-- <v-container fluid>
-            <v-row class="justify-space-around">
-              <v-autocomplete
-                v-model="customer"
-                :items="customersFiltered"
-                :search-input.sync="searchCustomers"
-                cache-items
-                item-value="name"
-                item-text="name"
-                class="mx-2 filterItems"
-                return-object
-                hide-no-data
-                hide-details
-                label="Search For Customer"
-                justify="between"
-                outlined
-                rounded
-              ></v-autocomplete>
-              <v-select
-                clearable
-                placeholder="All Statuses"
-                :items="status"
-                label="Status"
-                outlined
-                class="filterItems"
-                rounded
-              ></v-select>
-
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="fromDate"
-                    label="From"
-                    append-icon="mdi-calendar"
-                    v-on="on"
-                    class="filterItems mx-2"
-                    outlined
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="fromDate" scrollable> </v-date-picker>
-              </v-menu>
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-                class="filterItems"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    v-model="toDate"
-                    label="To"
-                    append-icon="mdi-calendar"
-                    v-on="on"
-                    class="filterItems mx-2"
-                    outlined
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="toDate" scrollable> </v-date-picker>
-              </v-menu>
-            </v-row>
-          </v-container> -->
         </b-col>
       </b-row>
-
-      <!-- <b-pagination
-        v-model="currentPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        align="fill"
-        aria-controls="my-table"
-      ></b-pagination> -->
-      <!-- <b-table
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        :filter="filter"
-        :current-page="currentPage"
-        :per-page="perPage"
-        borderless
-        sticky-header="58vh"
-        style="height: 58vh;"
-        :fields="invoiceTableFields"
-        small
-        :items="invoices"
-      >
-        <template v-slot:cell(status)="data">
-          <div>
-            <v-btn v-if="!data.item.completed" color="error">Overdue</v-btn>
-            <v-btn color="success" v-else>Completed</v-btn>
-          </div>
-        </template>
-        <template v-slot:cell(date_due)="data">
-          <div v-if="!data.item.completed" class="text-danger">
-            {{ data.item.date_due | moment("MMM Do YYYY") }}
-          </div>
-          <div v-else class="text-success">
-            {{ data.item.date_due | moment("MMM Do YYYY") }}
-          </div>
-        </template>
-        <template v-slot:cell(id)="data">
-          <div>
-            <div>{{ data.item.id }}</div>
-          </div>
-        </template>
-        <template v-slot:cell(customer)="data">
-          <div>
-            <div>{{ data.item.customer.name }}</div>
-          </div>
-        </template>
-        <template v-slot:cell(actions)="data">
-          <div>
-            <b-dropdown
-              variant="primary"
-              no-caret
-              id="dropdown-1"
-              text="Options"
-              class="m-md-2 bg-transparent"
-            >
-              <template v-slot:button-content>
-                <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
-              </template>
-              <b-dropdown-group id="dropdown-group-1">
-                <b-dropdown-item @click="viewInvoice(data.item)"
-                  >View</b-dropdown-item
-                >
-                <b-dropdown-item @click="editInvoice(data.item)"
-                  >Edit</b-dropdown-item
-                >
-                <b-dropdown-item
-                  v-if="data.item.completed"
-                  @click="markInvoice(false, data.item)"
-                  >Mark As Incomplete</b-dropdown-item
-                >
-                <b-dropdown-item v-else @click="markInvoice(true, data.item)"
-                  >Mark As Complete</b-dropdown-item
-                >
-                <b-dropdown-item @click="deleteInvoice(data.item)"
-                  >Delete</b-dropdown-item
-                >
-              </b-dropdown-group>
-            </b-dropdown>
-          </div>
-        </template>
-      </b-table> -->
-      <v-card elevation="0">
+      <v-card class="my-2" elevation="0">
         <v-card-title class="p-0">
-          <v-container class="my-0 px-4" fluid>
+          <v-container class="p-0" fluid>
             <v-row class="justify-space-around cardTitle">
               <v-autocomplete
                 clearable
@@ -310,6 +96,7 @@
                 :items="status"
                 label="Status"
                 outlined
+                :menu-props="{ bottom: true, offsetY: true }"
                 class="filterItems"
                 rounded
               ></v-select>
@@ -326,6 +113,7 @@
                     clearable
                     v-model="fromDate"
                     label="From"
+                    rounded
                     append-icon="mdi-calendar"
                     v-on="on"
                     class="filterItems mx-2"
@@ -345,6 +133,7 @@
                 <template v-slot:activator="{ on }">
                   <v-text-field
                     clearable
+                    rounded
                     v-model="toDate"
                     label="To"
                     append-icon="mdi-calendar"
@@ -632,7 +421,13 @@ export default {
           );
       });
     },
+    filterInvoices() {
+      let result = [];
+
+      return result;
+    },
   },
+
   watch: {
     searchCustomers(val) {
       val && val !== this.select && this.querySelections(val);
@@ -671,5 +466,8 @@ export default {
 .noMargin {
   margin: 0;
   padding: 0;
+}
+.routerLink {
+  text-decoration: none;
 }
 </style>

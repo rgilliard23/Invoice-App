@@ -1,6 +1,11 @@
 <template>
   <div id="app" style="height: 100vh; overflow: hidden;">
-    <v-app class="h-100"><Dashboard /></v-app>
+    <v-app class="h-100">
+      <v-content class="h-100">
+        <Dashboard  class="h-100" />
+      </v-content>
+      
+    </v-app>
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
