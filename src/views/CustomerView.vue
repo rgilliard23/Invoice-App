@@ -169,9 +169,9 @@ export default {
       dialog: false,
       searchCustomer: "",
       customer: {
-        id: 0,
-        name: "",
-        address: "",
+        id: null,
+        name: null,
+        address: null,
       },
       options: {
         buttons: ["Yes", "No", "Cancel"],

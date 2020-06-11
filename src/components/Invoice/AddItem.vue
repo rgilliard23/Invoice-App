@@ -51,7 +51,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-row justify-center> <v-btn @click="addItem"> Add New</v-btn></v-row>
+          <v-row justify-center>
+            <v-btn @click="addItem"> Add New</v-btn></v-row
+          >
         </v-card-actions>
       </v-card>
     </v-menu>
@@ -73,7 +75,7 @@ export default {
       fav: true,
       menu: false,
       message: false,
-      product: {},
+      product: null,
       hints: true,
       searchProducts: "",
     };
@@ -82,7 +84,7 @@ export default {
     addItem() {
       if (this.product === null) this.$emit("addItem", null);
       else this.$emit("addItem", this.product);
-      this.product = {};
+      this.product = null;
       this.menu = false;
     },
   },

@@ -35,10 +35,7 @@
                       Excel
                     </JsonExcel></b-dropdown-item
                   >
-                  <b-dropdown-item
-                    href="#"
-                    v-b-modal.InvoiceTemplate
-                    @click="invoicePDf"
+                  <b-dropdown-item href="#" v-b-modal.InvoiceTemplat
                     >PDF</b-dropdown-item
                   >
                 </b-dropdown>
@@ -70,7 +67,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="dateFormatted"
+                v-model="date_created"
                 label="Invoice Date"
                 hint="MM/DD/YYYY format"
                 rounded
@@ -101,7 +98,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="dateFormatted"
+                v-model="date_due"
                 label="Date Due"
                 clearable
                 hint="MM/DD/YYYY format"
@@ -123,30 +120,42 @@
         <v-col>
           <v-card>
             <v-card-title>
-              <v-row justify="space-between">
-                <v-text-field
-                  v-model="search"
-                  class="tableHeaderField px-3"
-                  clearable
-                  prepend-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                ></v-text-field>
-                <v-autocomplete
-                  class="tableHeaderField px-3"
-                  label="Add Customer"
-                  item-value="name"
-                  item-text="name"
-                  :items="customers"
-                  flat
-                  >Add Customer</v-autocomplete
-                >
+              <v-row justify="space-around">
+                <v-row class="w-50 m-0 p-0">
+                  <v-text-field
+                    v-model="search"
+                    class="mb-0 mt-2 m-0 px-4 py-0 "
+                    clearable
+                    label="Search"
+                    single-line
+                    hide-details
+                  ></v-text-field>
+                </v-row>
+
+                <v-row class="p-0 m-0 w-25" justify="space-around"
+                  ><v-autocomplete
+                    class="mb-0 mt-2 m-0 mx-6 py-0"
+                    label="Add Customer"
+                    item-value="name"
+                    item-text="name"
+                    :items="customers"
+                    flat
+                  >
+                  </v-autocomplete>
+                  <AddCustomer
+                    :create="true"
+                    :edit="edit"
+                    :dialog="dialog"
+                    :customer="customer"
+                    @addedCustomer="addedCustomer"
+                    class="mt-2 navLinks navButton navButtonMargin"
+                  ></AddCustomer
+                ></v-row>
               </v-row>
             </v-card-title>
             <v-data-table :headers="headers" :items="items" :search="search">
               <template v-slot:item.quantity="{ item }">
-                <v-col align-content-center class="m-0 p-0">
+                <v-col align-content-center id="detailsMenu" class="m-0 p-0">
                   <v-text-field
                     class="m-0 p-0"
                     outlined
@@ -177,25 +186,48 @@
                 </div>
               </template>
               <template v-slot:item.total="{ item }">
-                <v-col class="m-0 p-0"
-                  ><v-row align-content-center class="m-0 p-0">
-                    <div>${{ item.total.toLocaleString() }}</div>
-                    <span
-                      ><v-icon @click="deleteItem(item)">
-                        mdi-delete
-                      </v-icon></span
-                    >
-                  </v-row>
-                  <v-text-field outlined class="tax"></v-text-field>
-                </v-col>
+                <div>${{ item.total.toLocaleString() }}</div>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <span
+                  ><v-icon @click="deleteItem(item)">
+                    mdi-delete
+                  </v-icon></span
+                >
               </template>
               <template v-slot:body.append>
                 <tr>
                   <td></td>
                   <td></td>
+                  <td></td>
+                  <td>
+                    <v-text-field
+                      append-icon="mdi-percent-outline"
+                      label="Tax"
+                      type="number"
+                      outlined
+                    ></v-text-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">Subtotal:</td>
+                  <td>${{ subTotal.toLocaleString() }}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                   <td>
                     <AddItem @addItem="addItem" :products="products"></AddItem>
                   </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">Grand Total:</td>
+                  <td>${{ grandTotal.toLocaleString() }}</td>
                 </tr>
               </template>
             </v-data-table>
@@ -208,6 +240,7 @@
 
 <script>
 import AddItem from "../components/Invoice/AddItem.vue";
+import AddCustomer from "../components/Customer/AddCustomer";
 
 const axios = require("axios");
 const productPath = "http://localhost:5000/api/product";
@@ -219,12 +252,18 @@ export default {
   name: "CreateInvoice",
   components: {
     AddItem,
+    AddCustomer,
   },
   data: (vm) => ({
     date: new Date().toISOString().substr(0, 10),
-    dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+    date_created: vm.formatDate(new Date().toISOString().substr(0, 10)),
+    date_due: vm.formatDate(new Date().toISOString().substr(0, 10)),
+    details: false,
     menu1: false,
+    title: "Create Customer",
     menu2: false,
+    edit: false,
+    dialog: false,
     GrandTotal: 0,
     transactions: [],
     createdDate: null,
@@ -342,6 +381,12 @@ export default {
   },
 
   methods: {
+    addedCustomer() {
+      this.getCustomers();
+      this.customer = this.customers[this.customers.length - 1];
+    },
+    closeAddCustomer() {},
+
     formatDate(date) {
       if (!date) return null;
 

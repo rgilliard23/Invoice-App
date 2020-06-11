@@ -149,14 +149,15 @@
     </v-dialog>
   </div> -->
   <v-row justify="center">
-    <v-dialog persistent v-model="dialog" max-width="600px">
+    <v-dialog persistent v-model="show" max-width="600px">
       <template v-slot:activator="{ on }">
-        <v-btn color="success" dark v-on="on">Add Customer</v-btn>
+        <v-btn v-if="create" color="success" v-on="on">New Customer</v-btn>
+        <v-btn color="success" v-else dark v-on="on">Add Customer</v-btn>
       </template>
       <v-card>
         <v-form ref="form">
           <v-card-title class="headline">
-            <span v-if="!edit" class="headline">Add Customer</span>
+            <span v-if="!edit" class="headline">Create Customer</span>
             <span v-else class="headline">Edit Customer</span>
           </v-card-title>
           <v-card-text>
@@ -179,7 +180,7 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field label="Email"></v-text-field>
+                  <v-text-field v-model="email" label="Email"></v-text-field>
                 </v-col>
               </v-row>
             </v-container>
@@ -201,15 +202,24 @@
                 :search="searchInvoices"
               >
                 <template v-slot:item.actions="{ item }">
-                  <div>
-                    <v-icon small class="mr-2" @click="editInvoice(item)">
-                      mdi-pencil
-                    </v-icon>
-                    <v-icon small @click="deleteInvoice(item)">
-                      mdi-delete
-                    </v-icon>
-                  </div>
+                  <v-menu open-on-hover top offset-y>
+                    <template v-slot:activator="{ on }">
+                      <div v-on="on">
+                        <v-icon small class="mr-2" @click="editInvoice(item)">
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon small @click="deleteInvoice(item)">
+                          mdi-delete
+                        </v-icon>
+                      </div>
+                    </template>
+                    <v-card>
+                      <v-card-title>{{ item.name }}</v-card-title>
+                      <v-card-text>howdy</v-card-text>
+                    </v-card>
+                  </v-menu>
                 </template>
+
                 <template v-slot:item.completed="{ item }">
                   <div>
                     <v-btn
@@ -262,6 +272,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    create: {
+      type: Boolean,
+      default: false,
+    },
   },
   // components: {
   //   Invoice,
@@ -271,6 +285,8 @@ export default {
     return {
       inputRules: [(v) => v.length >= 3 || "Minimum length is 3 characters"],
       invoices: [],
+      show: false,
+      email: null,
       tableHeaders: [
         { text: "Id", value: "id", sortable: true },
         { text: "Status", value: "completed", sortable: true },
@@ -347,7 +363,7 @@ export default {
         this.address = null;
       }
       this.edit = false;
-      this.dialog = false;
+      this.show = false;
       this.$emit("close");
     },
     deleteInvoice(invoice) {
@@ -396,7 +412,7 @@ export default {
             .put(path + "/" + this.customer.id, this.customer)
             .then((res) => {
               this.$emit("addedCustomer");
-              this.dialog = false;
+              this.show = false;
               console.log(res.data);
             })
             .catch((err) => {
@@ -406,14 +422,16 @@ export default {
         }
       } else {
         let temp = { name: "", address: "" };
-        temp.name = this.name;
-        temp.address = this.address;
+        temp.name = this.customer.name;
+        temp.address = this.customer.address;
         axios
           .post(path, temp)
           .then((res) => {
             this.$emit("addedCustomer");
+            this.customer;
+            this.show = false;
             alert("Added Customer");
-            this.dialog = false;
+
             console.log(res.data);
             this.getCustomers();
           })
@@ -445,6 +463,7 @@ export default {
     },
   },
   created() {
+    this.show = this.dialog;
     if (this.customer != null) {
       this.name = this.customer.name;
       this.address = this.customer.address;

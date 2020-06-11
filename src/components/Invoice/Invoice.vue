@@ -40,7 +40,6 @@
               <b-dropdown-item
                 href="#"
                 v-b-modal.InvoiceTemplate
-                @click="invoicePDf"
                 >PDF</b-dropdown-item
               >
             </b-dropdown>
