@@ -7,8 +7,8 @@
     >
       <b-navbar
         style="height:10vh;"
-        class="navigation"
-        type="dark"
+        class="navigation bg-white"
+        type="liht"
         variant="info"
       >
         <b-navbar-brand>
@@ -33,6 +33,7 @@
                   >Add Customer
                 </v-btn> -->
                 <AddCustomer
+                  :create="false"
                   :edit="edit"
                   :dialog="dialog"
                   @close="closeAddCustomer"
@@ -82,6 +83,7 @@
               </template>
             </v-data-table>
           </v-flex>
+         
         </v-card>
       </v-column>
 
@@ -200,9 +202,9 @@ export default {
       this.getCustomers();
       this.$refs["addCustomer"].hide();
     },
-    showCustomer(customer) {
+    showCustomer(customer, bool) {
       this.customer = customer;
-      this.edit = true;
+      this.edit = bool;
       this.dialog = true;
     },
     viewCustomer(customer) {

@@ -154,95 +154,281 @@
         <v-btn v-if="create" color="success" v-on="on">New Customer</v-btn>
         <v-btn color="success" v-else dark v-on="on">Add Customer</v-btn>
       </template>
+
       <v-card>
-        <v-form ref="form">
-          <v-card-title class="headline">
-            <span v-if="!edit" class="headline">Create Customer</span>
-            <span v-else class="headline">Edit Customer</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    :rules="inputRules"
-                    v-model="customer.name"
-                    label="Name*"
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field
-                    :rules="inputRules"
-                    v-model="customer.address"
-                    label="Address*"
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field v-model="email" label="Email"></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small>*indicates required field</small>
+        <!-- Edit Customer -->
+        <v-stepper non-linear v-if="edit" v-model="e1">
+          <v-stepper-header>
+            <v-stepper-step step="1">Contact</v-stepper-step>
 
-            <v-flex v-if="edit" style="overflow: auto;" class="w-100">
-              <v-card-title>
-                <v-text-field
-                  v-model="searchInvoices"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                ></v-text-field>
-              </v-card-title>
-              <v-data-table
-                :headers="tableHeaders"
-                :items="customer.invoices"
-                :search="searchInvoices"
-              >
-                <template v-slot:item.actions="{ item }">
-                  <v-menu open-on-hover top offset-y>
-                    <template v-slot:activator="{ on }">
-                      <div v-on="on">
-                        <v-icon small class="mr-2" @click="editInvoice(item)">
-                          mdi-pencil
-                        </v-icon>
-                        <v-icon small @click="deleteInvoice(item)">
-                          mdi-delete
-                        </v-icon>
-                      </div>
-                    </template>
-                    <v-card>
-                      <v-card-title>{{ item.name }}</v-card-title>
-                      <v-card-text>howdy</v-card-text>
-                    </v-card>
-                  </v-menu>
-                </template>
+            <v-divider></v-divider>
 
-                <template v-slot:item.completed="{ item }">
-                  <div>
-                    <v-btn
-                      v-if="!item.completed"
-                      readonly
-                      style="width: 70%;"
-                      color="error"
-                      >Unpaid</v-btn
+            <v-stepper-step step="2">Billing</v-stepper-step>
+
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content step="1">
+              <v-form ref="form">
+                <v-card-title class="headline">
+                  <span v-if="!edit" class="headline">Contact Info</span>
+                  <span v-else class="headline">Edit Customer</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          :rules="inputRules"
+                          v-model="customer.name"
+                          label="Name*"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          :rules="inputRules"
+                          v-model="customer.address"
+                          label="Address*"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="email"
+                          label="Email"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small>*indicates required field</small>
+
+                  <v-flex v-if="edit" style="overflow: auto;" class="w-100">
+                    <v-card-title>
+                      <v-text-field
+                        v-model="searchInvoices"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                      :headers="tableHeaders"
+                      :items="customer.invoices"
+                      :search="searchInvoices"
                     >
-                    <v-btn color="success" readonly style="width: 70%;" v-else
-                      >Completed</v-btn
+                      <template v-slot:item.actions="{ item }">
+                        <v-menu open-on-hover top offset-y>
+                          <template v-slot:activator="{ on }">
+                            <div v-on="on">
+                              <v-icon
+                                small
+                                class="mr-2"
+                                @click="editInvoice(item)"
+                              >
+                                mdi-pencil
+                              </v-icon>
+                              <v-icon small @click="deleteInvoice(item)">
+                                mdi-delete
+                              </v-icon>
+                            </div>
+                          </template>
+                          <v-card>
+                            <v-card-title>{{ item.name }}</v-card-title>
+                            <v-card-text>howdy</v-card-text>
+                          </v-card>
+                        </v-menu>
+                      </template>
+
+                      <template v-slot:item.completed="{ item }">
+                        <div>
+                          <v-btn
+                            v-if="!item.completed"
+                            readonly
+                            style="width: 70%;"
+                            color="error"
+                            >Unpaid</v-btn
+                          >
+                          <v-btn
+                            color="success"
+                            readonly
+                            style="width: 70%;"
+                            v-else
+                            >Completed</v-btn
+                          >
+                        </div>
+                      </template>
+                    </v-data-table>
+                  </v-flex>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="close">Close</v-btn>
+                  <v-btn color="success" text @click="submit">Save</v-btn>
+                </v-card-actions>
+              </v-form>
+
+              <v-btn color="primary" @click="e1 = 2">
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+            </v-stepper-content>
+
+            <v-stepper-content step="2">
+              <v-card
+                class="mb-12"
+                color="grey lighten-1"
+                height="200px"
+              ></v-card>
+
+              <v-btn color="primary" v-on:click="e1 = 3">
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+
+        <!--* Add Customer-->
+        <v-stepper v-if="!edit" :non-linear="nextStep" :editable="nextStep" v-model="e1" :complete="nextStep">
+          <v-stepper-header>
+            <v-stepper-step step="1">Contact</v-stepper-step>
+
+            <v-divider></v-divider>
+
+            <v-stepper-step step="2">Billing</v-stepper-step>
+
+            <v-divider></v-divider>
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content step="1">
+              <v-form ref="form">
+                <v-card-title class="headline">
+                  <span v-if="!edit" class="headline">Contact Info</span>
+                  <span v-else class="headline">Edit Customer</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          :rules="inputRules"
+                          v-model="customer.name"
+                          label="Name*"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          :rules="inputRules"
+                          v-model="customer.address"
+                          label="Address*"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="email"
+                          label="Email"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small>*indicates required field</small>
+
+                  <v-flex v-if="edit" style="overflow: auto;" class="w-100">
+                    <v-card-title>
+                      <v-text-field
+                        v-model="searchInvoices"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                      :headers="tableHeaders"
+                      :items="customer.invoices"
+                      :search="searchInvoices"
                     >
-                  </div>
-                </template>
-              </v-data-table>
-            </v-flex>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="close">Close</v-btn>
-            <v-btn color="success" text @click="submit">Save</v-btn>
-          </v-card-actions>
-        </v-form>
+                      <template v-slot:item.actions="{ item }">
+                        <v-menu open-on-hover top offset-y>
+                          <template v-slot:activator="{ on }">
+                            <div v-on="on">
+                              <v-icon
+                                small
+                                class="mr-2"
+                                @click="editInvoice(item)"
+                              >
+                                mdi-pencil
+                              </v-icon>
+                              <v-icon small @click="deleteInvoice(item)">
+                                mdi-delete
+                              </v-icon>
+                            </div>
+                          </template>
+                          <v-card>
+                            <v-card-title>{{ item.name }}</v-card-title>
+                            <v-card-text>howdy</v-card-text>
+                          </v-card>
+                        </v-menu>
+                      </template>
+
+                      <template v-slot:item.completed="{ item }">
+                        <div>
+                          <v-btn
+                            v-if="!item.completed"
+                            readonly
+                            style="width: 70%;"
+                            color="error"
+                            >Unpaid</v-btn
+                          >
+                          <v-btn
+                            color="success"
+                            readonly
+                            style="width: 70%;"
+                            v-else
+                            >Completed</v-btn
+                          >
+                        </div>
+                      </template>
+                    </v-data-table>
+                  </v-flex>
+                </v-card-text>
+                
+              </v-form>
+
+              <v-btn color="primary" @click="e1 = 2">
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+            </v-stepper-content>
+
+            <v-stepper-content step="2">
+              <v-card
+                class="mb-12"
+                color="grey lighten-1"
+                height="200px"
+              ></v-card>
+
+              <v-btn color="primary" v-on:click="next">
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+              <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="close">Close</v-btn>
+                  <v-btn color="success" text @click="submit">Save</v-btn>
+                </v-card-actions>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
       </v-card>
     </v-dialog>
   </v-row>
@@ -285,6 +471,8 @@ export default {
     return {
       inputRules: [(v) => v.length >= 3 || "Minimum length is 3 characters"],
       invoices: [],
+      nextStep: false,
+      e1: 1,
       show: false,
       email: null,
       tableHeaders: [
@@ -356,6 +544,10 @@ export default {
       });
 
       this.$refs["viewInvoice"].show();
+    },
+    next(){
+      this.e1 =2;
+      this.nextStep= true;
     },
     close() {
       if (this.edit) {
@@ -470,6 +662,11 @@ export default {
 
       this.invoices = this.customer.invoices;
     }
+  },
+  watch: {
+    dialog() {
+      this.show = this.dialog;
+    },
   },
 };
 </script>

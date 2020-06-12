@@ -6,7 +6,7 @@
       :nudge-width="200"
       offset-x
       offset-y
-      bottom
+      left
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" dark v-bind="attrs" v-on="on">
@@ -17,7 +17,7 @@
       <v-card raised color="white">
         <v-card-title>
           <div class="w-100 mt-4 m-auto">
-            <v-autocomplete
+            <v-autocompleteF
               outlined
               clearable
               v-model="product"
@@ -43,7 +43,7 @@
                   </v-col></v-row
                 >
               </template>
-            </v-autocomplete>
+            </v-autocompleteF>
           </div>
         </v-card-title>
 

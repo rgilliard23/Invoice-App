@@ -2,7 +2,7 @@
   <div>
     <b-container style="" class="w-100 px-0 h-100 " fluid>
       <b-row class="h-100" style="">
-        <b-col class="h-100 sidebar bg-primary fullHeight">
+        <b-col class="h-100 sidebar bg-primary h-100">
           <b-nav fill type="dark" vertical class="w-100 h-100">
             <b-nav-item class="navLogo">
               <h1 class="text-white">Invoice App</h1>
@@ -106,7 +106,7 @@
           </b-nav>
         </b-col>
         <b-col col class=" h-100">
-          <router-view class="fullHeight overflow-scroll"></router-view>
+          <router-view class="h-100 overflow-auto"></router-view>
         </b-col>
       </b-row>
     </b-container>

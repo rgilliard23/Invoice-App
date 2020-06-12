@@ -1,13 +1,16 @@
 <template>
   <div class="bg-light" style="height: 100vh; overflow: hidden;">
     <b-container class="clear m-0 p-0" fluid>
-      <b-navbar class="navigation" type="dark" variant="info">
+      <b-navbar class="navigation bg-transparent" type="light" variant="info">
         <b-navbar-brand>
           <h1>Products</h1>
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-input
+            <v-row>
+              
+            </v-row>
+            <!-- <b-input
               type="text"
               style="width: 45%"
               class="margin navButtonMargin navLinks"
@@ -21,7 +24,7 @@
               size="lg"
               variant="success"
               >Add Product</b-button
-            >
+            > -->
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>

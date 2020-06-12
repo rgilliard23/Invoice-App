@@ -83,7 +83,6 @@
                 item-text="name"
                 class="mx-2 filterItems"
                 return-object
-                hide-no-data
                 hide-details
                 label="Search For Customer"
                 justify="between"

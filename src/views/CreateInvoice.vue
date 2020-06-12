@@ -6,42 +6,52 @@
       </b-navbar-brand>
       <b-navbar-nav class="ml-auto">
         <b-nav-form>
-          <v-col align="center">
-            <v-row>
-              <!-- <v-text-field
+          <!-- <v-text-field
                   class="navSearch"
                   label="Search"
                   v-model="searchCustomer"
                   solo
                   hide-details
                 ></v-text-field> -->
-              <!-- <v-btn
+          <!-- <v-btn
                   @click="showCustomer(null, false)"
                   class="navLinks navButton navButtonMargin"
                   block
                   color="success"
                   >Add Customer
                 </v-btn> -->
-              <v-container id="dropdown-example-1">
-                <b-dropdown
-                  class="exportDropdown"
-                  variant="danger"
-                  size="lg"
-                  :disabled="InvoiceIncomplete"
-                  text="Export"
-                >
-                  <b-dropdown-item class="m-0 p-0" href="#">
-                    <JsonExcel :disabled="InvoiceIncomplete" :data="items">
-                      Excel
-                    </JsonExcel></b-dropdown-item
-                  >
-                  <b-dropdown-item href="#" v-b-modal.InvoiceTemplat
-                    >PDF</b-dropdown-item
-                  >
-                </b-dropdown>
-              </v-container>
+          <v-container align-center class="m-0 p-0" id="dropdown-example-1">
+            <v-row class="m-0 p-0">
+              <v-select
+                :disabled="InvoiceIncomplete"
+                style="max-width:50%"
+                background-color="error"
+                dark
+                offset-y
+                class="mt-5 p-0 ml-auto"
+                :items="exportItems"
+                label="Export"
+                v-model="download"
+                solo
+                @input="downloadFiles"
+                dense
+              >
+                <template v-slot:selection>
+                  <span style="max-width:25%" class="text-white">
+                    Export
+                  </span>
+                </template>
+              </v-select>
+
+              <v-btn
+                class="mt-5 mr-1 ml-2"
+                v-on:click="saveInvoice"
+                :disabled="InvoiceIncomplete"
+                color="success"
+                >Save Invoice</v-btn
+              >
             </v-row>
-          </v-col>
+          </v-container>
 
           <!-- <b-button
               @click="showCustomer(null, false)"
@@ -80,7 +90,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="date"
+              v-model="date_created"
               no-title
               @input="menu1 = false"
             ></v-date-picker>
@@ -106,14 +116,14 @@
                 outlined
                 append-icon="mdi-calendar"
                 v-bind="attrs"
-                @blur="date = parseDate(dateFormatted)"
+                @blur="date = parseDate(date_due)"
                 v-on="on"
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="date"
+              v-model="date_due"
               no-title
-              @input="menu1 = false"
+              @input="menu2 = false"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -134,9 +144,13 @@
 
                 <v-row class="p-0 m-0 w-25" justify="space-around"
                   ><v-autocomplete
+                    clearable
                     class="mb-0 mt-2 m-0 mx-6 py-0"
                     label="Add Customer"
                     item-value="name"
+                    return-object
+                    hide-details
+                    v-model="customer"
                     item-text="name"
                     :items="customers"
                     flat
@@ -147,7 +161,7 @@
                     :edit="edit"
                     :dialog="dialog"
                     :customer="customer"
-                    @addedCustomer="addedCustomer"
+                    @addedCustomer="addedCustomer(customer)"
                     class="mt-2 navLinks navButton navButtonMargin"
                   ></AddCustomer
                 ></v-row>
@@ -203,17 +217,15 @@
                   <td>
                     <v-text-field
                       append-icon="mdi-percent-outline"
+                      v-model="tax"
+                      max="100"
                       label="Tax"
                       type="number"
+                      class="mt-2"
                       outlined
                     ></v-text-field>
                   </td>
-                </tr>
-                <tr>
                   <td></td>
-                  <td></td>
-                  <td class="text-right">Subtotal:</td>
-                  <td>${{ subTotal.toLocaleString() }}</td>
                 </tr>
                 <tr>
                   <td></td>
@@ -222,16 +234,37 @@
                   <td>
                     <AddItem @addItem="addItem" :products="products"></AddItem>
                   </td>
+                  <td></td>
                 </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right">Subtotal:</td>
+                  <td>${{ subTotal.toLocaleString() }}</td>
+                  <td></td>
+                </tr>
+
                 <tr>
                   <td></td>
                   <td></td>
                   <td class="text-right">Grand Total:</td>
                   <td>${{ grandTotal.toLocaleString() }}</td>
+                  <td></td>
                 </tr>
               </template>
-            </v-data-table>
-          </v-card>
+            </v-data-table> </v-card
+          ><v-container fluid>
+            <v-textarea
+              id="notes"
+              name="input-7-1"
+              label="Notes"
+              v-model="notes"
+              outlined
+              ows="2"
+              row-height="15"
+              auto-grow
+            ></v-textarea>
+          </v-container>
         </v-col>
       </v-row>
     </v-col>
@@ -254,11 +287,13 @@ export default {
     AddItem,
     AddCustomer,
   },
-  data: (vm) => ({
+  data: () => ({
     date: new Date().toISOString().substr(0, 10),
-    date_created: vm.formatDate(new Date().toISOString().substr(0, 10)),
-    date_due: vm.formatDate(new Date().toISOString().substr(0, 10)),
+    date_created: null,
+    date_due: null,
+    exportItems: ["Pdf", "Excel"],
     details: false,
+    download: "Download",
     menu1: false,
     title: "Create Customer",
     menu2: false,
@@ -280,9 +315,9 @@ export default {
     invoices: [],
     perPage: 5,
     tax: 0,
-    search: "",
+    search: null,
     discount: 0,
-    notes: "",
+    notes: null,
     pageOfItems: [],
     excelFields: ["name", "price", "quantity", "total"],
     headers: [
@@ -361,8 +396,8 @@ export default {
       if (
         this.customer.name !== null &&
         this.items.length > 0 &&
-        this.createdDate !== null &&
-        this.dateDue !== null
+        this.date_created !== null &&
+        this.date_due !== null && this.customer != null
       ) {
         return false;
       } else {
@@ -381,11 +416,11 @@ export default {
   },
 
   methods: {
-    addedCustomer() {
-      this.getCustomers();
+    async addedCustomer() {
+      await this.getCustomers();
+
       this.customer = this.customers[this.customers.length - 1];
     },
-    closeAddCustomer() {},
 
     formatDate(date) {
       if (!date) return null;
@@ -524,7 +559,7 @@ export default {
 
       this.items.forEach((item) => {
         let temp2 = {
-          date_created: this.createdDate,
+          date_created: this.date_due,
           quantity: item.quantity,
           invoice_id: invoiceId,
           product_id: item.id,
@@ -544,12 +579,19 @@ export default {
     },
     saveInvoice() {
       let temp = {
-        date_created: this.createdDate,
-        date_due: this.dateDue,
+        date_created: this.date_created,
+        date_due: this.date_due,
         notes: this.notes,
         customer_id: this.customer.id,
         total: this.grandTotal,
       };
+
+      if (this.notes === null) {
+        if (confirm("Do you want to add notes")) {
+            window.location.hash = "notes";
+            return;
+        } 
+      }
 
       axios.post(invoicePath, temp).then((res) => {
         alert("Invoice Saved");
