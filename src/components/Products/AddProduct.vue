@@ -47,23 +47,7 @@
     </b-form> -->
 
   <v-row justify="center">
-    <v-dialog
-      attach="false"
-      content-class="class"
-      disabled
-      full-width
-      fullscreen
-      hide-overlay
-      lazy
-      max-width="none"
-      origin="center center"
-      persistent
-      return-value="returnValue"
-      scrollable
-      transition="dialog-transition"
-      value="value"
-      width="auto"
-    >
+    <v-dialog v-model="show" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn color="success" dark v-on="on">Add Product</v-btn>
       </template>
@@ -71,8 +55,8 @@
       <v-card>
         <v-form ref="form">
           <v-card-title class="headline">
-            <span v-if="!edit" class="headline">Product Info</span>
-            <span v-else class="headline">Edit Customer</span>
+            <span v-if="!edit" class="headline">New Product</span>
+            <span v-else class="headline">Edit Product</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -89,7 +73,8 @@
                   <v-text-field
                     :rules="inputRules"
                     v-model="product.price"
-                    label="Address*"
+                    label="Price*"
+                    number
                     required
                   ></v-text-field>
                 </v-col>
@@ -124,44 +109,56 @@ import {
   required,
   minLength,
   maxLength,
-  between,
+  between
 } from "vuelidate/lib/validators";
 const axios = require("axios");
 const path = "http://localhost:5000/api/product";
 
 export default {
   mixins: [validationMixin],
-  name: "AddProductInvoice",
+  name: "AddProduct",
   props: {
     edit: Boolean,
-    product: Object,
+    product: {
+      type: Object,
+      defautl: null
+    },
+    dialog: {
+      type: Boolean,
+      default: false
+    }
   },
   data: function() {
     return {
-      inputRules: [(v) => v.length >= 3 || "Minimum length is 3 characters"],
+      inputRules: [v => v.length >= 3 || "Minimum length is 3 characters"],
+      show: false,
       form: {
         name: "",
         price: 0,
-        description: "",
-      },
+        description: ""
+      }
     };
   },
   validations: {
     form: {
       price: {
         required,
-        between: between(0, 99999999999),
+        between: between(0, 99999999999)
       },
       name: {
         required,
-        minLength: minLength(3),
+        minLength: minLength(3)
       },
       description: {
-        maxLength: maxLength(10000),
-      },
-    },
+        maxLength: maxLength(10000)
+      }
+    }
   },
   methods: {
+    close() {
+      this.show = false;
+      this.$emit("close");
+    },
     validateState(name) {
       const { $dirty, $error } = this.$v.form[name];
       return $dirty ? !$error : null;
@@ -169,16 +166,20 @@ export default {
     resetForm() {
       this.form = {
         name: null,
-        address: null,
+        address: null
       };
 
       this.$nextTick(() => {
         this.$v.$reset();
       });
     },
-    onSubmit() {
+    submit() {
       this.$v.form.$touch();
-      if (this.$v.form.$anyError) {
+      // if (this.$v.form.$anyError) {
+      //   return;
+      // }
+
+      if (this.$refs.form.validate()) {
         return;
       }
       if (this.edit) {
@@ -188,39 +189,48 @@ export default {
         temp.description = this.form.description;
         axios
           .put(path + "/" + this.product.id, temp)
-          .then((res) => {
+          .then(res => {
             this.$emit("addedProduct");
+            this.show = false;
             alert("Product Updated");
             console.log(res.data);
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
       } else {
         let temp = { name: "", price: 0, description: "" };
-        temp.name = this.form.name;
-        temp.price = this.form.price;
-        temp.description = this.form.description;
+        temp.name = this.product.name;
+        temp.price = this.product.price;
+        temp.description = this.product.description;
         axios
           .post(path, temp)
-          .then((res) => {
+          .then(res => {
             this.$emit("addedProduct");
+            this.show = false;
             alert("Added Product");
             console.log(res.data);
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
       }
-    },
+    }
   },
   created() {
+    this.show = this.dialog;
+
     if (this.edit) {
       this.form.name = this.product.name;
       this.form.description = this.product.description;
       this.form.price = this.product.price;
     }
   },
+  watch: {
+    dialog() {
+      this.show = this.dialog;
+    }
+  }
 };
 </script>
 

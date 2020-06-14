@@ -17,7 +17,7 @@
       <v-card raised color="white">
         <v-card-title>
           <div class="w-100 mt-4 m-auto">
-            <v-autocompleteF
+            <v-autocomplete
               outlined
               clearable
               v-model="product"
@@ -43,7 +43,7 @@
                   </v-col></v-row
                 >
               </template>
-            </v-autocompleteF>
+            </v-autocomplete>
           </div>
         </v-card-title>
 

@@ -273,7 +273,7 @@
                 Continue
               </v-btn>
 
-              <v-btn text>Cancel</v-btn>
+              <v-btn text v-on:click="close">Cancel</v-btn>
             </v-stepper-content>
 
             <v-stepper-content step="2">
@@ -420,7 +420,7 @@
                 Continue
               </v-btn>
 
-              <v-btn text>Cancel</v-btn>
+              <v-btn text @click="close">Cancel</v-btn>
               <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn text @click="close">Close</v-btn>

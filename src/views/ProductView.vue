@@ -1,14 +1,20 @@
 <template>
   <div class="bg-light" style="height: 100vh; overflow: hidden;">
     <b-container class="clear m-0 p-0" fluid>
-      <b-navbar class="navigation bg-transparent" type="light" variant="info">
+      <b-navbar class="navigation bg-white" type="light" variant="info">
         <b-navbar-brand>
           <h1>Products</h1>
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <v-row>
-              
+              <AddProduct
+                @close="close"
+                :dialog="dialog"
+                @addedProduct="addedProduct"
+                v-bind:edit="edit"
+                v-bind:product="product"
+              />
             </v-row>
             <!-- <b-input
               type="text"
@@ -28,45 +34,37 @@
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
-      <b-table fixed :fields="productFields" :items="filterProductList">
-        <template v-slot:cell(actions)="data">
-          <b-dropdown
-            v-b-popover.hover.top="'Actions'"
-            variant="primary"
-            no-caret
-            id="dropdown-1"
-            text="Options"
-            class="m-md-2 bg-transparent"
-          >
-            <template v-slot:button-content>
-              <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
-            </template>
-            <b-dropdown-group id="dropdown-group-1">
-              <b-dropdown-item @click="viewProduct(data.item)"
-                >View</b-dropdown-item
-              >
-              <b-dropdown-item @click="addProduct(data.item, true)"
-                >Edit</b-dropdown-item
-              >
-              <b-dropdown-item @click="deleteProduct(data.item)"
-                >Delete</b-dropdown-item
-              >
-            </b-dropdown-group>
-            <!-- <b-button variant="warning" block @click="addProduct(data.item,true)">Edit</b-button>
-            <b-button variant="danger" block @click="deleteProduct(data.item)">Delete</b-button>-->
-          </b-dropdown>
-        </template>
-        <!-- <template v-slot:custom-foot v-if="filterProductList.length === 0">
-          <tr>
-            <td></td>
-            <td></td>
-            <td>
-              <h1>No Data</h1>
-            </td>
-            <td></td>
-          </tr>
-        </template> -->
-      </b-table>
+      <v-column style="height: 90vh">
+        <v-card style="height: 90vh; overflow: auto;">
+          <v-flex style="overflow: auto;" class="w-100">
+            <v-card-title>
+              <v-text-field
+                v-model="searchProduct"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-title>
+            <v-data-table
+              :headers="tableHeaders"
+              :items="products"
+              :search="searchProduct"
+            >
+              <template v-slot:item.actions="{ item }">
+                <div>
+                  <v-icon small class="mr-2" @click="showProduct(item, true)">
+                    mdi-pencil
+                  </v-icon>
+                  <v-icon small @click="deleteCustomer(item)">
+                    mdi-delete
+                  </v-icon>
+                </div>
+              </template>
+            </v-data-table>
+          </v-flex>
+        </v-card>
+      </v-column>
       <div v-if="filterProductList == 0"><h1>No Data</h1></div>
       <b-modal
         hide-footer
@@ -101,39 +99,55 @@
 <script>
 const axios = require("axios");
 const path = "http://localhost:5000/api/product";
-import AddProduct from "/Users/ronaldgilliard/invoice-app-electron/src/components/Products/AddProduct.vue";
-import { BIconThreeDotsVertical } from "bootstrap-vue";
+import AddProduct from "../components/Products/AddProduct";
+// import { BIconThreeDotsVertical } from "bootstrap-vue";
 import ViewProduct from "../components/Products/ViewProduct";
 export default {
   name: "ProductView",
   components: {
     AddProduct,
-    ViewProduct,
-    BIconThreeDotsVertical,
+    ViewProduct
   },
   data: function() {
     return {
       edit: false,
+      dialog: false,
       products: [],
       searchProduct: "",
       product: {
-        id: 0,
-        name: "",
-        price: 0,
-        description: "",
+        id: null,
+        name: null,
+        price: null,
+        description: null
       },
-      productFields: [
-        { key: "id", label: "Id" },
-        { key: "name", label: "Name" },
-        { key: "price", label: "Price" },
-        { key: "actions", label: "Actions" },
-      ],
+      tableHeaders: [
+        { text: "Id", value: "id" },
+        { text: "Name", value: "name" },
+        { text: "Price", value: "price" },
+        { text: "Actions", value: "actions", sortable: false }
+      ]
+      // tableHeaders: [
+      //   { text: "Id", value: "id" },
+      //   {
+      //     text: "Name",
+      //     sortable: false,
+      //     value: "name",
+      //   },
+      //   { text: "Address", value: "address" },
+      //   { text: "Actions", value: "actions", sortable: false },
+      // ],
     };
   },
   methods: {
     addedProduct() {
       this.getProducts();
       this.$refs["addProduct"].hide();
+    },
+
+    showProduct(product, bool) {
+      this.edit = bool;
+      this.dialog = true;
+      this.product = product;
     },
     addProduct(product, edit) {
       this.product = product;
@@ -143,22 +157,32 @@ export default {
     getProducts() {
       axios
         .get(path)
-        .then((res) => {
+        .then(res => {
           this.products = res.data.products;
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-disable-next-line
           console.error(error);
         });
+    },
+    close() {
+      this.edit = false;
+      this.dialog = false;
+      this.product = {
+        id: null,
+        name: null,
+        price: null,
+        description: null
+      };
     },
     submitProduct() {
       if (this.edit) {
         axios
           .put(path + "/" + this.product.id, this.product)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
         this.$emit("currentTab", "Product");
@@ -167,10 +191,10 @@ export default {
       } else {
         axios
           .post(path, this.product)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
         this.$emit("currentTab", "Product");
@@ -189,23 +213,23 @@ export default {
       if (confirm("Are You Sure You Want To Delete This Product")) {
         axios
           .delete(path + "/" + product.id)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
             this.getProducts();
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
       }
-    },
+    }
   },
   computed: {
     filterProductList() {
-      return this.products.filter((item) => {
+      return this.products.filter(item => {
         return this.searchProduct
           .toLowerCase()
           .split(" ")
-          .every((v) => item.name.toLowerCase().includes(v));
+          .every(v => item.name.toLowerCase().includes(v));
       });
     },
     modalName() {
@@ -213,11 +237,11 @@ export default {
         return "Edit Product";
       }
       return "Add Product";
-    },
+    }
   },
   created() {
     this.getProducts();
-  },
+  }
 };
 </script>
 
