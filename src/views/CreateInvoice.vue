@@ -2,7 +2,8 @@
   <div style=" overflow: auto">
     <b-navbar style="height:10vh;" type="light" variant="white">
       <b-navbar-brand class="text-center">
-        <h1>Home</h1>
+        <h1 v-if="invoice === null">Create Invoice</h1>
+        <h1 v-else>Edit Invoice</h1>
       </b-navbar-brand>
       <b-navbar-nav class="ml-auto">
         <b-nav-form>
@@ -25,37 +26,49 @@
               <v-tooltip left>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn
-                      class="mt-5 mr-1 ml-2"
-                      v-on:click="saveInvoice"
-                      :disabled="InvoiceIncomplete"
-                      color="success"
-                      >Save Invoice</v-btn
-                    >
+                    <v-row justify="space-around">
+                      <v-btn
+                        v-if="invoice === null"
+                        class="mt-5"
+                        v-on:click="saveInvoice"
+                        :disabled="InvoiceIncomplete"
+                        color="success"
+                        >Save Invoice
+                      </v-btn>
+                      <v-btn
+                        v-else
+                        class="mt-5"
+                        :disabled="InvoiceIncomplete"
+                        color="success"
+                        @click="updateInvoice"
+                      >
+                        Update Invoice</v-btn
+                      >
+                      <v-select
+                        :disabled="InvoiceIncomplete"
+                        style="max-width:45%"
+                        background-color="error"
+                        dark
+                        offset-y
+                        class="mt-5"
+                        :items="exportItems"
+                        label="Export"
+                        v-model="download"
+                        solo
+                        @input="downloadFiles"
+                        dense
+                      >
+                        <template v-slot:selection>
+                          <span style="max-width:25%" class="text-white">
+                            Export
+                          </span>
+                        </template>
+                      </v-select>
+                    </v-row>
                   </div>
                 </template>
-                <span>Left tooltip</span>
+                <span>Must Select: Invoice Date, Date Due and Customer</span>
               </v-tooltip>
-              <v-select
-                :disabled="InvoiceIncomplete"
-                style="max-width:50%"
-                background-color="error"
-                dark
-                offset-y
-                class="mt-5 p-0 ml-auto"
-                :items="exportItems"
-                label="Export"
-                v-model="download"
-                solo
-                @input="downloadFiles"
-                dense
-              >
-                <template v-slot:selection>
-                  <span style="max-width:25%" class="text-white">
-                    Export
-                  </span>
-                </template>
-              </v-select>
             </v-row>
           </v-container>
 
@@ -293,6 +306,17 @@ export default {
     AddItem,
     AddCustomer
   },
+  props: {
+    editInvoice: {
+      type: Boolean,
+      default: false
+    },
+    invoice: {
+      type: Object,
+      default: null
+    }
+  },
+
   data: () => ({
     date: new Date().toISOString().substr(0, 10),
     date_created: null,
@@ -425,7 +449,6 @@ export default {
   methods: {
     async addedCustomer() {
       await this.getCustomers();
-
       this.customer = this.customers[this.customers.length - 1];
     },
 
@@ -527,8 +550,8 @@ export default {
     },
     updateInvoice() {
       let temp = {
-        date_created: this.createdDate,
-        date_due: this.dateDue,
+        date_created: this.date_created,
+        date_due: this.date_due,
         notes: this.notes,
         customer_id: this.customer.id,
         total: this.grandTotal
@@ -575,7 +598,6 @@ export default {
         axios
           .put(transactionPath + "/" + item.id, temp2)
           .then(res => {
-            alert("howdy");
             console.log(res);
           })
           .catch(err => {
@@ -613,10 +635,6 @@ export default {
           .then(res => {
             this.invoices = res.data.invoices;
 
-            console.log("howdyyyyyy" + this.invoices);
-
-            alert(this.invoices.length);
-
             if (this.invoices.length > 0) {
               alert("invoice");
               invoiceId = this.invoices[this.invoices.length - 1].id;
@@ -627,7 +645,7 @@ export default {
             this.items
               .forEach(item => {
                 let temp2 = {
-                  date_created: this.createdDate,
+                  date_created: this.date_created,
                   quantity: item.quantity,
                   invoice_id: invoiceId,
                   product_id: item.id
@@ -661,9 +679,25 @@ export default {
       this.$refs["viewInvoice"].show();
     }
   },
-  created() {
-    this.getProducts();
-    this.getCustomers();
+  async created() {
+    if (this.invoice !== null) {
+      this.items = [];
+      this.invoice.transactions.forEach(transaction => {
+        this.items.push({
+          name: transaction.product.name,
+          quantity: transaction.quantity,
+          price: transaction.product.price,
+          id: transaction.product.id,
+          product: true,
+          total: transaction.product.price * transaction.quantity
+        });
+      });
+      this.date_created = this.invoice.date_created;
+      this.date_due = this.invoice.date_due;
+      this.customer = this.invoice.customer;
+    }
+    await this.getProducts();
+    await this.getCustomers();
   }
 };
 </script>

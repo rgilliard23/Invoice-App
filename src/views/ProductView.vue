@@ -7,15 +7,19 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <v-row>
-              <AddProduct
-                @close="close"
-                :dialog="dialog"
-                @addedProduct="addedProduct"
-                v-bind:edit="edit"
-                v-bind:product="product"
-              />
-            </v-row>
+            <v-col
+              ><v-row align="center">
+                <AddProduct
+                  @close="close"
+                  :dialog="dialog"
+                  @addedProduct="addedProduct"
+                  v-bind:edit="edit"
+                  v-bind:product="product"
+                  class="navLinks navButton navButtonMargin"
+                />
+              </v-row>
+            </v-col>
+
             <!-- <b-input
               type="text"
               style="width: 45%"
@@ -56,7 +60,7 @@
                   <v-icon small class="mr-2" @click="showProduct(item, true)">
                     mdi-pencil
                   </v-icon>
-                  <v-icon small @click="deleteCustomer(item)">
+                  <v-icon small @click="deleteProduct(item)">
                     mdi-delete
                   </v-icon>
                 </div>
@@ -87,7 +91,7 @@
         <keep-alive>
           <AddProduct
             @addedProduct="addedProduct"
-            v-bind:edit="edit"
+            :edit="edit"
             v-bind:product="product"
           />
         </keep-alive>
@@ -166,14 +170,15 @@ export default {
         });
     },
     close() {
-      this.edit = false;
       this.dialog = false;
+
       this.product = {
         id: null,
         name: null,
         price: null,
         description: null
       };
+      this.edit = false;
     },
     submitProduct() {
       if (this.edit) {
@@ -209,7 +214,7 @@ export default {
       this.product = product;
       this.$refs["viewProduct"].show();
     },
-    deleteProduct: function(product) {
+    deleteProduct(product) {
       if (confirm("Are You Sure You Want To Delete This Product")) {
         axios
           .delete(path + "/" + product.id)
@@ -253,6 +258,14 @@ export default {
   width: 45%;
   font-size: 20px;
 }
+.navButton {
+  min-width: 2vh;
+  padding: 0;
+  font-size: 14px;
+  height: 4.7vh;
+  min-height: 4.7vh;
+}
+
 .navigation {
   height: 10vh;
 }

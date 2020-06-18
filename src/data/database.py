@@ -55,6 +55,7 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     address = db.Column(db.String(150))
+    invoices = db.relationship("Invoice", back_populates="customer", cascade= "all, delete, delete-orphan")
 
     def __init__(self, name, address):
         self.name = name
@@ -70,7 +71,9 @@ class Invoice(db.Model):
     notes = db.Column(db.String)
     customer_id = db.Column(db.Integer, db.ForeignKey(
         'customers.id'), nullable=False)
-    customer = db.relationship('Customer', backref="invoices")
+    customer = db.relationship('Customer', back_populates="invoices")
+    transactions = db.relationship(
+        "Transaction", cascade="all, delete", passive_deletes=True)
     total = db.Column(db.Float)
 
     def __init__(self, date_created, date_due, notes, customer_id, total, completed):
@@ -88,8 +91,8 @@ class Transaction(db.Model):
     date_created = db.Column(db.Date, nullable=False)
     quantity = db.Column(db.Integer, unique=False)
     invoice_id = db.Column(db.Integer, db.ForeignKey(
-        'invoices.id'), nullable=False)
-    invoice = db.relationship('Invoice', backref="transactions")
+        'invoices.id', ondelete="cascade"), nullable=False, index=True)
+    # invoice = db.relationship('Invoice', backref="transactions")
     product_id = db.Column(db.Integer, db.ForeignKey(
         'products.id'), nullable=False)
     product = db.relationship("Product", backref="transactions")
@@ -131,7 +134,7 @@ class InvoiceSchema(ma.Schema):
     transactions = fields.Nested(
         lambda: TransactionSchema(many=True, exclude=("invoice",)))
     customer = fields.Nested(lambda: CustomerSchema(
-        only=("name", "address", "id")))
+        only=("name", "address", "id",)))
 
     class Meta:
         fields = ("id", "date_due", "notes", "date_created",

@@ -64,15 +64,14 @@
                 <v-col cols="12">
                   <v-text-field
                     :rules="inputRules"
-                    v-model="product.name"
+                    v-model="form.name"
                     label="Name*"
                     required
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                    :rules="inputRules"
-                    v-model="product.price"
+                    v-model="form.price"
                     label="Price*"
                     number
                     required
@@ -81,10 +80,11 @@
                 <v-col cols="12">
                   <v-textarea
                     auto-grow
-                    rows="3"
-                    row-height="15"
+                    outlined
+                    rows="5"
+                    row-height="24"
                     :rules="inputRules"
-                    v-model="product.description"
+                    v-model="form.description"
                     label="Description"
                   ></v-textarea>
                 </v-col>
@@ -118,10 +118,13 @@ export default {
   mixins: [validationMixin],
   name: "AddProduct",
   props: {
-    edit: Boolean,
+    edit: {
+      type: Boolean,
+      default: false
+    },
     product: {
       type: Object,
-      defautl: null
+      default: null
     },
     dialog: {
       type: Boolean,
@@ -130,7 +133,7 @@ export default {
   },
   data: function() {
     return {
-      inputRules: [v => v.length >= 3 || "Minimum length is 3 characters"],
+      inputRules: [v => v.length >= 3 || "Minimum Length is 3 Characters"],
       show: false,
       form: {
         name: "",
@@ -174,12 +177,12 @@ export default {
       });
     },
     submit() {
-      this.$v.form.$touch();
       // if (this.$v.form.$anyError) {
       //   return;
       // }
 
-      if (this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
+        alert("foehofh");
         return;
       }
       if (this.edit) {
@@ -200,9 +203,9 @@ export default {
           });
       } else {
         let temp = { name: "", price: 0, description: "" };
-        temp.name = this.product.name;
-        temp.price = this.product.price;
-        temp.description = this.product.description;
+        temp.name = this.form.name;
+        temp.price = this.form.price;
+        temp.description = this.form.description;
         axios
           .post(path, temp)
           .then(res => {
@@ -219,14 +222,18 @@ export default {
   },
   created() {
     this.show = this.dialog;
-
-    if (this.edit) {
+    if (this.product !== null) {
       this.form.name = this.product.name;
       this.form.description = this.product.description;
       this.form.price = this.product.price;
     }
   },
   watch: {
+    product() {
+      this.form.name = this.product.name;
+      this.form.price = this.product.price;
+      this.form.description = this.product.description;
+    },
     dialog() {
       this.show = this.dialog;
     }

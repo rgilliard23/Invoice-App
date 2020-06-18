@@ -16,6 +16,19 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
+            <v-dialog
+              v-model="dialog"
+              scrollable
+              fullscreen
+              persistent
+              :overlay="false"
+              max-width="500px"
+              transition="dialog-transition"
+            >
+            </v-dialog>
+            <v-snackbar v-model="dialog" top right color="success"
+              >Customer Created</v-snackbar
+            >
             <v-col align="center">
               <v-row>
                 <!-- <v-text-field
@@ -83,7 +96,6 @@
               </template>
             </v-data-table>
           </v-flex>
-         
         </v-card>
       </v-column>
 
@@ -162,7 +174,7 @@ export default {
   name: "CustomerView",
   components: {
     AddCustomer,
-    ViewCustomer,
+    ViewCustomer
   },
   data: function() {
     return {
@@ -173,28 +185,28 @@ export default {
       customer: {
         id: null,
         name: null,
-        address: null,
+        address: null
       },
       options: {
         buttons: ["Yes", "No", "Cancel"],
-        message: "Do you really want to quit?",
+        message: "Do you really want to quit?"
       },
       tableHeaders: [
         { text: "Id", value: "id" },
         {
           text: "Name",
           sortable: false,
-          value: "name",
+          value: "name"
         },
         { text: "Address", value: "address" },
-        { text: "Actions", value: "actions", sortable: false },
+        { text: "Actions", value: "actions", sortable: false }
       ],
       customerFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
         { key: "address", label: "Address" },
-        { key: "actions", label: "Actions" },
-      ],
+        { key: "actions", label: "Actions" }
+      ]
     };
   },
   methods: {
@@ -215,10 +227,10 @@ export default {
     getCustomers() {
       axios
         .get(path)
-        .then((res) => {
+        .then(res => {
           this.customers = res.data.customers;
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -226,10 +238,10 @@ export default {
     getCustomer() {
       axios
         .get(path + "/" + this.customer.id)
-        .then((res) => {
+        .then(res => {
           this.customer = res.data.customer;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -243,21 +255,21 @@ export default {
       if (this.edit) {
         axios
           .put(path + "/" + this.customer.id, this.customer)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err.data);
           });
         this.edit = false;
       } else {
         axios
           .post(path, this.customer)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch((error) => {
+          .catch(error => {
             console.log(error.data);
           });
         console.log("Submitted Product");
@@ -272,15 +284,15 @@ export default {
       if (confirm("Do you really want to delete?")) {
         axios
           .delete(path + "/" + customer.id)
-          .then((res) => {
+          .then(res => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err.data);
           });
       }
-    },
+    }
   },
   //* Calls function on load
   created() {
@@ -295,14 +307,14 @@ export default {
       return "Add Customer";
     },
     filterCustomerList() {
-      return this.customers.filter((item) => {
+      return this.customers.filter(item => {
         return this.searchCustomer
           .toLowerCase()
           .split(" ")
-          .every((v) => item.name.toLowerCase().includes(v));
+          .every(v => item.name.toLowerCase().includes(v));
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

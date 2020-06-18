@@ -161,7 +161,6 @@
           <v-stepper-header>
             <v-stepper-step step="1">Contact</v-stepper-step>
 
-            <v-divider></v-divider>
 
             <v-stepper-step step="2">Billing</v-stepper-step>
 
@@ -273,7 +272,7 @@
                 Continue
               </v-btn>
 
-              <v-btn text v-on:click="close">Cancel</v-btn>
+              <v-btn text @click="close">Cancel</v-btn>
             </v-stepper-content>
 
             <v-stepper-content step="2">
@@ -287,7 +286,7 @@
                 Continue
               </v-btn>
 
-              <v-btn text>Cancel</v-btn>
+              <v-btn text @click="close">Cancel</v-btn>
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
@@ -596,6 +595,7 @@ export default {
     },
     submit() {
       if (!this.$refs.form.validate()) {
+        
         return;
       }
       if (this.edit) {

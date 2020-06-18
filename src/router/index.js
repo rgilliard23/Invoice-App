@@ -6,12 +6,8 @@ import ProductView from "../views/ProductView.vue";
 import CustomerView from "../views/CustomerView.vue";
 import Invoice from "../components/Invoice/Invoice.vue";
 import Home from "../views/Home.vue";
-import CreateInvoice from "../views/CreateInvoice"
-
-
-
-
-
+import CreateInvoice from "../views/CreateInvoice";
+import ViewInvoice from "../components/Invoice/ViewInvoice";
 
 Vue.use(VueRouter);
 
@@ -42,33 +38,41 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: Home,
+    component: Home
   },
   {
     path: "/",
     name: "InvoiceView",
-    component: InvoiceView,
+    component: InvoiceView
   },
   {
     path: "/newinvoice",
     name: "New Invoice",
-    component: Invoice,
+    component: Invoice
   },
   {
     path: "/customer",
     name: "Customer View",
-    component: CustomerView,
+    component: CustomerView
   },
   {
     path: "/product",
     name: "Product View",
-    component: ProductView,
+    component: ProductView
   },
   {
     path: "/createinvoice",
     name: "Create Invoice",
     component: CreateInvoice,
+    props: true
   },
+  {
+    path: "/viewinvoice",
+    name: "View Invoice",
+    component: ViewInvoice,
+    props: true
+  }
+
   // {
   //   path: "/",
   //   name: "Home",
@@ -81,7 +85,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
   linkExactActiveClass: "active",
-  linkActiveClass: "active",
+  linkActiveClass: "active"
 });
 
 export default router;

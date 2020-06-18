@@ -7,7 +7,7 @@
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <router-link class="noMargin routerLink" to="/newinvoice">
+            <router-link class="noMargin routerLink" to="/createinvoice">
               <v-btn large flat color="success">New Invoice</v-btn>
             </router-link>
           </b-nav-form>
@@ -61,7 +61,6 @@
                       ></b-icon-exclamation-circle>
                     </div>
                   </b-row>
-
                   <h1 class="float-right"></h1>
                 </b-col>
               </b-card>
@@ -70,9 +69,9 @@
         </b-col>
       </b-row>
       <v-card class="my-2" elevation="0">
-        <v-card-title class="p-0">
+        <v-card-title class="">
           <v-container class="p-0" fluid>
-            <v-row class="justify-space-around cardTitle">
+            <v-row justify="space-between" class=" cardTitle">
               <v-autocomplete
                 clearable
                 v-model="customer"
@@ -154,9 +153,13 @@
         >
           <template v-slot:item.actions="{ item }">
             <div>
+              <v-icon small class="mr-2" @click="viewInvoice(item)">
+                mdi-eye
+              </v-icon>
               <v-icon small class="mr-2" @click="editInvoice(item)">
                 mdi-pencil
               </v-icon>
+
               <v-icon small @click="deleteInvoice(item)">
                 mdi-delete
               </v-icon>
@@ -211,7 +214,7 @@ export default {
   name: "InvoiceView",
   components: {
     InvoiceTemplate,
-    Invoice,
+    Invoice
   },
   data: function() {
     return {
@@ -228,7 +231,7 @@ export default {
       sortBy: "",
       sortDesc: false,
       sortDirection: "asc",
-      customer: {},
+      customer: null,
       customers: [],
       customersFiltered: [],
       currentPage: 1,
@@ -239,11 +242,11 @@ export default {
         {
           text: "Due",
           sortable: true,
-          value: "date_due",
+          value: "date_due"
         },
 
         { text: "Created", value: "date_created" },
-        { text: "Actions", value: "actions", sortable: false },
+        { text: "Actions", value: "actions", sortable: false }
       ],
       invoiceTableFields: [
         { key: "status", label: "Status" },
@@ -254,37 +257,37 @@ export default {
         {
           key: "total",
           label: "Total",
-          formatter: (value) => {
+          formatter: value => {
             return "$" + value.toLocaleString();
-          },
+          }
         },
-        { key: "actions", label: "Actions" },
+        { key: "actions", label: "Actions" }
       ],
       status: ["Completed", "Unpaid"],
       customLabels: {
         first: "<<",
         last: ">>",
         previous: "<",
-        next: ">",
-      },
+        next: ">"
+      }
     };
   },
   methods: {
     getCustomers() {
       axios
         .get(customerPath)
-        .then((res) => {
+        .then(res => {
           this.customers = res.data.customers;
           this.customersFiltered = this.customers;
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(e);
         });
     },
     querySelections(v) {
       // Simulated ajax query
       setTimeout(() => {
-        this.customersFiltered = this.customers.filter((e) => {
+        this.customersFiltered = this.customers.filter(e => {
           return (
             (e.name || "").toLowerCase().indexOf((v || "").toLowerCase()) > -1
           );
@@ -298,17 +301,17 @@ export default {
         notes: invoice.notes,
         customer_id: invoice.customer.id,
         completed: bool,
-        total: invoice.total,
+        total: invoice.total
       };
 
       axios
         .put(invoicePath + "/" + invoice.id, temp)
-        .then((res) => {
+        .then(res => {
           console.log(res.data);
           alert("Invoice Marked");
           this.getInvoices();
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err.data);
         });
     },
@@ -319,13 +322,13 @@ export default {
     getInvoices() {
       axios
         .get(invoicePath)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           this.invoices = res.data.invoices;
           this.customer = res.data.invoices.customer;
           this.transactions = res.data.invoices.transactions;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -334,34 +337,38 @@ export default {
 
       this.transactions = [];
 
-      this.invoice.transactions.forEach((element) => {
+      this.invoice.transactions.forEach(element => {
         this.transactions.push({
           price: element.product.price,
           name: element.product.name,
-          quantity: element.quantity,
+          quantity: element.quantity
         });
       });
+      this.$router.push({
+        name: "View Invoice",
+        params: { invoice: this.invoice }
+      });
       // this.$refs["viewInvoice"].show();
-      this.$refs["invoice"].show();
     },
-    deleteInvoice(invoice) {
+    async deleteInvoice(invoice) {
       if (confirm("Are You Sure You Want To Delete This Invoice")) {
         axios
           .delete(invoicePath + "/" + invoice.id)
-          .then((res) => {
+          .then(res => {
             alert("Invoice Deleted");
+            this.getInvoices();
             console.log(res.data);
             axios
               .get(customerPath + "/" + this.customer.id)
-              .then((res) => {
+              .then(res => {
                 this.customer = res.data.customer;
-                this.invoices = res.data.customer.invoices;
+                // this.invoices = res.data.customer.invoices;
               })
-              .catch((err) => {
+              .catch(err => {
                 console.log(err.data);
               });
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err.data);
           });
       }
@@ -369,27 +376,31 @@ export default {
     editInvoice(invoice) {
       this.invoice = invoice;
       this.customer = invoice.customer;
-      this.$refs["editInvoice"].show();
-    },
+      this.$router.push({
+        name: "Create Invoice",
+        params: { invoice: this.invoice }
+      });
+      // this.$refs["editInvoice"].show();
+    }
   },
   filters: {
     currency(number) {
       let temp = Number(number.toFixed(2));
       return temp.toLocaleString();
-    },
+    }
   },
   computed: {
     sortOptions() {
       // Create an options list from our fields
       return this.fields
-        .filter((f) => f.sortable)
-        .map((f) => {
+        .filter(f => f.sortable)
+        .map(f => {
           return { text: f.label, value: f.key };
         });
     },
     invoicesComplete() {
       let temp = 0;
-      this.invoices.forEach((element) => {
+      this.invoices.forEach(element => {
         if (element.completed) {
           temp += element.total;
         }
@@ -398,7 +409,7 @@ export default {
     },
     invoicesOutstanding() {
       let temp = 0;
-      this.invoices.forEach((element) => {
+      this.invoices.forEach(element => {
         if (!element.completed) {
           temp += element.total;
         }
@@ -409,42 +420,52 @@ export default {
       return this.invoices.length;
     },
     filterInvoiceList() {
-      return this.invoices.filter((item) => {
-        return this.searchInvoices
-          .toLowerCase()
-          .split(" ")
-          .every(
-            (v) => item.customer.name.toLowerCase().includes(v)
-            // item.date_cue.toLowerCase().includes(v)
-            // item.customer.name.toLowerCase().includes(v);
-          );
-      });
+      //   return this.searchInvoices
+      //     .toLowerCase()
+      //     .split(" ")
+      //     .every(
+      //       v => item.customer.name.toLowerCase().includes(v)
+      //     );
+      // }
+
+      let invoices = this.invoices;
+
+      if (this.customer != null) {
+        invoices = invoices.filter(
+          x => JSON.stringify(x.customer) === JSON.stringify(this.customer)
+        );
+        alert(
+          JSON.stringify(this.invoices[0].customer)
+        );
+      }
+
+      if (this.status != null) {
+        invoices.filter(x => x == this.status);
+      }
+      return invoices;
     },
     filterInvoices() {
       let result = [];
 
       return result;
-    },
+    }
   },
 
   watch: {
     searchCustomers(val) {
       val && val !== this.select && this.querySelections(val);
-    },
+    }
   },
-  created() {
-    this.getInvoices();
-    this.getCustomers();
-  },
+  async created() {
+    await this.getInvoices();
+    await this.getCustomers();
+  }
 };
 </script>
 
 <style scoped>
-.cardTitle {
-  padding: 0 !important;
-}
 .filterItems {
-  max-width: 24% !important;
+  max-width: 22% !important;
   min-width: 5% !important;
 }
 .overviewCardHeader {

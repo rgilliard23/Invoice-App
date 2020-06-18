@@ -52,7 +52,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-row justify-center>
-            <v-btn @click="addItem"> Add New</v-btn></v-row
+            <v-btn @click="addItem" color="success"> Add New</v-btn></v-row
           >
         </v-card-actions>
       </v-card>
@@ -66,8 +66,8 @@ export default {
   props: {
     products: {
       type: Array,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
@@ -77,7 +77,7 @@ export default {
       message: false,
       product: null,
       hints: true,
-      searchProducts: "",
+      searchProducts: ""
     };
   },
   methods: {
@@ -86,8 +86,8 @@ export default {
       else this.$emit("addItem", this.product);
       this.product = null;
       this.menu = false;
-    },
-  },
+    }
+  }
 };
 </script>
 
