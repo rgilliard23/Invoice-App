@@ -91,13 +91,20 @@
               <v-select
                 clearable
                 placeholder="All Statuses"
-                :items="status"
                 label="Status"
                 outlined
+                :items="status"
+                v-model="Status"
                 :menu-props="{ bottom: true, offsetY: true }"
                 class="filterItems"
                 rounded
-              ></v-select>
+              >
+                <template v-slot:item="data">
+                  <div>
+                    {{data.title}}
+                  </div>
+                </template>
+              </v-select>
 
               <v-menu
                 ref="menu"
@@ -263,7 +270,11 @@ export default {
         },
         { key: "actions", label: "Actions" }
       ],
-      status: ["Completed", "Unpaid"],
+      status: [
+        { title: "Completed", value: true },
+        { title: "Unpaid", value: false }
+      ],
+      Status: null,
       customLabels: {
         first: "<<",
         last: ">>",
@@ -432,15 +443,14 @@ export default {
 
       if (this.customer != null) {
         invoices = invoices.filter(
-          x => JSON.stringify(x.customer) === JSON.stringify(this.customer)
+          x =>
+            JSON.stringify(x.customer.id) === JSON.stringify(this.customer.id)
         );
-        alert(
-          JSON.stringify(this.invoices[0].customer)
-        );
+        alert(JSON.stringify(this.invoices[0].customer));
       }
 
-      if (this.status != null) {
-        invoices.filter(x => x == this.status);
+      if (this.Status != null) {
+        invoices.filter(x => x == this.Status);
       }
       return invoices;
     },
