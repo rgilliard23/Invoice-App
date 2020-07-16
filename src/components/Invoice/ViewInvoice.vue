@@ -90,8 +90,8 @@ export default {
   props: {
     invoice: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data: function() {
     return {};
@@ -100,9 +100,9 @@ export default {
     editInvoice() {
       this.$router.push({
         name: "Create Invoice",
-        params: { invoice: this.invoice }
+        params: { invoice: this.invoice },
       });
-    }
-  }
+    },
+  },
 };
 </script>
