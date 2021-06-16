@@ -75,9 +75,24 @@
         <v-card class="elevation-2">
           <v-card-text>
             <h3>Download</h3>
-            <v-btn color="success" class="mt-3" @click="editInvoice"
-              >Export Invoice</v-btn
-            >
+            <div class="mt-3">
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                    Dropdown
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="null">
+                    <largeModal></largeModal>
+                    <v-list-item-title>PDF</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="exportTo(2)">
+                    <v-list-item-title>Excel</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </v-card-text>
         </v-card>
       </v-timeline-item>
@@ -85,24 +100,48 @@
   </v-col>
 </template>
 <script>
+import { json2excel } from "js2excel";
+import largeModal from "/Users/ronaldgilliard/invoice-app-electron/src/components/modals/largeModal.vue";
+
 export default {
   name: "ViewInvoice",
+  components: {
+    largeModal
+  },
   props: {
     invoice: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   data: function() {
-    return {};
+    return {
+      invoiceData: []
+    };
   },
   methods: {
     editInvoice() {
       this.$router.push({
         name: "Create Invoice",
-        params: { invoice: this.invoice },
+        params: { invoice: this.invoice }
       });
     },
-  },
+    exportTo(val) {
+      switch (val) {
+        case 1:
+          return;
+        case 2:
+          try {
+            json2excel({
+              data: this.invoice.transactions,
+              name: "user-info-data",
+              formateDate: "yyyy/mm/dd"
+            });
+          } catch (e) {
+            console.log(e);
+          }
+      }
+    }
+  }
 };
 </script>

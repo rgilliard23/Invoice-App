@@ -120,7 +120,7 @@
                     year: 'numeric',
                     month: 'short',
                     day: '2-digit',
-                    weekday: 'short'
+                    weekday: 'short',
                   }"
                   locale="en"
                 ></b-form-datepicker> </b-input-group
@@ -136,7 +136,7 @@
                     year: 'numeric',
                     month: 'short',
                     day: '2-digit',
-                    weekday: 'short'
+                    weekday: 'short',
                   }"
                   locale="en"
                 ></b-form-datepicker> </b-input-group></b-col
@@ -149,8 +149,7 @@
               @revenue="revenueTotal"
               class="revenueChart"
             ></RevenueChart></b-col
-          ></b-row
-        >
+        ></b-row>
       </b-card>
     </b-col>
   </div>
@@ -180,7 +179,7 @@ export default {
       customers: [],
       invoices: [],
       products: [],
-      transactions: []
+      transactions: [],
     };
   },
   components: { RevenueChart },
@@ -194,33 +193,33 @@ export default {
     getCustomers() {
       axios
         .get(customerPath)
-        .then(res => {
+        .then((res) => {
           console.log(res.data);
           this.customers = res.data.customers;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.data);
         });
     },
     getProducts() {
       axios
         .get(productPath)
-        .then(res => {
+        .then((res) => {
           console.log(res.data);
           this.products = res.data.products;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.data);
         });
     },
     getInvoices() {
       axios
         .get(invoicePath)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           this.invoices = res.data.invoices;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -232,7 +231,7 @@ export default {
       }
       if (this.date1 != null && this.date2 != null) {
         this.invoicesRevenue = [];
-        this.invoices.forEach(element => {
+        this.invoices.forEach((element) => {
           // alert(moment(element.date_due).isBetween(this.date1, this.date2));
           if (moment(element.date_due).isBetween(this.date1, this.date2)) {
             this.invoicesRevenue.push(element);
@@ -259,11 +258,11 @@ export default {
     getTransactions() {
       axios
         .get(transactionPath)
-        .then(res => {
+        .then((res) => {
           console.log(res.data);
           this.transactions = res.data.transactions;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.data);
         });
     },
@@ -272,15 +271,15 @@ export default {
       const myChart = new Chart(ctx, {
         type: chartData.type,
         data: chartData.data,
-        options: chartData.options
+        options: chartData.options,
       });
       console.log(myChart);
-    }
+    },
   },
   computed: {
     invoicesComplete() {
       let temp = 0;
-      this.invoices.forEach(element => {
+      this.invoices.forEach((element) => {
         if (element.completed) {
           temp += element.total;
         }
@@ -289,13 +288,13 @@ export default {
     },
     invoicesOutstanding() {
       let temp = 0;
-      this.invoices.forEach(element => {
+      this.invoices.forEach((element) => {
         if (!element.completed) {
           temp += element.total;
         }
       });
       return temp;
-    }
+    },
   },
   watch: {
     date1() {
@@ -303,14 +302,14 @@ export default {
     },
     date2() {
       this.filterRevenueChart(null, true);
-    }
+    },
   },
   created() {
     this.getCustomers();
     this.getProducts();
     this.getInvoices();
     this.getTransactions();
-  }
+  },
 };
 </script>
 

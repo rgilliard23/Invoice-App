@@ -1,153 +1,4 @@
 <template>
-  <!-- <div>
-    <b-form @submit.stop.prevent="onSubmit">
-      <b-col class="w-100 m-auto" align-h="between"
-        ><b-row class="w-100"> -->
-  <!-- <h4>Customer Name:</h4> -->
-  <!-- <b-form-input
-            id="input-1"
-            v-model="$v.form.name.$model"
-            type="text"
-            required
-            :state="validateState('name')"
-            placeholder="Enter Name"
-            aria-describedby="input-1-live-feedback"
-          ></b-form-input>
-        </b-row>
-        <b-row class="w-100" style="margin-top: 1vh;">
-          <h4>Customer Address:</h4>
-          <b-form-input
-            id="input-1"
-            v-model="$v.form.address.$model"
-            type="text"
-            required
-            :state="validateState('address')"
-            placeholder="Enter Address"
-            aria-describedby="input-2-live-feedback"
-          ></b-form-input> </b-row
-      ></b-col>
-
-      <b-pagination
-        v-if="invoices.length > perPage"
-        style="margin-top: 2vh;"
-        class="w-100"
-        v-model="currentPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        aria-controls="my-table"
-        align="fill"
-      ></b-pagination>
-      <b-table
-        :currentPage="currentPage"
-        :perPage="perPage"
-        style="margin-top: 1vh;"
-        v-if="edit && invoices.length > 0"
-        :items="invoices"
-        :fields="invoiceFields"
-      >
-        <template v-slot:cell(actions)="data">
-          <div>
-            <b-dropdown
-              variant="primary"
-              no-caret
-              id="dropdown-1"
-              text="Options"
-              class="m-md-2 bg-transparent"
-            >
-              <template v-slot:button-content>
-                <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
-              </template>
-              <b-dropdown-group id="dropdown-group-1">
-                <b-dropdown-item @click="viewInvoice(data.item)">
-                  View</b-dropdown-item
-                >
-                <b-dropdown-item @click="editInvoice(data.item)"
-                  >Edit</b-dropdown-item
-                >
-                <b-dropdown-item @click="deleteInvoice(data.item)"
-                  >Delete</b-dropdown-item
-                >
-              </b-dropdown-group>
-
-            </b-dropdown>
-          </div>
-        </template>
-      </b-table>
-
-
-      <b-button
-        type="submit"
-        style="margin-top: 1vh;"
-        variant="primary"
-        v-if="edit"
-        >Update Customer</b-button
-      >
-      <b-button type="submit" style="margin-top: 1vh;" variant="primary" v-else
-        >Create Customer</b-button
-      >
-      <b-button
-        class="ml-2"
-        style="margin-top: 1vh;"
-        variant="danger"
-        @click="resetForm()"
-        >Reset Form</b-button
-      >
-    </b-form>
-    <b-modal title="Invoice" hide-footer size="xl" ref="viewInvoice">
-      <keep-alive>
-        <InvoiceTemplate
-          v-bind:transactions="transactions"
-          v-bind:dateDue="invoice.date_due"
-          v-bind:createdDate="invoice.createdDate"
-        />
-      </keep-alive>
-    </b-modal>
-
-    <b-modal hide-footer size="xl" ref="editInvoice">
-      <keep-alive>
-        <Invoice
-          v-bind:invoiceCustomer="customer"
-          v-bind:edit="true"
-          v-bind:invoice="invoice"
-        />
-      </keep-alive>
-    </b-modal>
-  </div> -->
-
-  <!-- <div class="text-center">
-    <v-dialog v-model="dialog" width="500">
-      <template v-slot:activator="{ on }">
-        <v-btn color="success" v-on="on">
-          Add Customer
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title class="headline grey lighten-2" primary-title>
-          <div v-if="!edit">Add Customer</div>
-          <div v-else>Edit Customer</div>
-        </v-card-title>
-
-        <v-card-text>
-          <v-form ref="form" class="px-3">
-            <v-text-field
-              prepend-icon="mdi-account"
-              label="Name"
-              v-model="name"
-              :rules="inputRules"
-            ></v-text-field>
-            <v-text-field
-              prepend-icon="mdi-map-marker"
-              label="Address"
-              v-model="address"
-              :rules="inputRules"
-            ></v-text-field>
-            <v-btn flat class="success mx-0 mt-3" @click="submit">Add Customer</v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </div> -->
   <v-row justify="center">
     <v-dialog persistent v-model="show" max-width="600px">
       <template v-slot:activator="{ on }">
@@ -157,15 +8,12 @@
 
       <v-card>
         <!-- Edit Customer -->
-        <v-stepper non-linear v-if="edit" v-model="e1">
+        <v-stepper v-if="edit" v-model="e1">
           <v-stepper-header>
             <v-stepper-step step="1">Contact</v-stepper-step>
 
-
             <v-stepper-step step="2">Billing</v-stepper-step>
-
           </v-stepper-header>
-
           <v-stepper-items>
             <v-stepper-content step="1">
               <v-form ref="form">
@@ -261,11 +109,11 @@
                     </v-data-table>
                   </v-flex>
                 </v-card-text>
-                <v-card-actions>
+                <!-- <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn text @click="close">Close</v-btn>
                   <v-btn color="success" text @click="submit">Save</v-btn>
-                </v-card-actions>
+                </v-card-actions> -->
               </v-form>
 
               <v-btn color="primary" @click="e1 = 2">
@@ -282,25 +130,26 @@
                 height="200px"
               ></v-card>
 
-              <v-btn color="primary" v-on:click="e1 = 3">
-                Continue
+              <v-btn color="primary" v-on:click="e1 = 1">
+                Back
               </v-btn>
-
-              <v-btn text @click="close">Cancel</v-btn>
+              <v-btn text @click="close">Close</v-btn>
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
 
         <!--* Add Customer-->
-        <v-stepper v-if="!edit" :non-linear="nextStep" :editable="nextStep" v-model="e1" :complete="nextStep">
+        <v-stepper
+          v-if="!edit"
+          :non-linear="nextStep"
+          :editable="nextStep"
+          v-model="e1"
+          :complete="nextStep"
+        >
           <v-stepper-header>
             <v-stepper-step step="1">Contact</v-stepper-step>
-
             <v-divider></v-divider>
-
             <v-stepper-step step="2">Billing</v-stepper-step>
-
-            <v-divider></v-divider>
           </v-stepper-header>
 
           <v-stepper-items>
@@ -398,7 +247,6 @@
                     </v-data-table>
                   </v-flex>
                 </v-card-text>
-                
               </v-form>
 
               <v-btn color="primary" @click="e1 = 2">
@@ -415,16 +263,16 @@
                 height="200px"
               ></v-card>
 
-              <v-btn color="primary" v-on:click="next">
+              <v-btn disabled color="primary" @click="e1 = 1">
                 Continue
               </v-btn>
 
               <v-btn text @click="close">Cancel</v-btn>
-              <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn text @click="close">Close</v-btn>
-                  <v-btn color="success" text @click="submit">Save</v-btn>
-                </v-card-actions>
+              <!-- <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text @click="close">Close</v-btn>
+                <v-btn color="success" text @click="submit">Save</v-btn>
+              </v-card-actions> -->
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
@@ -544,9 +392,9 @@ export default {
 
       this.$refs["viewInvoice"].show();
     },
-    next(){
-      this.e1 =2;
-      this.nextStep= true;
+    next() {
+      this.e1 = 2;
+      this.nextStep = true;
     },
     close() {
       if (this.edit) {
@@ -595,7 +443,6 @@ export default {
     },
     submit() {
       if (!this.$refs.form.validate()) {
-        
         return;
       }
       if (this.edit) {

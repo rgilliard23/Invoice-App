@@ -26,25 +26,9 @@
               transition="dialog-transition"
             >
             </v-dialog>
-            <v-snackbar v-model="dialog" top right color="success"
-              >Customer Created</v-snackbar
-            >
+            <v-snackbar top right color="success">Customer Created</v-snackbar>
             <v-col align="center">
               <v-row>
-                <!-- <v-text-field
-                  class="navSearch"
-                  label="Search"
-                  v-model="searchCustomer"
-                  solo
-                  hide-details
-                ></v-text-field> -->
-                <!-- <v-btn
-                  @click="showCustomer(null, false)"
-                  class="navLinks navButton navButtonMargin"
-                  block
-                  color="success"
-                  >Add Customer
-                </v-btn> -->
                 <AddCustomer
                   :create="false"
                   :edit="edit"
@@ -56,14 +40,6 @@
                 ></AddCustomer>
               </v-row>
             </v-col>
-
-            <!-- <b-button
-              @click="showCustomer(null, false)"
-              class="margin navLinks navButtonMargin"
-              size="lg"
-              variant="success"
-              >Add Customer</b-button
-            > -->
           </b-nav-form>
         </b-navbar-nav>
       </b-navbar>
@@ -98,53 +74,6 @@
           </v-flex>
         </v-card>
       </v-column>
-
-      <!-- <b-table fixed :fields="customerFields" :items="filterCustomerList">
-        <template v-slot:cell(actions)="data">
-          <b-dropdown
-            v-b-popover.hover.top="'Actions'"
-            variant="primary"
-            no-caret
-            id="dropdown-1"
-            text="Options"
-            class="m-md-2"
-          >
-            <template v-slot:button-content variant="link">
-              <b-icon-three-dots-vertical></b-icon-three-dots-vertical>
-            </template>
-            <b-dropdown-group id="dropdown-group-1">
-              <b-dropdown-item @click="viewCustomer(data.item)"
-                >View</b-dropdown-item
-              >
-              <b-dropdown-item @click="showCustomer(data.item, true)"
-                >Edit</b-dropdown-item
-              >
-              <b-dropdown-item @click="deleteCustomer(data.item)"
-                >Delete</b-dropdown-item
-              >
-            </b-dropdown-group>
-          </b-dropdown>
-        </template>
-      </b-table>
-      <div v-if="filterCustomerList == 0"><h1>No Data</h1></div> -->
-      <!-- <b-modal
-        hide-footer
-        centered
-        size="lg"
-        :title="modalName"
-        ref="addCustomer"
-        id="addCustomer"
-      >
-        <keep-alive>
-          <AddCustomer
-            @closeAddCustomer="closeAddCustomer"
-            @addedCustomer="addedCustomer"
-            :dialog="dialog"
-            v-bind:edit="edit"
-            v-bind:customer="customer"
-          />
-        </keep-alive>
-      </b-modal> -->
       <b-modal
         centered
         hide-footer
@@ -174,7 +103,7 @@ export default {
   name: "CustomerView",
   components: {
     AddCustomer,
-    ViewCustomer
+    ViewCustomer,
   },
   data: function() {
     return {
@@ -185,28 +114,28 @@ export default {
       customer: {
         id: null,
         name: null,
-        address: null
+        address: null,
       },
       options: {
         buttons: ["Yes", "No", "Cancel"],
-        message: "Do you really want to quit?"
+        message: "Do you really want to quit?",
       },
       tableHeaders: [
         { text: "Id", value: "id" },
         {
           text: "Name",
           sortable: false,
-          value: "name"
+          value: "name",
         },
         { text: "Address", value: "address" },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       customerFields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Name" },
         { key: "address", label: "Address" },
-        { key: "actions", label: "Actions" }
-      ]
+        { key: "actions", label: "Actions" },
+      ],
     };
   },
   methods: {
@@ -227,10 +156,10 @@ export default {
     getCustomers() {
       axios
         .get(path)
-        .then(res => {
+        .then((res) => {
           this.customers = res.data.customers;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -238,10 +167,10 @@ export default {
     getCustomer() {
       axios
         .get(path + "/" + this.customer.id)
-        .then(res => {
+        .then((res) => {
           this.customer = res.data.customer;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -255,21 +184,21 @@ export default {
       if (this.edit) {
         axios
           .put(path + "/" + this.customer.id, this.customer)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.data);
           });
         this.edit = false;
       } else {
         axios
           .post(path, this.customer)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error.data);
           });
         console.log("Submitted Product");
@@ -284,15 +213,15 @@ export default {
       if (confirm("Do you really want to delete?")) {
         axios
           .delete(path + "/" + customer.id)
-          .then(res => {
+          .then((res) => {
             console.log(res.data);
             this.getCustomers();
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.data);
           });
       }
-    }
+    },
   },
   //* Calls function on load
   created() {
@@ -307,14 +236,14 @@ export default {
       return "Add Customer";
     },
     filterCustomerList() {
-      return this.customers.filter(item => {
+      return this.customers.filter((item) => {
         return this.searchCustomer
           .toLowerCase()
           .split(" ")
-          .every(v => item.name.toLowerCase().includes(v));
+          .every((v) => item.name.toLowerCase().includes(v));
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -101,7 +101,7 @@
               >
                 <template v-slot:item="data">
                   <div>
-                    {{data.title}}
+                    {{ data.title }}
                   </div>
                 </template>
               </v-select>
@@ -221,7 +221,7 @@ export default {
   name: "InvoiceView",
   components: {
     InvoiceTemplate,
-    Invoice
+    Invoice,
   },
   data: function() {
     return {
@@ -249,11 +249,11 @@ export default {
         {
           text: "Due",
           sortable: true,
-          value: "date_due"
+          value: "date_due",
         },
 
         { text: "Created", value: "date_created" },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       invoiceTableFields: [
         { key: "status", label: "Status" },
@@ -264,41 +264,41 @@ export default {
         {
           key: "total",
           label: "Total",
-          formatter: value => {
+          formatter: (value) => {
             return "$" + value.toLocaleString();
-          }
+          },
         },
-        { key: "actions", label: "Actions" }
+        { key: "actions", label: "Actions" },
       ],
       status: [
         { title: "Completed", value: true },
-        { title: "Unpaid", value: false }
+        { title: "Unpaid", value: false },
       ],
       Status: null,
       customLabels: {
         first: "<<",
         last: ">>",
         previous: "<",
-        next: ">"
-      }
+        next: ">",
+      },
     };
   },
   methods: {
     getCustomers() {
       axios
         .get(customerPath)
-        .then(res => {
+        .then((res) => {
           this.customers = res.data.customers;
           this.customersFiltered = this.customers;
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
         });
     },
     querySelections(v) {
       // Simulated ajax query
       setTimeout(() => {
-        this.customersFiltered = this.customers.filter(e => {
+        this.customersFiltered = this.customers.filter((e) => {
           return (
             (e.name || "").toLowerCase().indexOf((v || "").toLowerCase()) > -1
           );
@@ -312,17 +312,17 @@ export default {
         notes: invoice.notes,
         customer_id: invoice.customer.id,
         completed: bool,
-        total: invoice.total
+        total: invoice.total,
       };
 
       axios
         .put(invoicePath + "/" + invoice.id, temp)
-        .then(res => {
+        .then((res) => {
           console.log(res.data);
           alert("Invoice Marked");
           this.getInvoices();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.data);
         });
     },
@@ -333,13 +333,13 @@ export default {
     getInvoices() {
       axios
         .get(invoicePath)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           this.invoices = res.data.invoices;
           this.customer = res.data.invoices.customer;
           this.transactions = res.data.invoices.transactions;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -348,16 +348,16 @@ export default {
 
       this.transactions = [];
 
-      this.invoice.transactions.forEach(element => {
+      this.invoice.transactions.forEach((element) => {
         this.transactions.push({
           price: element.product.price,
           name: element.product.name,
-          quantity: element.quantity
+          quantity: element.quantity,
         });
       });
       this.$router.push({
         name: "View Invoice",
-        params: { invoice: this.invoice }
+        params: { invoice: this.invoice },
       });
       // this.$refs["viewInvoice"].show();
     },
@@ -365,21 +365,21 @@ export default {
       if (confirm("Are You Sure You Want To Delete This Invoice")) {
         axios
           .delete(invoicePath + "/" + invoice.id)
-          .then(res => {
+          .then((res) => {
             alert("Invoice Deleted");
             this.getInvoices();
             console.log(res.data);
             axios
               .get(customerPath + "/" + this.customer.id)
-              .then(res => {
+              .then((res) => {
                 this.customer = res.data.customer;
                 // this.invoices = res.data.customer.invoices;
               })
-              .catch(err => {
+              .catch((err) => {
                 console.log(err.data);
               });
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.data);
           });
       }
@@ -389,29 +389,29 @@ export default {
       this.customer = invoice.customer;
       this.$router.push({
         name: "Create Invoice",
-        params: { invoice: this.invoice }
+        params: { invoice: this.invoice },
       });
       // this.$refs["editInvoice"].show();
-    }
+    },
   },
   filters: {
     currency(number) {
       let temp = Number(number.toFixed(2));
       return temp.toLocaleString();
-    }
+    },
   },
   computed: {
     sortOptions() {
       // Create an options list from our fields
       return this.fields
-        .filter(f => f.sortable)
-        .map(f => {
+        .filter((f) => f.sortable)
+        .map((f) => {
           return { text: f.label, value: f.key };
         });
     },
     invoicesComplete() {
       let temp = 0;
-      this.invoices.forEach(element => {
+      this.invoices.forEach((element) => {
         if (element.completed) {
           temp += element.total;
         }
@@ -420,7 +420,7 @@ export default {
     },
     invoicesOutstanding() {
       let temp = 0;
-      this.invoices.forEach(element => {
+      this.invoices.forEach((element) => {
         if (!element.completed) {
           temp += element.total;
         }
@@ -443,14 +443,14 @@ export default {
 
       if (this.customer != null) {
         invoices = invoices.filter(
-          x =>
+          (x) =>
             JSON.stringify(x.customer.id) === JSON.stringify(this.customer.id)
         );
         alert(JSON.stringify(this.invoices[0].customer));
       }
 
       if (this.Status != null) {
-        invoices.filter(x => x == this.Status);
+        invoices.filter((x) => x == this.Status);
       }
       return invoices;
     },
@@ -458,18 +458,18 @@ export default {
       let result = [];
 
       return result;
-    }
+    },
   },
 
   watch: {
     searchCustomers(val) {
       val && val !== this.select && this.querySelections(val);
-    }
+    },
   },
   async created() {
     await this.getInvoices();
     await this.getCustomers();
-  }
+  },
 };
 </script>
 

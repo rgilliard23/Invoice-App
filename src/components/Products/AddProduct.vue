@@ -1,52 +1,5 @@
 <template>
-  <!-- <b-form @submit.stop.prevent="onSubmit">
-      <b-form-group id="input-group-1" label="Product Name:" label-for="input-1">
-        <b-form-input
-          id="input-1"
-          v-model="$v.form.name.$model"
-          type="text"
-          required
-          :state="validateState('name')"
-          placeholder="Enter Name"
-          aria-describedby="input-1-live-feedback"
-        ></b-form-input>
-        <b-form-invalid-feedback id="input-1-live-feedback">Name must be at least 3 characters</b-form-invalid-feedback>
-      </b-form-group>
-      <b-form-group label="Product Price:">
-        <b-input-group prepend="$">
-          <b-form-input
-            id="input-1"
-            v-model="$v.form.price.$model"
-            type="number"
-            min="0"
-            step="1"
-            required
-            :state="validateState('price')"
-            placeholder="0"
-            aria-describedby="input-2-live-feedback"
-          ></b-form-input>
-        </b-input-group>
-
-        <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
-      </b-form-group>
-      <b-form-group label="Product Description:">
-        <b-form-textarea
-          id="textarea"
-          v-model="$v.form.description.$model"
-          placeholder="Description.."
-          :state="validateState('description')"
-          aria-describedby="input-2-live-feedback"
-          rows="6"
-          max-rows="6"
-        ></b-form-textarea>
-
-        <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
-      </b-form-group>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button variant="danger" class="ml-2" @click="resetForm()">Reset</b-button>
-    </b-form> -->
-
-  <v-row justify="center">
+<v-row justify="center">
     <v-dialog v-model="show" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn color="success" dark v-on="on">Add Product</v-btn>

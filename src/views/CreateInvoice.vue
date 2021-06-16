@@ -304,17 +304,17 @@ export default {
   name: "CreateInvoice",
   components: {
     AddItem,
-    AddCustomer
+    AddCustomer,
   },
   props: {
     editInvoice: {
       type: Boolean,
-      default: false
+      default: false,
     },
     invoice: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
 
   data: () => ({
@@ -336,7 +336,7 @@ export default {
     customer: {
       id: null,
       name: null,
-      address: null
+      address: null,
     },
     customers: [],
     currentPage: 1,
@@ -355,7 +355,7 @@ export default {
       { text: "Price", value: "price" },
       { text: "Quantity", value: "quantity" },
       { text: "Total", value: "total" },
-      { text: "", value: "actions", sortable: false }
+      { text: "", value: "actions", sortable: false },
     ],
     items: [
       {
@@ -365,7 +365,7 @@ export default {
         name: "Ronald",
         quantity: 1,
         price: 300,
-        total: 300
+        total: 300,
       },
       {
         uniqueId: 0,
@@ -373,7 +373,7 @@ export default {
         name: "Ronald",
         quantity: 1,
         price: 300,
-        total: 300
+        total: 300,
       },
       {
         uniqueId: 0,
@@ -381,7 +381,7 @@ export default {
         name: "Ronald",
         quantity: 1,
         price: 300,
-        total: 300
+        total: 300,
       },
       {
         uniqueId: 0,
@@ -389,7 +389,7 @@ export default {
         name: "Ronald",
         quantity: 1,
         price: 300,
-        total: 300
+        total: 300,
       },
       {
         uniqueId: 0,
@@ -397,9 +397,9 @@ export default {
         name: "Ronald",
         quantity: 1,
         price: 300,
-        total: 300
-      }
-    ]
+        total: 300,
+      },
+    ],
   }),
 
   computed: {
@@ -409,7 +409,7 @@ export default {
     subTotal() {
       let temp = 0;
 
-      this.items.forEach(transaction => {
+      this.items.forEach((transaction) => {
         temp += transaction.price * transaction.quantity;
       });
       return temp;
@@ -437,13 +437,13 @@ export default {
     },
     rows() {
       return this.items.length;
-    }
+    },
   },
 
   watch: {
     date() {
       this.dateFormatted = this.formatDate(this.date);
-    }
+    },
   },
 
   methods: {
@@ -481,7 +481,7 @@ export default {
           name: "",
           quantity: 1,
           price: Number(0),
-          total: 0
+          total: 0,
         });
       } else {
         this.items.push({
@@ -491,7 +491,7 @@ export default {
           name: product.name,
           quantity: 1,
           price: product.price,
-          total: product.price
+          total: product.price,
         });
       }
 
@@ -512,7 +512,7 @@ export default {
     },
     inLineTotal() {
       let count = 0;
-      this.items.forEach(element => {
+      this.items.forEach((element) => {
         element.uniqueId = count;
         element.total = Number((element.price * element.quantity).toFixed(2));
         element.price = Number(element.price);
@@ -529,10 +529,10 @@ export default {
     getProducts() {
       axios
         .get(productPath)
-        .then(res => {
+        .then((res) => {
           this.products = res.data.products;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -540,10 +540,10 @@ export default {
     getCustomers() {
       axios
         .get(customerPath)
-        .then(res => {
+        .then((res) => {
           this.customers = res.data.customers;
         })
-        .catch(error => {
+        .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
         });
@@ -554,16 +554,16 @@ export default {
         date_due: this.date_due,
         notes: this.notes,
         customer_id: this.customer.id,
-        total: this.grandTotal
+        total: this.grandTotal,
       };
 
       axios
         .put(invoicePath + "/" + this.invoice.id, temp)
-        .then(res => {
+        .then((res) => {
           alert("Invoice Updated");
           console.log(res);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           console.log("Invoice Error");
         });
@@ -572,11 +572,11 @@ export default {
 
       axios
         .get(invoicePath)
-        .then(res => {
+        .then((res) => {
           this.invoices = res.data.invoices;
           console.log(typeof this.invoices);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
 
@@ -587,20 +587,20 @@ export default {
         invoiceId = this.invoices[this.invoices.length - 1].id;
       }
 
-      this.items.forEach(item => {
+      this.items.forEach((item) => {
         let temp2 = {
           date_created: this.date_due,
           quantity: item.quantity,
           invoice_id: invoiceId,
-          product_id: item.id
+          product_id: item.id,
         };
         console.log(temp2);
         axios
           .put(transactionPath + "/" + item.id, temp2)
-          .then(res => {
+          .then((res) => {
             console.log(res);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
             console.log("Transaction Error");
           });
@@ -612,7 +612,7 @@ export default {
         date_due: this.date_due,
         notes: this.notes,
         customer_id: this.customer.id,
-        total: this.grandTotal
+        total: this.grandTotal,
       };
 
       if (this.notes === null) {
@@ -622,7 +622,7 @@ export default {
         }
       }
 
-      axios.post(invoicePath, temp).then(res => {
+      axios.post(invoicePath, temp).then((res) => {
         alert("Invoice Saved");
         console.log(res);
 
@@ -632,7 +632,7 @@ export default {
 
         axios
           .get(invoicePath)
-          .then(res => {
+          .then((res) => {
             this.invoices = res.data.invoices;
 
             if (this.invoices.length > 0) {
@@ -643,33 +643,33 @@ export default {
             console.log(this.invoices[this.invoices.length - 1].id);
 
             this.items
-              .forEach(item => {
+              .forEach((item) => {
                 let temp2 = {
                   date_created: this.date_created,
                   quantity: item.quantity,
                   invoice_id: invoiceId,
-                  product_id: item.id
+                  product_id: item.id,
                 };
 
                 console.log(temp2);
 
                 axios
                   .post(transactionPath, temp2)
-                  .then(res => {
+                  .then((res) => {
                     alert("howdy");
                     console.log(res);
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     console.log(err);
                     console.log("Transaction Error");
                   });
               })
-              .catch(err => {
+              .catch((err) => {
                 console.log(err);
                 console.log("Invoice Error");
               });
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       });
@@ -677,19 +677,19 @@ export default {
     viewInvoice(invoice) {
       this.invoice = invoice;
       this.$refs["viewInvoice"].show();
-    }
+    },
   },
   async created() {
     if (this.invoice !== null) {
       this.items = [];
-      this.invoice.transactions.forEach(transaction => {
+      this.invoice.transactions.forEach((transaction) => {
         this.items.push({
           name: transaction.product.name,
           quantity: transaction.quantity,
           price: transaction.product.price,
           id: transaction.product.id,
           product: true,
-          total: transaction.product.price * transaction.quantity
+          total: transaction.product.price * transaction.quantity,
         });
       });
       this.date_created = this.invoice.date_created;
@@ -698,7 +698,7 @@ export default {
     }
     await this.getProducts();
     await this.getCustomers();
-  }
+  },
 };
 </script>
 

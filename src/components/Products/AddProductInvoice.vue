@@ -1,7 +1,11 @@
 <template>
   <div>
     <b-form @submit.stop.prevent="onSubmit">
-      <b-form-group id="input-group-1" label="Product Name:" label-for="input-1">
+      <b-form-group
+        id="input-group-1"
+        label="Product Name:"
+        label-for="input-1"
+      >
         <b-form-input
           id="input-1"
           v-model="$v.form.name.$model"
@@ -11,7 +15,9 @@
           placeholder="Enter Name"
           aria-describedby="input-1-live-feedback"
         ></b-form-input>
-        <b-form-invalid-feedback id="input-1-live-feedback">Name must be at least 3 characters</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-1-live-feedback"
+          >Name must be at least 3 characters</b-form-invalid-feedback
+        >
       </b-form-group>
       <b-form-group label="Product Price:">
         <b-input-group prepend="$">
@@ -28,7 +34,9 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-form-invalid-feedback id="input-2-live-feedback">Price is required</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-2-live-feedback"
+          >Price is required</b-form-invalid-feedback
+        >
       </b-form-group>
 
       <b-form-group label="Select Quantity:">
@@ -46,7 +54,9 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-form-invalid-feedback id="input-2-live-feedback">Quantity Too High</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-2-live-feedback"
+          >Quantity Too High</b-form-invalid-feedback
+        >
       </b-form-group>
       <b-form-group label="Product Description:">
         <b-form-textarea
@@ -59,7 +69,9 @@
           max-rows="6"
         ></b-form-textarea>
 
-        <b-form-invalid-feedback id="input-2-live-feedback">Description cannot exceed 1000 characters</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="input-2-live-feedback"
+          >Description cannot exceed 1000 characters</b-form-invalid-feedback
+        >
       </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button class="ml-2" @click="resetForm()">Reset</b-button>
@@ -69,7 +81,12 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, minLength, maxLength, between } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  between,
+} from "vuelidate/lib/validators";
 const axios = require("axios");
 const path = "http://localhost:5000/api/product";
 
@@ -82,33 +99,33 @@ export default {
         name: null,
         price: null,
         quantity: 1,
-        description: null
+        description: null,
       },
       product: {
         name: null,
         price: null,
         quantity: 1,
-        description: null
-      }
+        description: null,
+      },
     };
   },
   validations: {
     form: {
       price: {
         required,
-        between: between(0, 99999999999)
+        between: between(0, 99999999999),
       },
       name: {
         required,
-        minLength: minLength(3)
+        minLength: minLength(3),
       },
       quantity: {
-        between: between(0, 9999)
+        between: between(0, 9999),
       },
       description: {
         maxLength: maxLength(1000),
-      }
-    }
+      },
+    },
   },
   methods: {
     validateState(name) {
@@ -118,7 +135,7 @@ export default {
     resetForm() {
       this.form = {
         name: null,
-        address: null
+        address: null,
       };
 
       this.$nextTick(() => {
@@ -136,13 +153,13 @@ export default {
       temp.description = this.form.description;
       axios
         .post(path, temp)
-        .then(res => {
+        .then((res) => {
           this.$emit("addedProduct");
           alert("Added Product");
-          this.$emit("addedProduct")
+          this.$emit("addedProduct");
           console.log(res.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error.data);
         });
 
@@ -151,10 +168,9 @@ export default {
       this.product.description = this.form.description;
       this.product.quantity = this.form.quantity;
       this.$emit("addToProductList", this.product);
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>
